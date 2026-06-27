@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# Script para executar linting no projeto
+# Uso: ./bin/lint
+
+# Cores para saída
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+echo -e "${BLUE}🔍 Iniciando verificação de linting...${BLUE}"
+echo -e "${YELLOW}Executando npm run lint ${GREEN}"
+echo ""
+
+npm run lint 
+
+EXIT_CODE=$?
+
+echo ""
+
+if [ $EXIT_CODE -eq 0 ]; then
+    echo -e "${GREEN}✅ Linting concluído com sucesso!${NC}"
+    echo -e "${GREEN}🎉 Nenhum erro encontrado. Código está limpo!${NC}"
+else
+    echo -e "${RED}❌ Erros encontrados no linting!${NC}"
+    echo -e "${RED}🔧 Corrija os erros antes de continuar.${NC}"
+    echo -e "${YELLOW}💡 Dica: Execute 'npm run lint' para ver os detalhes completos.${NC}"
+    exit 1
+fi

@@ -1,0 +1,26 @@
+<ion-content class="[--background:#0f1115]">
+  <div class="success-modal-enter flex min-h-full flex-col items-center justify-center px-6 py-10 text-center">
+    <div class="success-icon-pop mb-8 flex h-25 w-25 items-center justify-center rounded-full bg-[#00ff88] text-[3rem] text-[#064e3b] shadow-[0_0_40px_rgba(0,255,136,0.3)]">
+      <i [class]="paymentIconClass"></i>
+    </div>
+
+    <div class="mb-8">
+      <h1 class="m-0 text-[1.8rem] font-black tracking-[-0.5px] text-white">Venda Confirmada!</h1>
+      <p class="mt-2 text-base text-zinc-400">
+        O pagamento via <strong class="text-[#00ff88]">{{ paymentLabel }}</strong> foi processado com sucesso.
+      </p>
+    </div>
+
+    <div class="mb-10 w-full rounded-3xl border border-white/5 bg-white/[0.03] p-6">
+      <span class="mb-2 block text-[0.75rem] font-extrabold uppercase tracking-[0.16em] text-zinc-500">Valor recebido</span>
+      <span class="text-[2.2rem] font-black text-white">R$ {{ totalVenda | number:'1.2-2' }}</span>
+    </div>
+
+    <button
+      type="button"
+      class="w-full rounded-[1.25rem] bg-[#00ff88] px-5 py-5 text-base font-black tracking-[0.08em] text-[#064e3b] shadow-[0_10px_25px_rgba(0,255,136,0.2)]"
+      (click)="close()">
+      CONCLUIR OPERAÇÃO
+    </button>
+  </div>
+</ion-content>

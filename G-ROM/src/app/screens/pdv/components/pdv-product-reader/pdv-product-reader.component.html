@@ -1,0 +1,39 @@
+
+<div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+  <div class="flex flex-1 items-center gap-2">
+    <label class="flex-1">
+      <div class="flex h-9 items-center gap-3 rounded-lg p-2 border border-emerald-500">
+        <i class="bi bi-upc-scan ml-2 text-emerald-100/50"></i>
+        <input
+          type="text"
+          [ngModel]="manualBarcode"
+          (ngModelChange)="updateManualBarcode($event)"
+          (keyup.enter)="addManual.emit()"
+          placeholder="Código de barras"
+          class="w-full text-sm outline-none text-gray-200 placeholder-gray-200 text-center"
+        />
+      </div>
+    </label>
+
+    <button
+      type="button"
+      class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl text-lg transition hover:scale-[1.03] active:scale-95 rounded-lg bg-emerald-600"
+      (click)="startScan.emit()"
+      title="Escanear código de barras"
+    >
+      <i class="bi bi-qr-code-scan"></i>
+    </button>
+  </div>
+
+  <div class="grid grid-cols-2 gap-2 sm:flex sm:min-w-fit">
+    <button
+      type="button"
+      class="inline-flex h-9 rounded-lg items-center justify-center p-2 text-sm font-semibold transition hover:scale-[1.03] active:scale-95"
+      style="background: rgba(255,183,125,0.1); border: 1px solid rgba(255,183,125,0.25); color: #ffb77d"
+      (click)="testScan.emit()"
+    >
+      <i class="bi bi-arrow-clockwise mr-1.5"></i>
+      Testar
+    </button>
+  </div>
+</div>

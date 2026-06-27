@@ -1,0 +1,32 @@
+<ion-menu-button
+  *ngIf="mode === 'menu'; else closeButton"
+  [class]="buttonClasses"
+  [attr.aria-label]="ariaLabel"
+>
+  <span class="menu-toggle__surface" aria-hidden="true">
+    <span class="menu-toggle__icon">
+      <span></span>
+      <span></span>
+      <span></span>
+    </span>
+  </span>
+</ion-menu-button>
+
+<ng-template #closeButton>
+  <button
+    type="button"
+    [class]="buttonClasses"
+    [attr.aria-label]="ariaLabel"
+    (click)="handlePress()"
+  >
+    <span
+      class="menu-toggle__surface menu-toggle__surface--close"
+      aria-hidden="true"
+    >
+      <span class="menu-toggle__close-icon">
+        <span></span>
+        <span></span>
+      </span>
+    </span>
+  </button>
+</ng-template>

@@ -1,0 +1,41 @@
+<ion-content
+  [fullscreen]="true"
+  style="--background: radial-gradient(circle at top, rgba(102, 223, 117, 0.12), transparent 28%), linear-gradient(180deg, #0d141a 0%, #091015 100%); color: #dce3ec;">
+  <div class="flex min-h-full flex-col gap-4 px-4 pb-[8.5rem] pt-5 text-[#dce3ec] max-[480px]:px-3.5">
+
+    <app-pdv-product-reader
+      [(manualBarcode)]="manualBarcode"
+      [cartIsEmpty]="cartItems.length === 0"
+      (addManual)="addManualItem()"
+      (startScan)="startScan()"
+      (testScan)="testScan()">
+    </app-pdv-product-reader>
+
+    <app-pdv-cart-list
+      [items]="cartItemViews"
+      (clearCart)="clearCart('Limpeza manual')"
+      (updateQuantity)="onUpdateQuantity($event)">
+    </app-pdv-cart-list>
+
+    <app-pdv-footer
+      [paymentMethod]="paymentMethod"
+      [totalVenda]="totalVenda"
+      [totalItens]="totalItensCarrinho"
+      [canConclude]="cartItems.length > 0"
+      [isSubmitting]="isSubmitting"
+      (choosePayment)="choosePayment()"
+      (concludeSale)="onConcludeSale()">
+    </app-pdv-footer>
+  </div>
+
+  <app-modal
+    *ngIf="isClearCartModalOpen"
+    title="Limpar carrinho?"
+    message="Todos os itens desta venda serao removidos e a operacao sera registrada como cancelada. Deseja continuar?"
+    icon="warning-outline"
+    cancelText="Manter venda"
+    confirmText="Limpar tudo"
+    (canceled)="closeClearCartModal()"
+    (confirmed)="confirmClearCart()">
+  </app-modal>
+</ion-content>

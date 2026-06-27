@@ -1,0 +1,144 @@
+/**
+ * GLASSMORPHISM UTILITIES
+ *
+ * Classes and mixins for macOS-style glass surfaces.
+ */
+.glass {
+  background: var(--app-glass-bg);
+  border: 1px solid var(--app-glass-border);
+  box-shadow: var(--app-glass-shadow);
+  backdrop-filter: blur(var(--app-glass-blur)) saturate(var(--app-glass-saturate));
+  -webkit-backdrop-filter: blur(var(--app-glass-blur)) saturate(var(--app-glass-saturate));
+}
+
+.glass-strong {
+  background: var(--app-glass-bg-strong);
+  border: 1px solid var(--app-glass-border-strong);
+  box-shadow: var(--app-glass-shadow-strong);
+  backdrop-filter: blur(var(--app-glass-blur-strong)) saturate(var(--app-glass-saturate));
+  -webkit-backdrop-filter: blur(var(--app-glass-blur-strong)) saturate(var(--app-glass-saturate));
+}
+
+.glass-subtle {
+  background: var(--app-glass-bg-subtle);
+  border: 1px solid var(--app-glass-border);
+  box-shadow: var(--app-glass-shadow);
+  backdrop-filter: blur(var(--app-glass-blur)) saturate(var(--app-glass-saturate));
+  -webkit-backdrop-filter: blur(var(--app-glass-blur)) saturate(var(--app-glass-saturate));
+}
+
+.glass-card {
+  background: var(--app-glass-bg);
+  border: 1px solid var(--app-glass-border);
+  box-shadow: var(--app-glass-shadow);
+  backdrop-filter: blur(var(--app-glass-blur)) saturate(var(--app-glass-saturate));
+  -webkit-backdrop-filter: blur(var(--app-glass-blur)) saturate(var(--app-glass-saturate));
+  border-radius: var(--app-radius-lg);
+}
+
+.glass-pill {
+  background: var(--app-glass-bg-subtle);
+  border: 1px solid var(--app-glass-border);
+  box-shadow: var(--app-glass-shadow);
+  backdrop-filter: blur(var(--app-glass-blur)) saturate(var(--app-glass-saturate));
+  -webkit-backdrop-filter: blur(var(--app-glass-blur)) saturate(var(--app-glass-saturate));
+  padding: 2px 8px;
+}
+
+.glass-border {
+  border: 1px solid var(--app-glass-border-strong) !important;
+}
+
+:host {
+  display: block;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.app-header {
+  background: transparent;
+}
+
+.header-toolbar {
+  --background: transparent;
+  --color: var(--app-color-on-surface);
+  --padding-start: 8px;
+  --padding-end: 8px;
+  --min-height: 64px;
+  background: var(--app-glass-bg);
+  border: 1px solid var(--app-glass-border);
+  box-shadow: var(--app-glass-shadow);
+  backdrop-filter: blur(var(--app-glass-blur)) saturate(var(--app-glass-saturate));
+  -webkit-backdrop-filter: blur(var(--app-glass-blur)) saturate(var(--app-glass-saturate));
+  border: none;
+  contain: none;
+}
+
+.title-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 100%;
+}
+.title-container i {
+  font-size: 1.2rem;
+  color: var(--app-color-primary);
+  text-shadow: 0 0 10px rgba(var(--app-color-primary-rgb), 0.3);
+}
+.title-container span {
+  font-size: var(--app-type-title-sm);
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  background: linear-gradient(to right, var(--app-color-on-surface), var(--app-color-on-surface-variant));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.header-action-btn {
+  margin: 0 2px;
+  transition: all 0.2s ease;
+}
+
+.header-menu-toggle {
+  margin: 0 2px;
+}
+
+.header-action-btn.notification-btn {
+  position: relative;
+}
+.header-action-btn.notification-btn .notification-badge {
+  position: absolute;
+  top: 10px;
+  right: 8px;
+  min-width: 16px;
+  height: 16px;
+  background: var(--app-color-primary);
+  color: var(--primary-contrast);
+  font-size: var(--app-type-label-sm);
+  font-weight: 800;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid var(--app-color-background);
+  box-shadow: 0 0 10px rgba(var(--app-color-primary-rgb), 0.4);
+  padding: 2px;
+}
+.header-action-btn.profile-shortcut i {
+  color: var(--app-color-primary);
+  opacity: 0.9;
+}
+.header-action-btn:active {
+  transform: scale(0.9);
+  opacity: 0.7;
+}
+
+/* Linha de Acento Neon Inferior */
+.header-accent-line {
+  height: 1px;
+  width: 100%;
+  background: linear-gradient(to right, transparent, rgba(var(--app-color-primary-rgb), 0.5), rgba(var(--app-color-primary-rgb), 0.8), rgba(var(--app-color-primary-rgb), 0.5), transparent);
+  box-shadow: 0 1px 10px rgba(var(--app-color-primary-rgb), 0.2);
+}

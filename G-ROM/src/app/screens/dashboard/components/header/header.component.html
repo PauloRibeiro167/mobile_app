@@ -1,0 +1,27 @@
+<header class="dashboard-header glass-card rounded-xl px-4 py-3 mb-4 w-100" *ngIf="userProfile$ | async as user">
+  <div class="dashboard-header__glow" aria-hidden="true"></div>
+
+  <div class="dashboard-header__content flex-column gap-3 w-100">
+    <div class="flex-between flex-items-start gap-2 w-100">
+      <div class="flex-column gap-1">
+        <span class="text-label text-primary tracking-wider">Painel do operador</span>
+        <h1 class="dashboard-hero-title m-0">
+          {{ isFirstGreeting ? 'Bem-vindo, ' : 'Olá, ' }}{{ user.nome }}
+        </h1>
+        <span class="dashboard-role text-body-small text-primary">{{ user.cargo }}</span>
+      </div>
+      <div class="dashboard-avatar flex-center text-label text-primary">
+        {{ user.nome.charAt(0) }}
+      </div>
+    </div>
+
+    <div class="dashboard-status-chip flex-left gap-1 w-100 rounded-xl px-3 py-2">
+      <span class="status-dot"></span>
+      <span class="text-label text-primary">
+        Caixa {{ user.status === 'online' ? 'aberto' : 'fechado' }}
+      </span>
+      <span class="dashboard-status-divider text-label text-primary" aria-hidden="true">•</span>
+      <span class="text-label text-primary">{{ user.turno }}</span>
+    </div>
+  </div>
+</header>

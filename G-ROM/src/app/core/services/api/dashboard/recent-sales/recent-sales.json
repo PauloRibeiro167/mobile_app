@@ -1,0 +1,64 @@
+[
+  {
+    "id": "#1042",
+    "hora": "14:35",
+    "valor": "45,50",
+    "pagamento": "PIX",
+    "cliente": "Consumidor final",
+    "itens": [
+      { "nome": "Refrigerante 2L", "quantidade": 1, "valorUnitario": "12,50" },
+      { "nome": "Biscoito recheado", "quantidade": 2, "valorUnitario": "6,00" },
+      { "nome": "Sabonete", "quantidade": 1, "valorUnitario": "21,00" }
+    ]
+  },
+  {
+    "id": "#1041",
+    "hora": "14:28",
+    "valor": "128,90",
+    "pagamento": "Crédito",
+    "cliente": "Maria Clara",
+    "itens": [
+      { "nome": "Arroz 5kg", "quantidade": 1, "valorUnitario": "32,90" },
+      { "nome": "Feijão carioca 1kg", "quantidade": 2, "valorUnitario": "8,50" },
+      { "nome": "Óleo de soja", "quantidade": 3, "valorUnitario": "7,00" },
+      { "nome": "Leite integral", "quantidade": 4, "valorUnitario": "8,00" },
+      { "nome": "Café 500g", "quantidade": 1, "valorUnitario": "27,00" }
+    ]
+  },
+  {
+    "id": "#1040",
+    "hora": "14:12",
+    "valor": "32,00",
+    "pagamento": "Dinheiro",
+    "cliente": "João Pedro",
+    "itens": [
+      { "nome": "Pão de forma", "quantidade": 1, "valorUnitario": "9,50" },
+      { "nome": "Margarina", "quantidade": 1, "valorUnitario": "7,50" },
+      { "nome": "Mortadela fatiada", "quantidade": 1, "valorUnitario": "15,00" }
+    ]
+  },
+  {
+    "id": "#1039",
+    "hora": "13:57",
+    "valor": "84,70",
+    "pagamento": "Débito",
+    "cliente": "Carlos Lima",
+    "itens": [
+      { "nome": "Fralda infantil", "quantidade": 1, "valorUnitario": "54,90" },
+      { "nome": "Lenço umedecido", "quantidade": 2, "valorUnitario": "14,90" }
+    ]
+  },
+  {
+    "id": "#1038",
+    "hora": "13:41",
+    "valor": "210,00",
+    "pagamento": "Promissória",
+    "cliente": "Mercadinho da Vila",
+    "vencimentoPromissoria": "2026-07-10",
+    "itens": [
+      { "nome": "Fardo de água mineral", "quantidade": 3, "valorUnitario": "24,00" },
+      { "nome": "Caixa de leite", "quantidade": 2, "valorUnitario": "58,00" },
+      { "nome": "Pacote de açúcar 5kg", "quantidade": 1, "valorUnitario": "22,00" }
+    ]
+  }
+]

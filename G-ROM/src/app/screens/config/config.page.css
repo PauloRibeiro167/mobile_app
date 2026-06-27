@@ -1,0 +1,136 @@
+/* Card de Dica de Busca */
+
+.dica-card {
+  background: var(--app-color-warning-light);
+  border-radius: 16px;
+  border: 1px solid var(--app-color-warning);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  padding: 24px;
+  margin-bottom: 20px;
+}
+.dica-card .card-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+.dica-card .bulb-btn {
+  margin-right: 8px;
+}
+.dica-card .card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+}
+.dica-card .card-description {
+  line-height: 1.6;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.config-title {
+  color: var(--app-color-secondary);
+  text-align: center;
+  font-size: 2rem;
+  font-weight: bold;
+  margin-top: 1rem;
+}
+
+.config-header {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+.config-subtitle {
+  color: var(--app-color-gray-600);
+  font-size: 1.1rem;
+}
+
+.config-section {
+  background: #fff;
+  border-radius: 8px;
+  margin: 16px 0;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+}
+.section-header {
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: var(--app-color-secondary);
+}
+.section-header i {
+  font-size: 1.3rem;
+  margin-right: 8px;
+}
+.section-title {
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+  color: var(--app-color-black);
+}
+.section-divider {
+  height: 4px;
+  background: var(--app-color-gray-200);
+  margin: 8px 0;
+  border-radius: 2px;
+}
+.section-description {
+  color: var(--app-color-gray-700);
+  font-size: 1rem;
+  margin-bottom: 8px;
+}
+.section-suggestion {
+  background: var(--app-color-info-light);
+  color: var(--app-color-info);
+  padding: 8px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  font-size: 0.98rem;
+}
+.section-suggestion i {
+  margin-right: 8px;
+}
+.config-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-size: 1rem;
+  color: var(--app-color-gray-700);
+}
+.config-item i {
+  color: var(--app-color-secondary);
+  font-size: 1.2rem;
+  margin-right: 8px;
+}
+.config-value {
+  margin-right: 8px;
+  color: var(--app-color-secondary);
+  font-weight: 500;
+}
+.config-footer {
+  text-align: center;
+  margin: 32px 0 0 0;
+}
+.about-btn {
+  border: 1px solid #00a9a3;
+  background: #fff;
+  color: #00a9a3;
+  border-radius: 8px;
+  padding: 12px 0;
+  width: 90%;
+  font-size: 1.1rem;
+  margin-bottom: 16px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.about-btn:hover {
+  background: #eaf4ff;
+}
+.footer-info {
+  color: #888;
+  font-size: 0.95rem;
+  margin-top: 8px;
+}

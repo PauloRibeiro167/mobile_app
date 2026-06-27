@@ -1,0 +1,90 @@
+<div class="" *ngIf="totalPages > 1">
+  
+  <div class="text-center">
+    <ion-button
+      fill="solid"
+      size="small"
+      (click)="openItemsPerPageActionSheet()"
+      class="secondary">
+      <div class="text-fixed-white font-bold">
+        <i class="bi bi-gear-fill mr-3"></i>
+        <span>{{ itemsPerPage }} itens</span>
+        <i class="bi bi-chevron-down ml-3"></i>
+      </div>
+    </ion-button>
+  </div>
+
+  <!-- Controles de navegação -->
+  <div class="flex-center-all gap-4 mt-3">
+    <!-- Primeira página -->
+    <ion-button 
+      fill="outline"
+      class="primary" 
+      size="small" 
+      (click)="changePage(1)" 
+      [disabled]="currentPage === 1"
+      title="Primeira página">
+      <i class="bi bi-skip-start-fill"></i>
+    </ion-button>
+    
+    <!-- Página anterior -->
+    <ion-button 
+      fill="outline" 
+      class="nav-button primary" 
+      size="small" 
+      (click)="changePage(currentPage - 1)" 
+      [disabled]="currentPage === 1"
+      title="Página anterior">
+      <i class="bi bi-chevron-left"></i>
+    </ion-button>
+
+    <!-- Páginas numéricas (para poucas páginas) -->
+    <div class="pagination-pages" *ngIf="shouldShowNumericButtons()">
+      <ion-button 
+        *ngFor="let page of getVisiblePages()" 
+        [fill]="page === currentPage ? 'solid' : 'outline'"
+        [class.current-page]="page === currentPage"
+        class="page-button primary"
+        size="small"
+        (click)="changePage(page)">
+        {{ page }}
+      </ion-button>
+    </div>
+    
+    <!-- Indicador de página (para muitas páginas ou quando necessário) -->
+    <div class="page-info" *ngIf="shouldShowPageIndicator()">
+      {{ currentPage }} de {{ totalPages }}
+    </div>
+
+    <!-- Próxima página -->
+    <ion-button 
+      fill="outline" 
+      class="nav-button primary" 
+      size="small" 
+      (click)="changePage(currentPage + 1)" 
+      [disabled]="currentPage === totalPages"
+      title="Próxima página">
+      <i class="bi bi-chevron-right"></i>
+    </ion-button>
+    
+    <!-- Última página -->
+    <ion-button 
+      fill="outline" 
+      class="nav-button primary" 
+      size="small" 
+      (click)="changePage(totalPages)" 
+      [disabled]="currentPage === totalPages"
+      title="Última página">
+      <i class="bi bi-skip-end-fill"></i>
+    </ion-button>
+  </div>
+
+</div>
+
+<!-- Custom ActionSheet Component -->
+<app-custom-action-sheet
+  [isOpen]="isActionSheetOpen"
+  header="Itens por página"
+  [buttons]="actionSheetButtons"
+  (didDismiss)="onActionSheetDismiss($event)">
+</app-custom-action-sheet>

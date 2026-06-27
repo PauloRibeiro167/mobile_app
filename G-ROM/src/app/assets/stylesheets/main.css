@@ -1,0 +1,32 @@
+
+/**
+ * ENTRYPOINT LEGADO DE ESTILOS
+ *
+ * Mantido para compatibilidade com imports antigos fora do pipeline principal.
+ * A composição real dos estilos continua modular.
+ */
+
+@import "./base/vendors.css";
+@import "./base/theme-tokens.css";
+@import "./base/theme-ionic.css";
+@import "./base/typography.css";
+
+@import "./utilities/safe-area-utils.css";
+@import "./utilities/colors.css";
+@import "./utilities/spacing-utils.css";
+@import "./utilities/rounded.css";
+@import "./utilities/glass.css";
+@import "./utilities/scrollbar.css";
+@import "./utilities/layout.css";
+
+@import "./components/buttons.css";
+@import "./components/cards.css";
+@import "./components/checkbox.css";
+@import "./components/forms.css";
+@import "./components/ionic-components.css";
+@import "./components/ionic-overrides.css";
+@import "./components/menu.css";
+@import "./components/modal.css";
+@import "./components/radio.css";
+@import "./components/user-info.css";
+@import "./components/feedback.css";

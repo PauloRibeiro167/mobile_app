@@ -1,0 +1,131 @@
+@charset "UTF-8";
+
+ion-menu::part(backdrop) {
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+}
+
+ion-menu::part(container) {
+  width: min(20rem, calc(100vw - 1rem));
+  max-width: calc(100vw - 0.75rem);
+  height: 100vh;
+  height: 100dvh;
+  height: 100svh;
+  max-height: 100vh;
+  max-height: 100dvh;
+  max-height: 100svh;
+  border-radius: 0 28px 28px 0;
+  box-shadow: 20px 0 50px rgba(0, 0, 0, 0.5);
+  background: #111418;
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+}
+
+.menu-content {
+  --background: #111418;
+  --padding-bottom: 0;
+  --offset-bottom: 0px;
+  height: 100%;
+}
+
+.menu-content::part(scroll) {
+  height: 100%;
+  min-height: 100svh;
+  min-height: 100dvh;
+  max-height: 100svh;
+  max-height: 100dvh;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Botão Fechar FIXO */
+.close-container {
+  position: absolute;
+  top: calc(var(--ion-safe-area-top, 0px) + 12px);
+  right: 12px;
+  z-index: 999;
+}
+
+.menu-item {
+  --background: transparent;
+  --min-height: 42px;
+  --padding-start: 10px;
+  --inner-padding-end: 10px;
+  --border-radius: 10px;
+  margin-bottom: 20px;
+  color: #a1a1aa;
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.menu-item i.bi {
+  font-size: 1.05rem;
+  margin-right: 14px;
+  color: #52525b;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu-item.active {
+  color: #ffffff;
+  --background: rgba(0, 255, 136, 0.08);
+}
+
+.menu-item.active i.bi {
+  color: #00ff88;
+  text-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+}
+
+.menu-item:active {
+  --background: rgba(255, 255, 255, 0.04);
+}
+
+.menu-footer-inner {
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: calc(var(--app-safe-area-bottom-effective, 0px) + 1rem);
+}
+
+@media (max-width: 768px) {
+  ion-menu::part(container) {
+    height: 100dvh;
+    height: 100svh;
+    max-height: 100dvh;
+    max-height: 100svh;
+  }
+
+  .menu-content::part(scroll) {
+    display: block;
+    height: 100dvh;
+    height: 100svh;
+    min-height: 100dvh;
+    min-height: 100svh;
+    max-height: 100dvh;
+    max-height: 100svh;
+  }
+
+}
+
+@media (max-width: 480px) {
+  ion-menu::part(container) {
+    width: min(18.5rem, calc(100vw - 0.5rem));
+    max-width: calc(100vw - 0.5rem);
+    height: 100dvh;
+    height: 100svh;
+    max-height: 100dvh;
+    max-height: 100svh;
+    border-radius: 0 22px 22px 0;
+  }
+
+  .menu-item {
+    --min-height: 40px;
+    font-size: 0.8rem;
+  }
+
+  .menu-item i.bi {
+    margin-right: 12px;
+  }
+}

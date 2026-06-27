@@ -1,0 +1,10 @@
+.git
+.gitignore
+.idea
+.vscode
+.env.development
+mobile/node_modules
+mobile/dist
+mobile/www
+mobile/coverage
+mobile/.angular

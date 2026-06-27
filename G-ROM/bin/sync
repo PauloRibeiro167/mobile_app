@@ -1,0 +1,247 @@
+#!/bin/bash
+
+# Cores para o terminal
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+PURPLE='\033[0;35m'
+CYAN='\033[0;36m'
+BOLD='\033[1m'
+NC='\033[0m'
+
+# Importar funções de checagem de dependências
+source bin/checks/deps-node
+source bin/checks/deps-ionic
+source bin/checks/deps-java
+
+# Verificar se foi passado argumento para mostrar ajuda
+if [ $# -gt 0 ]; then
+    case $1 in
+        "--help"|"-h"|"help")
+            echo -e "${CYAN}${BOLD}SITFOR Sync Script${NC}"
+            echo ""
+            echo -e "${YELLOW}Descrição:${NC}"
+            echo "  Script para sincronização e deploy contínuo de builds Android"
+            echo ""
+            echo -e "${YELLOW}Uso:${NC}"
+            echo "  ./bin/sync"
+            echo ""
+            echo -e "${YELLOW}Funcionalidades:${NC}"
+            echo -e "  📱 Builds automáticos Android quando arquivos são modificados"
+            echo -e "  🔄 Reinstala automaticamente no dispositivo conectado"
+            echo -e "  🔍 Detecta dispositivos Android via ADB"
+            echo -e "  ⚡ Sincronização rápida de assets web"
+            echo ""
+            echo -e "${YELLOW}Recursos automáticos:${NC}"
+            echo -e "  ✅ Verifica e instala Node.js via NVM"
+            echo -e "  ✅ Verifica e instala Ionic CLI"
+            echo -e "  ✅ Verifica e instala Java JDK"
+            echo -e "  ✅ Configura JAVA_HOME automaticamente"
+            echo -e "  ✅ Funciona sem privilégios de administrador"
+            echo ""
+            echo -e "${YELLOW}Pré-requisitos:${NC}"
+            echo -e "  📱 Dispositivo Android conectado via USB"
+            echo -e "  🔧 USB Debugging habilitado no dispositivo"
+            echo -e "  🛠️  Android SDK tools (ADB) configurado"
+            echo ""
+            exit 0
+            ;;
+        *)
+            echo -e "${RED}❌ Argumento inválido: $1${NC}"
+            echo -e "${YELLOW}Use --help para ver as opções disponíveis${NC}"
+            exit 1
+            ;;
+    esac
+fi
+
+# Verificar dependências antes de executar
+echo -e "${CYAN}🔍 Verificando dependências...${NC}"
+check_nodejs
+check_ionic_cli
+check_java_android
+
+echo -e "${GREEN}✅ Todas as verificações de dependências concluídas!${NC}"
+echo -e "${GREEN}✅ Ambiente de desenvolvimento verificado e pronto!${NC}"
+echo ""
+
+# Instalar dependências do projeto se necessário
+if [ ! -d "node_modules" ]; then
+    echo -e "${YELLOW}📦 Instalando dependências do projeto (npm ci)...${NC}"
+    if ! npm ci; then
+        echo -e "${RED}❌ Falha ao instalar dependências com npm ci${NC}"
+        echo -e "${YELLOW}💡 Tentando com npm install...${NC}"
+        if ! npm install; then
+            echo -e "${RED}❌ Falha crítica na instalação de dependências${NC}"
+            exit 1
+        fi
+    fi
+    echo -e "${GREEN}✅ Dependências instaladas com sucesso!${NC}"
+else
+    echo -e "${GREEN}✅ Dependências já instaladas (node_modules encontrado)${NC}"
+fi
+
+PACKAGE="io.ionic.starter"
+ACTIVITY=".MainActivity"
+ANDROID_PATH="$(pwd)/android"
+APK_PATH="$ANDROID_PATH/app/build/outputs/apk/debug/app-debug.apk"
+
+# Função para atualizar, sincronizar, buildar APK, instalar e iniciar o app
+atualizar_e_recarregar_app() {
+    echo -e "${YELLOW} Executando build de produção...${NC}"
+
+    # Tenta build com Nx (se aplicável). Caso falhe, tenta fallbacks comuns: npm, ionic, ng
+    if command -v npx &> /dev/null && npx --no-install nx --version &> /dev/null; then
+        echo -e "${CYAN}🔁 Tentando: npx nx build app --configuration=production --skip-nx-cache${NC}"
+        if npx nx build app --configuration=production --skip-nx-cache; then
+            echo -e "${GREEN}✅ Build de produção (Nx) concluído com sucesso!${NC}"
+            build_ok=1
+        else
+            echo -e "${YELLOW}⚠️  build com Nx falhou. Tentando fallbacks...${NC}"
+            build_ok=0
+        fi
+    else
+        build_ok=0
+    fi
+
+    if [ "${build_ok}" != "1" ]; then
+        # Tentar npm run build com argumentos de configuration (muitos projetos suportam)
+        echo -e "${CYAN}🔁 Tentando: npm run build -- --configuration=production${NC}"
+        if npm run build -- --configuration=production; then
+            echo -e "${GREEN}✅ Build de produção (npm) concluído com sucesso!${NC}"
+            build_ok=1
+        else
+            echo -e "${YELLOW}⚠️  npm run build com --configuration falhou, tentando npm run build simples...${NC}"
+            if npm run build; then
+                echo -e "${GREEN}✅ Build de produção (npm run build) concluído com sucesso!${NC}"
+                build_ok=1
+            else
+                echo -e "${YELLOW}⚠️  npm run build também falhou. Tentando: ionic build...${NC}"
+                if command -v ionic &> /dev/null && ionic build --configuration=production 2>/dev/null; then
+                    echo -e "${GREEN}✅ Build de produção (ionic) concluído com sucesso!${NC}"
+                    build_ok=1
+                elif command -v ionic &> /dev/null && ionic build 2>/dev/null; then
+                    echo -e "${GREEN}✅ Build (ionic build) concluído com sucesso!${NC}"
+                    build_ok=1
+                else
+                    echo -e "${YELLOW}⚠️  ionic build não disponível ou falhou. Tentando: ng build...${NC}"
+                    if command -v ng &> /dev/null && ng build --configuration=production; then
+                        echo -e "${GREEN}✅ Build de produção (ng) concluído com sucesso!${NC}"
+                        build_ok=1
+                    elif command -v ng &> /dev/null && ng build; then
+                        echo -e "${GREEN}✅ Build (ng build) concluído com sucesso!${NC}"
+                        build_ok=1
+                    else
+                        echo -e "${RED}❌ Nenhum comando de build bem-sucedido. Verifique a configuração do projeto e as mensagens acima.${NC}"
+                        return 1
+                    fi
+                fi
+            fi
+        fi
+    fi
+
+  echo -e "${YELLOW}🔄 Sincronizando Capacitor...${NC}"
+  if npx cap sync android; then
+    echo -e "${GREEN}✅ Sincronização do Capacitor concluída!${NC}"
+  else
+    echo -e "${RED}❌ Erro durante a sincronização. Verifique as mensagens de erro acima.${NC}"
+    return 1
+  fi
+
+  echo -e "${YELLOW}🔨 Gerando APK debug com Gradle...${NC}"
+
+  # Verificar se o diretório Android existe
+  if [ ! -d "$ANDROID_PATH" ]; then
+    echo -e "${RED}❌ Diretório Android não encontrado: $ANDROID_PATH${NC}"
+    echo -e "${YELLOW}💡 Certifique-se de que o projeto Android foi configurado.${NC}"
+    echo -e "${CYAN}   Execute: npx cap add android${NC}"
+    return 1
+  fi
+
+  # Verificar se o gradlew existe
+  if [ ! -f "$ANDROID_PATH/gradlew" ]; then
+    echo -e "${RED}❌ Arquivo gradlew não encontrado em $ANDROID_PATH${NC}"
+    echo -e "${YELLOW}💡 O projeto Android pode não estar configurado corretamente.${NC}"
+    return 1
+  fi
+
+  # Gerar APK
+    cd "$ANDROID_PATH" || return 1
+    if ./gradlew assembleDebug; then
+    echo -e "${GREEN}✅ APK gerado com sucesso!${NC}"
+  else
+    echo -e "${RED}❌ Erro durante a geração do APK.${NC}"
+        cd - > /dev/null || true
+    return 1
+  fi
+    cd - > /dev/null || true
+
+  if [ -f "$APK_PATH" ]; then
+    echo -e "${YELLOW}📲 Instalando APK no dispositivo/emulador...${NC}"
+    if adb install -r -t "$APK_PATH"; then
+      echo -e "${GREEN}✅ APK instalado com sucesso!${NC}"
+      echo -e "${YELLOW}🚀 Iniciando app no dispositivo/emulador...${NC}"
+      if adb shell am start -n "$PACKAGE/$ACTIVITY" -a android.intent.action.MAIN -c android.intent.category.LAUNCHER; then
+        echo -e "${GREEN}🎉 App Android atualizado e iniciado com sucesso!${NC}"
+      else
+        echo -e "${YELLOW}⚠️  App instalado, mas falha ao iniciar automaticamente.${NC}"
+      fi
+    else
+      echo -e "${RED}❌ Erro ao instalar APK. Verifique se o dispositivo está conectado.${NC}"
+    fi
+  else
+    echo -e "${RED}❌ APK não encontrado em $APK_PATH. Verifique se o build foi concluído.${NC}"
+    return 1
+  fi
+
+  return 0
+}
+
+echo ""
+
+# Mostrar resumo das dependências verificadas
+echo -e "${YELLOW}📋 Resumo das dependências:${NC}"
+echo -e "   🟢 Node.js: $(node --version)"
+echo -e "   🟢 npm: $(npm --version)"
+if command -v ionic &> /dev/null; then
+    echo -e "   🟢 Ionic CLI: $(ionic --version 2>/dev/null || echo 'desconhecida')"
+else
+    echo -e "   🔴 Ionic CLI: não encontrado"
+fi
+if command -v java &> /dev/null; then
+    echo -e "   🟢 Java JDK: $(java -version 2>&1 | head -n 1)"
+else
+    echo -e "   � Java JDK: não encontrado"
+fi
+if [ -d "android" ] && [ -f "android/gradlew" ]; then
+    echo -e "   🟢 Projeto Android: configurado"
+else
+    echo -e "   🔴 Projeto Android: não configurado"
+fi
+if [ -n "$ANDROID_DEVICES_COUNT" ] && [ "$ANDROID_DEVICES_COUNT" -gt 0 ]; then
+    echo -e "   🟢 Dispositivos Android: $ANDROID_DEVICES_COUNT conectado(s)"
+    if [ -n "$ANDROID_DEVICES_LIST" ]; then
+        echo "$ANDROID_DEVICES_LIST" | tr ' ' '\n' | while read -r device; do
+            [ -n "$device" ] && echo -e "      - $device"
+        done
+    fi
+else
+    echo -e "   🟡 Dispositivos Android: nenhum conectado"
+fi
+echo ""
+
+echo -e "${YELLOW}🚀 Iniciando processo de build e sincronização...${NC}"
+echo -e "${CYAN}Passos que serão executados:${NC}"
+echo -e "   1️⃣  Build do projeto Ionic (produção)"
+echo -e "   2️⃣  Sincronização com Capacitor"
+echo -e "   3️⃣  Geração de APK debug"
+echo -e "   4️⃣  Instalação no dispositivo/emulador"
+echo -e "   5️⃣  Inicialização da aplicação"
+echo ""
+
+echo ""
+atualizar_e_recarregar_app
+echo ""
+echo -e "${BLUE}📋 Processo concluído com sucesso!${NC}"
+echo -e "${GREEN}🎉 Aplicação SITFOR pronta para uso!${NC}"
+

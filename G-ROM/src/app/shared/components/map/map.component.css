@@ -1,0 +1,29 @@
+/* ========================================
+   COMPONENTE MAPA LEAFLET ISOLADO
+   ======================================== */
+
+.map-container {
+  width: 100%;
+  overflow: hidden;
+  background: var(--app-color-gray-100);
+  position: relative;
+
+  /* Container do Leaflet */
+  .leaflet-container {
+    height: 100% !important;
+    width: 100% !important;
+    position: absolute !important;
+  }
+
+  /* Estilizar popup */
+  .leaflet-popup-content-wrapper {
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .leaflet-popup-content {
+    margin: 8px 12px;
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-normal);
+  }
+}

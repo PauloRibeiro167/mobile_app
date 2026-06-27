@@ -1,0 +1,347 @@
+#!/bin/bash
+
+export NCURSES_UTF8_ACS=1
+export LANG=pt_BR.UTF-8
+export LC_ALL=pt_BR.UTF-8
+
+# Script interativo para build do projeto SITFOR
+# Permite escolher o ambiente e tipo de build
+
+# Remover set -e para permitir tratamento de erros personalizado
+# set -e
+
+# Cores para o terminal
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+CYAN='\033[0;36m'
+NC='\033[0m'
+PURPLE='\033[0;35m'
+
+# Carregar funções de verificação de dependências
+# shellcheck source=bin/check_deps
+if [ -f "$(dirname "$0")/check_deps" ]; then
+  . "$(dirname "$0")/check_deps"  # Use "." ao invés de "source" para compatibilidade POSIX
+else
+  echo -e "${RED}❌ Arquivo check_deps não encontrado em $(dirname "$0")/check_deps${NC}"
+  echo -e "${YELLOW}💡 Para rodar o ShellCheck sem este aviso, adicione o arquivo check_deps como input usando a opção -x:${NC}"
+  echo -e "${CYAN}   shellcheck -x ./bin/build ./bin/check_deps${NC}"
+  echo -e "${YELLOW}💡 Certifique-se de que o arquivo check_deps está presente na pasta bin/${NC}"
+  exit 1
+fi
+
+# Carregar dependências Java
+if [ -f "$(dirname "$0")/checks/deps-java" ]; then
+  . "$(dirname "$0")/checks/deps-java"
+else
+  echo -e "${RED}❌ Arquivo de dependências Java não encontrado em $(dirname "$0")/checks/deps-java${NC}"
+  exit 1
+fi
+
+# Carregar dependências Angular
+if [ -f "$(dirname "$0")/checks/angular_deps" ]; then
+  . "$(dirname "$0")/checks/angular_deps"
+else
+  echo -e "${RED}❌ Arquivo de dependências Angular não encontrado em $(dirname "$0")/checks/angular_deps${NC}"
+  exit 1
+fi
+
+# Importar função check_nodejs do arquivo de dependências
+if [ -f "$(dirname "$0")/checks/deps-node" ]; then
+  . "$(dirname "$0")/checks/deps-node"
+else
+  echo -e "${RED}❌ Arquivo de dependências Node.js não encontrado em $(dirname "$0")/checks/deps-node${NC}"
+  exit 1
+fi
+
+# Importa funções de dependências para build web
+if [ -f "$(dirname "$0")/checks/deps-build-web" ]; then
+  . "$(dirname "$0")/checks/deps-build-web"
+else
+  echo -e "${RED}❌ Arquivo de dependências para build web não encontrado em $(dirname "$0")/checks/deps-build-web${NC}"
+  exit 1
+fi
+
+# Importa função build_web do novo arquivo de dependências para build web
+if [ -f "$(dirname "$0")/checks/deps-build-web" ]; then
+  . "$(dirname "$0")/checks/deps-build-web"
+else
+  echo -e "${RED}❌ Arquivo de dependências para build web não encontrado em $(dirname "$0")/checks/deps-build-web${NC}"
+  exit 1
+fi
+
+# Função para build Android
+build_android() {
+  local env=$1
+
+  echo -e "${GREEN}📱 Iniciando build ANDROID para ambiente: ${YELLOW}$env${NC}"
+  echo ""
+
+  # Checar AVDs disponíveis
+  local emulator="$HOME/Android/Sdk/emulator/emulator"
+  if [ ! -x "$emulator" ]; then
+    echo -e "${RED}[ERRO] emulator não encontrado em $emulator. Instale o pacote 'emulator' pelo SDK Manager.${NC}"
+    exit 1
+  fi
+  local avds
+  avds=$(ANDROID_AVD_HOME="$HOME/.android/avd" "$emulator" -list-avds | grep -v '^$')
+  if [ -z "$avds" ]; then
+    echo -e "${RED}❌ Nenhum AVD (Android Virtual Device) configurado.${NC}"
+    echo -e "${YELLOW}Crie um emulador usando o AVD Manager no Android Studio (Tools > AVD Manager).${NC}"
+    exit 1
+  else
+    echo -e "${CYAN}🔍 AVDs disponíveis:${NC}"
+    while IFS= read -r avd; do
+      [ -n "$avd" ] && echo -e "${GREEN}  - $avd${NC}"
+    done <<< "$avds"
+  fi
+
+  # Executar script específico do ambiente
+  case $env in
+    "test")
+      ./bin/test android
+      ;;
+    "staging")
+      ./bin/staging android
+      ;;
+    "production")
+      ./bin/production android
+      ;;
+  esac
+}
+
+# Função principal
+main() {
+  while true; do
+    choice=$(dialog --clear --stdout \
+      --title "SITFOR - Selecione o ambiente para build" \
+      --menu "Escolha uma opcao:" 20 60 6 \
+      1 "Desenvolvimento" \
+      2 "Testes (PWA, Android, Web)" \
+      3 "Homologacao" \
+      4 "Producao" \
+      5 "Android Build (Selecionar ambiente)" \
+      0 "Cancelar")
+    case "$choice" in
+      1)
+        show_header
+        echo -e "${PURPLE}🛠️  AMBIENTE: DEVELOPMENT${NC}"
+        echo "================================================"
+        ./bin/builds/web_development.sh
+        ;;
+      2)
+        show_header
+        test_menu
+        wait
+        ;;
+      3)
+        show_header
+        echo -e "${PURPLE}🎭 AMBIENTE: STAGING${NC}"
+        echo "================================================"
+        ./bin/builds/web_staging.sh
+        wait
+        ;;
+      4)
+        show_header
+        echo -e "${PURPLE}🚀 AMBIENTE: PRODUCTION${NC}"
+        echo "================================================"
+        ./bin/builds/web_production.sh
+        wait
+        ;;
+      5)
+        show_header
+        android_menu
+        wait
+        ;;
+      0|""|255)
+        echo -e "${RED}❌ Build cancelado.${NC}"
+        exit 0
+        ;;
+    esac
+  done
+}
+
+# Função para menu de Testes (PWA, Android, Web)
+test_menu() {
+  while true; do
+    choice=$(dialog --clear --stdout \
+      --title "SITFOR - Testes" \
+      --menu "Escolha o tipo de teste:" 20 60 4 \
+      1 "Teste PWA" \
+      2 "Teste Android" \
+      3 "Teste Web" \
+      4 "Voltar ao menu principal")
+
+    case "$choice" in
+      1)
+        show_header
+        echo -e "${PURPLE} TESTE: PWA${NC}"
+        echo "================================================"
+        if [ -f ./bin/tests/pwa_test.sh ]; then
+          ./bin/tests/pwa_test.sh
+        else
+          echo -e "${YELLOW}Script de teste PWA não encontrado: ./bin/tests/pwa_test.sh${NC}"
+        fi
+        wait
+        ;;
+      2)
+        show_header
+        echo -e "${PURPLE} TESTE: ANDROID${NC}"
+        echo "================================================"
+        if [ -f ./bin/tests/android_test.sh ]; then
+          ./bin/tests/android_test.sh
+        else
+          echo -e "${YELLOW}Script de teste Android não encontrado: ./bin/tests/android_test.sh${NC}"
+        fi
+        wait
+        ;;
+      3)
+        show_header
+        echo -e "${PURPLE} TESTE: WEB${NC}"
+        echo "================================================"
+        if [ -f ./bin/tests/web_test.sh ]; then
+          ./bin/tests/web_test.sh
+        else
+          echo -e "${YELLOW}Script de teste Web não encontrado: ./bin/tests/web_test.sh${NC}"
+        fi
+        wait
+        ;;
+      4|""|255)
+        break
+        ;;
+    esac
+    if [ "$choice" = "4" ] || [ -z "$choice" ] || [ "$choice" = "255" ]; then
+      break
+    fi
+  done
+}
+
+# Função para menu Android
+android_menu() {
+  while true; do
+    choice=$(dialog --clear --stdout \
+      --title "SITFOR - Build Android" \
+      --menu "Escolha o ambiente Android:" 20 60 4 \
+      1 "Test Android" \
+      2 "Staging Android" \
+      3 "Production Android" \
+      4 "Voltar ao menu principal")
+
+    case "$choice" in
+      1)
+        show_header
+        echo -e "${PURPLE} AMBIENTE: TEST ANDROID${NC}"
+        echo "================================================"
+        ./bin/builds/android_test.sh
+        wait
+        ;;
+      2)
+        show_header
+        echo -e "${PURPLE} AMBIENTE: STAGING ANDROID${NC}"
+        echo "================================================"
+        ./bin/builds/android_staging.sh
+        wait
+        ;;
+      3)
+        show_header
+        echo -e "${PURPLE} AMBIENTE: PRODUCTION ANDROID${NC}"
+        echo "================================================"
+        ./bin/builds/android_production.sh
+        wait
+        ;;
+      4|""|255)
+        break
+        ;;
+    esac
+    # Após qualquer build ou voltar, retorna ao menu principal
+    if [ "$choice" = "4" ] || [ -z "$choice" ] || [ "$choice" = "255" ]; then
+      break
+    fi
+  done
+}
+
+# Verificar se foi passado argumento para executar sem interação
+if [ $# -gt 0 ]; then
+  case $1 in
+    "development"|"dev")
+      ./bin/builds/web_development.sh
+      ;;
+    "test")
+      ./bin/builds/web_test.sh
+      ;;
+    "staging")
+      ./bin/builds/web_staging.sh
+      ;;
+    "production"|"prod")
+      ./bin/builds/web_production.sh
+      ;;
+    "android")
+      if [ $# -gt 1 ]; then
+        case "$2" in
+          test)
+            ./bin/builds/android_test.sh
+            ;;
+          staging)
+            ./bin/builds/android_staging.sh
+            ;;
+          production)
+            ./bin/builds/android_production.sh
+            ;;
+          *)
+            echo -e "${RED} Ambiente Android inválido: $2${NC}"
+            exit 1
+            ;;
+        esac
+      else
+        echo -e "${RED} Especifique o ambiente para Android: test, staging ou production${NC}"
+        exit 1
+      fi
+      ;;
+    "--help"|"-h"|"help")
+      echo -e "${CYAN}${BOLD}SITFOR Build Script${NC}"
+      echo ""
+      echo -e "${YELLOW}Uso:${NC}"
+      echo -e "  ./bin/build [AMBIENTE]"
+      echo ""
+      echo -e "${YELLOW}Ambientes disponíveis:${NC}"
+      echo -e "  ${GREEN}development${NC} (ou ${GREEN}dev${NC})  - Build para desenvolvimento"
+      echo -e "  ${GREEN}test${NC}                    - Build para testes"
+      echo -e "  ${GREEN}staging${NC}                 - Build para staging"
+      echo -e "  ${GREEN}production${NC} (ou ${GREEN}prod${NC}) - Build para produção"
+      echo -e "  ${GREEN}android${NC} [ENV]           - Build Android (requer ENV: test|staging|production)"
+      echo ""
+      echo -e "${YELLOW}Exemplos:${NC}"
+      echo -e "  ./bin/build development"
+      echo -e "  ./bin/build android staging"
+      echo ""
+      echo -e "${YELLOW}Recursos automáticos:${NC}"
+      echo -e "  Verifica e instala Node.js via NVM"
+      echo -e "  Verifica e instala Angular CLI"
+      echo -e "  Verifica e instala Java JDK (para builds Android)"
+      echo -e "  Instala dependencias do projeto"
+      echo -e "  Configura JAVA_HOME automaticamente"
+      echo -e "  Funciona sem privilégios de administrador"
+      echo ""
+      exit 0
+      ;;
+    *)
+      echo -e "${RED} Ambiente invalido: $1${NC}"
+      echo -e "${YELLOW}Ambientes disponíveis: development, test, staging, production, android${NC}"
+      exit 1
+      ;;
+  esac
+else
+  # Executar menu interativo
+  main
+fi
+
+echo ""
+echo -e "${GREEN} Processo finalizado!${NC}"
+
+if grep -q "Could not read workspace metadata" build.log; then
+  echo -e "${RED} Erro de cache do Gradle detectado.${NC}"
+  echo -e "   Tente rodar './bin/clean' ou apagar a pasta ~/.gradle/caches manualmente."
+  echo -e "   Depois, execute o build novamente."
+  exit 1
+fi

@@ -1,0 +1,632 @@
+#!/bin/bash
+# Script para Ionic Live Reload sem cache.
+# 
+# Configuração via variáveis de ambiente:
+#   DEV_HOST_IP          - IP da máquina host para WiFi
+#   DEV_USE_POLLING      - Ativa modo polling (1=sim, 0=não) [padrão: 1]
+#   DEV_POLL_INTERVAL    - Intervalo de polling em ms [padrão: 1000]
+#   DEV_EXTRA_NG_FLAGS   - Flags extras para ng serve
+#   DEV_AUTO_TUNNEL      - Ativa adb reverse automaticamente (1=sim) [padrão: 0]
+#   DEV_LIVERELOAD_PORT  - Porta do servidor [padrão: 8100]
+#   DEV_VERBOSE_WATCH    - Ativa logs detalhados de mudanças [padrão: 0]
+#   DEV_SKIP_INITIAL_BUILD - Pula build inicial [padrão: 0]
+
+set -euo pipefail  # Strict mode: exit on error, undefined vars, pipe failures
+
+# Constantes de cores
+readonly C_RESET='\033[0m'
+readonly C_BOLD='\033[1m'
+readonly C_DIM='\033[2m'
+readonly C_RED='\033[31m'
+readonly C_GREEN='\033[32m'
+readonly C_YELLOW='\033[33m'
+readonly C_BLUE='\033[34m'
+readonly C_CYAN='\033[36m'
+
+# Configurações padrão
+readonly ENV_FILE_PATH="/workspace/.env.development"
+readonly DEFAULT_PORT=8100
+readonly DEFAULT_HOST="localhost"
+readonly SERVER_LOG_FILE="/tmp/ionic-server.log"
+readonly BUILD_LOG_FILE="/tmp/ionic-initial-build.log"
+
+# Função auxiliar para logging
+log_info() {
+  echo -e "${C_GREEN}[INFO]${C_RESET} $*"
+}
+
+log_warn() {
+  echo -e "${C_YELLOW}[AVISO]${C_RESET} $*"
+}
+
+log_error() {
+  echo -e "${C_RED}[ERRO]${C_RESET} $*"
+}
+
+log_debug() {
+  echo -e "${C_CYAN}[DEBUG]${C_RESET} $*"
+}
+
+# Função para obter IP do host
+obter_ip_host() {
+  local host_ip="${DEV_HOST_IP:-}"
+  
+  if [[ -z "$host_ip" ]] && [[ -f "$ENV_FILE_PATH" ]]; then
+    host_ip=$(grep -E '^DEV_HOST_IP=' "$ENV_FILE_PATH" | cut -d '=' -f2 | tr -d '[:space:]' || true)
+  fi
+  
+  if [[ -z "$host_ip" ]]; then
+    log_warn "Variável de ambiente DEV_HOST_IP não definida."
+    log_warn "Para live-reload em dispositivo físico, execute no terminal do container:"
+    log_warn "  ${C_BOLD}export DEV_HOST_IP=<IP_DA_SUA_MAQUINA_NA_REDE_WIFI>${C_RESET}"
+    log_warn "Ou defina no arquivo .env.development: DEV_HOST_IP=192.168.124.152"
+    log_warn "Usando 'localhost' como fallback (funciona apenas para emuladores).\n"
+    host_ip="$DEFAULT_HOST"
+  fi
+  
+  echo "$host_ip"
+}
+
+# Inicialização
+readonly HOST_IP=$(obter_ip_host)
+log_info "Usando IP do host: ${C_BOLD}$HOST_IP${C_RESET}"
+
+# Função para limpar processos do servidor Ionic
+limpar_processos_ionic() {
+  log_info "Limpando processos Ionic existentes..."
+  pkill -f "ionic serve" 2>/dev/null || true
+  sleep 2
+}
+
+# Função para verificar se porta está livre
+verificar_porta_livre() {
+  local porta=$1
+  
+  if lsof -i :"$porta" >/dev/null 2>&1; then
+    log_error "Porta $porta ainda está ocupada. Limpando..."
+    fuser -k "$porta"/tcp 2>/dev/null || true
+    sleep 2
+    return 1
+  fi
+  return 0
+}
+
+# Função para aguardar servidor iniciar
+aguardar_servidor_iniciar() {
+  local porta=$1
+  local server_pid=$2
+  local max_tentativas=60  # 2 minutos
+  local tentativas=0
+  
+  log_info "Aguardando servidor iniciar..."
+  
+  while ! curl -s --connect-timeout 5 "http://localhost:$porta" >/dev/null 2>&1; do
+    if [[ $tentativas -ge $max_tentativas ]]; then
+      log_error "Servidor não iniciou após $max_tentativas tentativas"
+      log_error "Logs do servidor:"
+      tail -20 "$SERVER_LOG_FILE"
+      return 1
+    fi
+    
+    # Verificar se o processo ainda está rodando
+    if ! kill -0 "$server_pid" 2>/dev/null; then
+      log_error "Processo do servidor parou inesperadamente"
+      log_error "Logs do servidor:"
+      cat "$SERVER_LOG_FILE"
+      return 1
+    fi
+    
+    sleep 2
+    ((tentativas++))
+    log_info "Tentativa $tentativas/$max_tentativas - Aguardando servidor... (PID: $server_pid)"
+  done
+  
+  return 0
+}
+
+# Função para iniciar watcher auxiliar
+iniciar_watcher_auxiliar() {
+  if [[ "${DEV_VERBOSE_WATCH:-0}" != "1" ]]; then
+    return 0
+  fi
+  
+  (
+    log_info "Watcher auxiliar ativo (DEV_VERBOSE_WATCH=1)."
+    
+    if command -v inotifywait >/dev/null 2>&1; then
+      inotifywait -m -e modify,create,delete,move src/ 2>/dev/null | while read -r path action file; do
+        echo -e "${C_CYAN}[WATCH]${C_RESET} ${action} -> ${path}${file}"
+      done
+    else
+      log_warn "inotifywait não encontrado; usando loop de timestamps."
+      log_warn "Instale 'inotify-tools' para melhor desempenho."
+      
+      declare -A FILE_TIMES
+      while true; do
+        while IFS= read -r -d '' arquivo; do
+          local timestamp
+          timestamp=$(stat -c %Y "$arquivo" 2>/dev/null || echo 0)
+          local timestamp_anterior=${FILE_TIMES[$arquivo]:-0}
+          
+          if [[ $timestamp -ne $timestamp_anterior ]]; then
+            FILE_TIMES[$arquivo]=$timestamp
+            echo -e "${C_CYAN}[WATCH]${C_RESET} change -> $arquivo"
+          fi
+        done < <(find src \( -type f -name '*.ts' -o -name '*.html' -o -name '*.css' \) -print0 2>/dev/null)
+        sleep 1
+      done
+    fi
+  ) &
+}
+
+# Função para iniciar servidor Ionic com melhor controle
+iniciar_servidor_ionic() {
+  local porta=$1
+  local ip_host=$2
+  
+  # Configurações de watch/polling
+  local usar_polling=${DEV_USE_POLLING:-1}
+  local intervalo_polling=${DEV_POLL_INTERVAL:-1000}
+  local flags_extras="${DEV_EXTRA_NG_FLAGS:-}"
+  
+  local ng_poll_flag=""
+  if [[ "$usar_polling" == "1" ]]; then
+    # Chokidar (usado pelo Angular) precisa de polling em ambientes Docker/WSL/NFS
+    export CHOKIDAR_USEPOLLING=1
+    export CHOKIDAR_INTERVAL=$intervalo_polling
+    ng_poll_flag="--poll=$intervalo_polling"
+  fi
+  
+  log_info "Watch config: USE_POLLING=$usar_polling POLL_INTERVAL=${intervalo_polling}ms"
+  [[ -n "$flags_extras" ]] && log_info "Flags extras ng: $flags_extras"
+  
+  log_info "Iniciando servidor Ionic na porta $porta..."
+  
+  limpar_processos_ionic
+  verificar_porta_livre "$porta" || true
+  
+  # Iniciar servidor com configurações específicas
+  log_info "Executando: npx ionic serve --port=$porta --host=0.0.0.0 --no-open --livereload -- $ng_poll_flag $flags_extras"
+  
+  # shellcheck disable=SC2086
+  nohup npx ionic serve --port="$porta" --host=0.0.0.0 --no-open --livereload -- $ng_poll_flag $flags_extras > "$SERVER_LOG_FILE" 2>&1 &
+  local server_pid=$!
+  
+  log_info "Servidor iniciado com PID: $server_pid"
+  log_info "Logs em: $SERVER_LOG_FILE"
+  
+  if ! aguardar_servidor_iniciar "$porta" "$server_pid"; then
+    return 1
+  fi
+  
+  log_info "Servidor Ionic iniciado com sucesso na porta $porta"
+  log_info "URL do servidor: http://$ip_host:$porta"
+  log_info "Teste local: http://localhost:$porta"
+  
+  iniciar_watcher_auxiliar
+  
+  return 0
+}
+
+# Função para verificar se servidor está acessível
+verificar_acesso_servidor() {
+  local url=$1
+  local timeout=15
+  
+  log_info "Verificando acesso ao servidor: $url"
+  
+  # Teste básico de conectividade
+  if curl -s --max-time "$timeout" "$url" >/dev/null 2>&1; then
+    log_info "Servidor acessível: $url"
+    
+    # Testar se retorna HTML válido
+    local resposta
+    resposta=$(curl -s "$url" | head -c 100)
+    
+    if [[ "$resposta" == *"<!DOCTYPE html"* ]] || [[ "$resposta" == *"<html"* ]]; then
+      log_info "Servidor retornando HTML válido"
+    else
+      log_warn "Servidor não está retornando HTML esperado"
+      log_debug "Resposta: $resposta"
+    fi
+    
+    return 0
+  fi
+  
+  # Se a URL não for localhost, o problema pode ser a rede do container
+  if [[ "$url" != *"localhost"* ]] && [[ "$url" != *"127.0.0.1"* ]]; then
+    log_warn "Não foi possível acessar o servidor via IP externo ($url) de dentro do container."
+    log_warn "Isso é esperado em alguns ambientes. O script continuará."
+    log_warn "O teste real será a conexão do dispositivo móvel."
+    return 0
+  fi
+  
+  log_error "Servidor não acessível: $url"
+  log_warn "Possíveis causas:"
+  log_warn "  1. Servidor não iniciou: ps aux | grep ionic"
+  log_warn "  2. Porta bloqueada: netstat -tlnp | grep :8100"
+  log_warn "  3. Firewall: sudo ufw allow 8100"
+  log_warn "  4. IP incorreto: echo \$DEV_HOST_IP"
+  log_warn "  5. Logs do servidor: tail -f $SERVER_LOG_FILE"
+  
+  # Testar localhost também
+  if [[ "$url" != "http://localhost:8100" ]]; then
+    log_debug "Testando localhost..."
+    if curl -s --max-time 5 "http://localhost:8100" >/dev/null 2>&1; then
+      log_debug "Localhost funciona, problema pode ser no IP: $HOST_IP"
+    else
+      log_debug "Nem localhost funciona, servidor não está rodando"
+    fi
+  fi
+  
+  return 1
+}
+
+# Função para exibir menu interativo
+exibir_menu() {
+  local selecionado=$1
+  shift
+  local opcoes=("$@")
+
+  echo -e "${C_BLUE}${C_BOLD}--- Selecione o modo de execução ---${C_RESET}\n"
+  
+  for i in "${!opcoes[@]}"; do
+    if [[ "$i" == "$selecionado" ]]; then
+      echo -e "  ${C_GREEN}➜${C_RESET} ${C_BOLD}${opcoes[$i]}${C_RESET}"
+    else
+      echo -e "    ${opcoes[$i]}"
+    fi
+  done
+  
+  echo
+  echo -e "${C_DIM}(Use as setas ↑↓ para navegar e Enter para selecionar)${C_RESET}"
+}
+
+# Função para detectar dispositivos Android conectados
+obter_dispositivos_android() {
+  local dispositivos=()
+  
+  if ! command -v adb &>/dev/null; then
+    echo "${dispositivos[@]}"
+    return 0
+  fi
+  
+  while IFS= read -r linha; do
+    local id tipo nome_ou_modelo
+    id=$(echo "$linha" | awk '{print $1}')
+    tipo=$(echo "$linha" | awk '{print $2}')
+    
+    if [[ "$tipo" == "device" ]]; then
+      if [[ "$id" == emulator-* ]]; then
+        nome_ou_modelo=$(adb -s "$id" emu avd name 2>/dev/null || echo "Desconhecido")
+        dispositivos+=("Android Emulator ($nome_ou_modelo) [$id]")
+      else
+        nome_ou_modelo=$(adb -s "$id" shell getprop ro.product.model 2>/dev/null || echo "Desconhecido")
+        dispositivos+=("Android USB ($nome_ou_modelo) [$id]")
+      fi
+    fi
+  done < <(adb devices 2>/dev/null | grep -v 'List' | grep -v '^$')
+  
+  printf '%s\n' "${dispositivos[@]}"
+}
+
+# Função para encontrar primeira porta livre
+encontrar_porta_livre() {
+  local inicio=$1
+  local fim=$((inicio + 100))
+  
+  # Preferir método python3 (confiável)
+  if command -v python3 &>/dev/null; then
+    python3 - <<PYTHON
+import socket
+start = int(${inicio})
+end = int(${fim})
+for p in range(start, end+1):
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        s.bind(("0.0.0.0", p))
+        s.close()
+        print(p)
+        break
+    except OSError:
+        s.close()
+PYTHON
+    return 0
+  fi
+  
+  # Fallback para ss ou lsof
+  local porta
+  for porta in $(seq "$inicio" "$fim"); do
+    if command -v ss &>/dev/null; then
+      if ! ss -ltn "( sport = :$porta )" 2>/dev/null | grep -q LISTEN; then
+        echo "$porta"
+        return 0
+      fi
+    elif command -v lsof &>/dev/null; then
+      if ! lsof -i :"$porta" -sTCP:LISTEN >/dev/null 2>&1; then
+        echo "$porta"
+        return 0
+      fi
+    else
+      # Sem ferramentas, assume porta livre (fallback inseguro)
+      echo "$porta"
+      return 0
+    fi
+  done
+  
+  return 1
+}
+
+# Função para configurar adb reverse
+configurar_adb_reverse() {
+  local device_id=$1
+  local porta=$2
+  
+  log_info "Configurando adb reverse tcp:${porta} -> tcp:${porta}..."
+  
+  # Remove reverse antigo específico (ignora erro)
+  adb -s "$device_id" reverse --remove tcp:"$porta" 2>/dev/null || true
+  
+  if ! adb -s "$device_id" reverse tcp:"$porta" tcp:"$porta" 2>/dev/null; then
+    log_error "Falha ao executar adb reverse."
+    return 1
+  fi
+  
+  # Confirmar
+  if ! adb -s "$device_id" reverse --list 2>/dev/null | grep -q "tcp:$porta"; then
+    log_error "adb reverse não apareceu na lista após configurar."
+    return 1
+  fi
+  
+  log_info "adb reverse ativo para porta $porta"
+  
+  # Teste rápido de conectividade dentro do device
+  if adb -s "$device_id" shell 'sh -c "echo > /dev/tcp/127.0.0.1/'"$porta"'"' 2>/dev/null; then
+    log_info "Teste de conexão localhost:$porta dentro do dispositivo passou"
+  else
+    log_warn "Teste /dev/tcp localhost:$porta falhou (shell pode não suportar), prosseguindo..."
+  fi
+  
+  return 0
+}
+
+# Função para executar build inicial
+executar_build_inicial() {
+  if [[ -f "www/index.html" ]]; then
+    return 0
+  fi
+  
+  if [[ "${DEV_SKIP_INITIAL_BUILD:-0}" == "1" ]]; then
+    log_warn "www/index.html ausente mas DEV_SKIP_INITIAL_BUILD=1. Prosseguindo (pode falhar)."
+    return 0
+  fi
+  
+  log_info "www/index.html não encontrado. Executando build inicial..."
+  
+  if npx ng build --configuration=development > "$BUILD_LOG_FILE" 2>&1; then
+    log_info "Build inicial concluído."
+    return 0
+  fi
+  
+  log_error "Build inicial falhou. Veja $BUILD_LOG_FILE"
+  tail -20 "$BUILD_LOG_FILE" || true
+  log_error "Abortando antes do run."
+  return 1
+}
+
+# Função para processar escolha Android
+processar_escolha_android() {
+  local escolha=$1
+  local porta=$2
+  local usar_adb_reverse=$3
+  
+  local device_id
+  device_id=$(echo "$escolha" | grep -oE '\[.*\]' | tr -d '[]')
+  
+  # Se for USB/Emulador e túnel desativado, oferecer ativar
+  if ([[ "$escolha" == *USB* ]] || [[ "$escolha" == *Emulator* ]]) && [[ "$usar_adb_reverse" != "1" ]]; then
+    echo -ne "${C_YELLOW}[PERGUNTA]${C_RESET} Ativar túnel adb reverse para usar http://localhost (recomendado)? (s/N): "
+    read -r resposta
+    
+    if [[ "$resposta" =~ ^[sySY]$ ]]; then
+      usar_adb_reverse=1
+      log_info "Túnel será configurado."
+    else
+      log_info "Prosseguindo sem túnel (usará IP da rede)."
+    fi
+  fi
+  
+  # Build inicial
+  if ! executar_build_inicial; then
+    exit 1
+  fi
+  
+  # Iniciar servidor Ionic
+  if ! iniciar_servidor_ionic "$porta" "$HOST_IP"; then
+    log_error "Falha ao iniciar servidor Ionic. Abortando."
+    log_warn "Verifique os logs em $SERVER_LOG_FILE"
+    exit 1
+  fi
+  
+  # Verificar acesso ao servidor
+  if ! verificar_acesso_servidor "http://$HOST_IP:$porta"; then
+    log_error "Servidor não está acessível. Abortando."
+    log_warn "Tente acessar manualmente: curl http://$HOST_IP:$porta"
+    exit 1
+  fi
+  
+  # Preparar comando Capacitor
+  local cap_run_cmd=("npx" "ionic" "cap" "run" "android" "--livereload" "--external")
+  local host_efetivo="$HOST_IP"
+  
+  # Adicionar target se for dispositivo USB ou emulador
+  if [[ "$escolha" == *USB* ]] || [[ "$escolha" == *Emulator* ]]; then
+    log_info "Dispositivo USB/Emulador detectado: $device_id"
+    
+    # Verificar se o dispositivo ainda está conectado
+    if ! adb devices | grep -q "$device_id"; then
+      log_error "Dispositivo $device_id não está mais conectado!"
+      log_warn "Verifique se o dispositivo está conectado via USB e com depuração USB ativada."
+      exit 1
+    fi
+    
+    cap_run_cmd+=("--target=$device_id")
+  fi
+  
+  # Configurar túnel se necessário
+  if [[ "$usar_adb_reverse" == "1" ]] && ([[ "$escolha" == *USB* ]] || [[ "$escolha" == *Emulator* ]]); then
+    if command -v adb &>/dev/null; then
+      if configurar_adb_reverse "$device_id" "$porta"; then
+        host_efetivo="localhost"
+        # Registrar cleanup
+        trap 'log_info "Removendo adb reverse tcp:$porta"; adb -s "$device_id" reverse --remove tcp:$porta 2>/dev/null || true' EXIT
+      else
+        log_warn "Prosseguindo sem túnel; usando IP do host."
+      fi
+    else
+      log_warn "adb não encontrado no PATH; não é possível usar túnel."
+    fi
+  fi
+  
+  cap_run_cmd+=("--livereload-url=http://$host_efetivo:$porta" "--no-sync")
+  
+  log_info "Comando a executar: ${cap_run_cmd[*]}"
+  log_info "URL de livereload (servidor host): http://$HOST_IP:$porta"
+  
+  if [[ "$host_efetivo" == "localhost" ]]; then
+    log_info "Modo adb reverse ativo: WebView usará http://localhost:$porta (túnel USB)"
+    log_info "Se precisar desativar: unset USE_ADB_REVERSE"
+  else
+    log_warn "Dispositivo deve alcançar este IP via WiFi: http://$HOST_IP:$porta"
+    log_warn "Se tiver problemas de rede, experimente: export USE_ADB_REVERSE=1"
+  fi
+  
+  # Executar comando
+  echo -e "${C_GREEN}Iniciando deploy no dispositivo...${C_RESET}"
+  log_info "Este processo pode levar alguns minutos na primeira vez"
+  log_info "Você pode acompanhar o progresso nos logs acima"
+  log_info "Pressione Ctrl+C para cancelar se necessário"
+  
+  "${cap_run_cmd[@]}"
+  
+  # Pós-execução: verificar túnel
+  if [[ "$host_efetivo" == "localhost" ]]; then
+    if ! adb -s "$device_id" reverse --list 2>/dev/null | grep -q "tcp:$porta"; then
+      log_warn "Túnel adb reverse desapareceu; tentando reconfigurar..."
+      
+      if configurar_adb_reverse "$device_id" "$porta"; then
+        log_info "Túnel restaurado. Se ainda não carrega, feche e reabra o app."
+      else
+        log_error "Não foi possível restaurar o túnel."
+        log_warn "Tente manual: adb -s $device_id reverse tcp:$porta tcp:$porta"
+      fi
+    fi
+  fi
+  
+  # Mensagens finais
+  log_info "Deploy concluído!"
+  log_info "Se o app não abriu automaticamente no dispositivo:"
+  log_info "1. Abra o app manualmente"
+  
+  if [[ "$host_efetivo" == "localhost" ]]; then
+    log_info "2. O túnel USB deve permitir acesso a http://localhost:$porta"
+    log_info "3. Se não abre: adb reverse --list | grep $porta"
+    log_info "4. Teste manual: adb -s $device_id shell am start -a android.intent.action.VIEW -d http://localhost:$porta"
+  else
+    log_info "2. Certifique-se de que está na mesma rede Wi-Fi"
+    log_info "3. Acesse no navegador: http://$HOST_IP:$porta"
+  fi
+}
+
+# Função principal de seleção e execução
+selecionar_e_executar() {
+  mapfile -t dispositivos_android < <(obter_dispositivos_android)
+  local opcoes=()
+  
+  # Adiciona dispositivos Android USB e Emuladores detectados
+  for disp in "${dispositivos_android[@]}"; do
+    opcoes+=("$disp")
+  done
+  
+  # Adiciona opção Android WiFi (sempre disponível)
+  opcoes+=("Android via WiFi (IP: $HOST_IP)")
+  
+  # Adiciona opções iOS
+  opcoes+=("iOS via USB")
+  opcoes+=("iOS via WiFi (IP: $HOST_IP)")
+  opcoes+=("Sair")
+  
+  local selecionado=0
+  tput civis  # Esconder cursor
+  
+  while true; do
+    clear
+    exibir_menu $selecionado "${opcoes[@]}"
+    
+    read -rsn1 tecla
+    if [[ $tecla == $'\033' ]]; then
+      read -rsn2 tecla
+    fi
+    
+    case "$tecla" in
+      '[A') # Seta para cima
+        ((selecionado--))
+        [[ $selecionado -lt 0 ]] && selecionado=$((${#opcoes[@]} - 1))
+        ;;
+      '[B') # Seta para baixo
+        ((selecionado++))
+        [[ $selecionado -ge ${#opcoes[@]} ]] && selecionado=0
+        ;;
+      '') # Enter
+        break
+        ;;
+    esac
+  done
+  
+  tput cnorm  # Mostrar cursor
+  clear
+  
+  local escolha="${opcoes[$selecionado]}"
+  
+  if [[ "$escolha" == "Sair" ]]; then
+    echo "Saindo."
+    exit 0
+  fi
+  
+  # Configurações
+  local porta_padrao=${DEV_LIVERELOAD_PORT:-8100}
+  local usar_adb_reverse=${USE_ADB_REVERSE:-0}
+  
+  # Auto túnel sem prompt se DEV_AUTO_TUNNEL=1
+  if [[ -z "${USE_ADB_REVERSE_SET:-}" ]] && [[ "${DEV_AUTO_TUNNEL:-0}" == "1" ]]; then
+    usar_adb_reverse=1
+    export USE_ADB_REVERSE=$usar_adb_reverse
+    log_info "DEV_AUTO_TUNNEL=1 -> habilitando adb reverse automaticamente."
+  fi
+  
+  log_info "USE_ADB_REVERSE=$usar_adb_reverse"
+  
+  # Detectar porta livre
+  local porta_livre
+  porta_livre=$(encontrar_porta_livre "$porta_padrao") || porta_livre=$porta_padrao
+  
+  if [[ "$porta_livre" != "$porta_padrao" ]]; then
+    log_warn "Porta $porta_padrao está ocupada. Usando porta livre $porta_livre para livereload."
+  fi
+  
+  local livereload_url="http://$HOST_IP:$porta_livre"
+  
+  # Executar conforme escolha
+  if [[ "$escolha" == Android* ]]; then
+    processar_escolha_android "$escolha" "$porta_livre" "$usar_adb_reverse"
+  elif [[ "$escolha" == "iOS via USB" ]]; then
+    echo -e "${C_GREEN}✔ Executando: ionic cap run ios -l --external --livereload-url=$livereload_url${C_RESET}\n"
+    ionic cap run ios -l --external --livereload-url="$livereload_url"
+  elif [[ "$escolha" == "iOS via WiFi"* ]]; then
+    echo -e "${C_GREEN}✔ Executando: ionic cap run ios -l --external --livereload-url=$livereload_url${C_RESET}\n"
+    ionic cap run ios -l --external --livereload-url="$livereload_url"
+  fi
+}
+
+# Ponto de entrada
+selecionar_e_executar

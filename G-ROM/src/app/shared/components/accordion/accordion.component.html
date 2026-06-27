@@ -1,0 +1,57 @@
+<ion-accordion-group expand="inset" [multiple]="dados.permitirMultiplosExpandidos ?? true">
+  <ion-accordion
+    *ngFor="let secao of dados.secoes; trackBy: rastrearPorSecao"
+    [value]="secao.id"
+    [toggleIcon]="'chevron-down'">
+
+    <ion-item slot="header" fill="solid">
+      <ion-label class="p-1">
+        <span class="text-h4 text-fixed-white">{{ secao.titulo }}</span>
+      </ion-label>
+    </ion-item> 
+    
+    <div slot="content">
+      <!-- Layout: grid-2x2 -->
+      <app-accordion-layout-grid-2x2
+        *ngIf="deveRenderizarLayout(secao, 'grid-2x2')"
+        [secao]="secao">
+      </app-accordion-layout-grid-2x2>
+
+      <!-- Layout: grid-2x2-icons -->
+      <app-accordion-layout-grid-2x2-icons
+        *ngIf="deveRenderizarLayout(secao, 'grid-2x2-icons')"
+        [secao]="secao">
+      </app-accordion-layout-grid-2x2-icons>
+
+      <!-- Layout: coluna-unica -->
+      <app-accordion-layout-coluna-unica
+        *ngIf="deveRenderizarLayout(secao, 'coluna-unica')"
+        [secao]="secao">
+      </app-accordion-layout-coluna-unica>
+
+      <!-- Layout: columns-groups -->
+      <app-accordion-layout-columns-groups
+        *ngIf="deveRenderizarLayout(secao, 'colunas-agrupadas')"
+        [secao]="secao">
+      </app-accordion-layout-columns-groups>
+
+      <!-- Layout: cartoes-agrupados -->
+      <app-accordion-layout-cartoes-agrupados
+        *ngIf="deveRenderizarLayout(secao, 'cartoes-agrupados')"
+        [secao]="secao">
+      </app-accordion-layout-cartoes-agrupados>
+
+      <!-- Layout: carrossel-imagens (galeria de imagens) -->
+      <app-accordion-layout-galeria-imagens
+        *ngIf="deveRenderizarLayout(secao, 'carrossel-imagens')"
+        [campos]="secao.campos"
+        [accordionPai]="this">
+      </app-accordion-layout-galeria-imagens>
+
+      <!-- Subseções (renderização recursiva) -->
+      <div *ngIf="secao.subsecoes && secao.subsecoes.length > 0">
+        <app-resultado-accordion [dados]="{ secoes: secao.subsecoes }"></app-resultado-accordion>
+      </div>
+    </div>
+  </ion-accordion>
+</ion-accordion-group>

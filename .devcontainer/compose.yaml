@@ -1,0 +1,23 @@
+services:
+  frontend:
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+    container_name: frontend
+    image: frontend:latest
+    privileged: true
+    network_mode: host
+    devices:
+      - /dev/bus/usb:/dev/bus/usb
+    volumes:
+      - ..:/workspaces:cached
+    working_dir: /workspaces/G-ROM
+    command: sleep infinity
+    restart: unless-stopped
+    env_file:
+      - ../.env.development
+    environment:
+      - SERVICE_TYPE=frontend
+      - ADB_SERVER_SOCKET=tcp:127.0.0.1:5037
+
+volumes: {}

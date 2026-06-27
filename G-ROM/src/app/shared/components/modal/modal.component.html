@@ -1,0 +1,15 @@
+<div class="modal-shell" *ngIf="isInline ? show : true">
+  <div class="modal-icon" *ngIf="icon">
+    <i [class]="getBootstrapIconClass()"></i>
+  </div>
+  <h2>{{ title }}</h2>
+  <p>{{ message }}</p>
+  <div class="modal-actions">
+    <ion-button fill="solid" *ngIf="cancelText" class="secondary text-fixed-white w-100" (click)="onCancel()">
+      <span>{{ cancelText }}</span>
+    </ion-button>
+    <ion-button fill="solid" *ngIf="confirmText" class="primary text-fixed-white w-100" (click)="onConfirm()">
+      <span>{{ confirmText }}</span>
+    </ion-button>
+  </div>
+</div>

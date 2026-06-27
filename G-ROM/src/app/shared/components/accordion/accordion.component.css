@@ -1,0 +1,418 @@
+ion-accordion ion-item[slot=header] {
+  --background: linear-gradient(100deg, var(--app-color-primary), var(--app-color-primary-darker)) !important;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+:host ::ng-deep .ion-accordion-toggle-icon {
+  --color: var(--fixed-white) !important;
+  color: var(--fixed-white) !important;
+}
+
+.columns-groups .field-group {
+  margin-bottom: 1.5rem;
+}
+.columns-groups .field-group:last-child {
+  margin-bottom: 0;
+}
+.columns-groups .field-group .group-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ion-color-primary);
+  margin: 0 0 0.75rem 0;
+  padding-bottom: 0.25rem;
+  border-bottom: 2px solid var(--ion-color-primary);
+  text-transform: uppercase;
+}
+.columns-groups .field-group ion-row ion-col ion-item {
+  --border-radius: $accordion-border-radius-sm;
+  --padding-start: 0.75rem;
+  --padding-end: 0.75rem;
+  margin-bottom: 0.25rem;
+  border: 1px solid var(--ion-color-light-shade);
+}
+.columns-groups .field-group ion-row ion-col ion-item.area-field {
+  border-left: 3px solid var(--ion-color-primary);
+}
+.columns-groups .field-group ion-row ion-col ion-item.area-field ion-label p {
+  font-weight: 600;
+  color: var(--ion-color-primary);
+}
+.columns-groups .field-group ion-row ion-col ion-item ion-label h3 {
+  margin: 0 0 0.25rem 0;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--ion-color-dark-tint);
+  text-transform: uppercase;
+}
+.columns-groups .field-group ion-row ion-col ion-item ion-label p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--ion-color-dark);
+}
+
+[slot=content] {
+  animation: slideDown 0.3s ease-out;
+}
+[slot=content] ion-item {
+  transition: all 0.2s ease;
+}
+
+.galeria-imagens {
+  --swiper-theme-color: var(--ion-color-primary);
+  --swiper-pagination-color: var(--ion-color-primary);
+  --swiper-pagination-bullet-inactive-color: #6b7280;
+  --swiper-pagination-bullet-inactive-opacity: 1;
+  --swiper-pagination-bullet-opacity: 1;
+  --swiper-pagination-bullet-horizontal-gap: 4px;
+  padding: 0;
+  background: var(--ion-background-color);
+}
+.galeria-imagens .galeria-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 8px 16px;
+  background: var(--ion-color-light);
+  margin-bottom: 8px;
+}
+.galeria-imagens .contador-imagens {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--ion-color-medium);
+}
+.galeria-imagens .numero-atual {
+  color: var(--ion-color-primary);
+  font-weight: 600;
+}
+.galeria-imagens .carousel-container {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: var(--ion-color-light);
+}
+.galeria-imagens .imagens-swiper {
+  width: 100%;
+  height: auto;
+  min-height: 300px;
+}
+.galeria-imagens .imagens-swiper :global(.swiper-pagination-bullet) {
+  background: #6b7280 !important;
+  opacity: 1 !important;
+  width: 12px !important;
+  height: 12px !important;
+  border-radius: 50% !important;
+}
+.galeria-imagens .imagens-swiper :global(.swiper-pagination-bullet-active) {
+  background: var(--ion-color-primary) !important;
+  opacity: 1 !important;
+  transform: scale(1.3) !important;
+}
+.galeria-imagens .imagens-swiper ::ng-deep .swiper-pagination-bullet {
+  background: #6b7280 !important;
+  opacity: 1 !important;
+}
+.galeria-imagens .imagens-swiper ::ng-deep .swiper-pagination-bullet-active {
+  background: var(--ion-color-primary) !important;
+  opacity: 1 !important;
+}
+.galeria-imagens .imagens-swiper::part(pagination) {
+  bottom: 8px;
+}
+.galeria-imagens .imagens-swiper::part(bullet) {
+  background: #6b7280 !important;
+  opacity: 1 !important;
+  width: 12px !important;
+  height: 12px !important;
+}
+.galeria-imagens .imagens-swiper::part(bullet-active) {
+  background: var(--ion-color-primary) !important;
+  opacity: 1 !important;
+  transform: scale(1.3) !important;
+}
+.galeria-imagens .slide-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: white;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+.galeria-imagens .imagem-container {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  background: var(--ion-color-light);
+}
+.galeria-imagens .imagem-principal {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease-out;
+}
+.galeria-imagens .imagem-overlay {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  opacity: 0;
+  transition: opacity 0.3s ease-out;
+}
+.galeria-imagens .slide-content:hover .imagem-overlay {
+  opacity: 1;
+}
+.galeria-imagens .btn-expandir {
+  position: absolute;
+  --background: rgba(0, 0, 0, $bg-opacity);
+  --color: white;
+  --border-radius: 50%;
+  z-index: 10;
+  --color: white;
+  --padding-start: $accordion-spacing-xs;
+  --padding-end: $accordion-spacing-xs;
+  --border-radius: $accordion-border-radius-sm;
+  height: 32px;
+  min-height: 32px;
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  min-height: 40px;
+}
+.galeria-imagens .btn-expandir:hover {
+  --background: rgba(0, 0, 0, $hover-opacity);
+}
+.galeria-imagens .btn-expandir i {
+  font-size: 16px;
+}
+.galeria-imagens .btn-expandir:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+.galeria-imagens .imagem-info {
+  padding: 12px;
+  background: white;
+  border-top: 1px solid var(--ion-color-light-shade);
+}
+.galeria-imagens .info-content {
+  text-align: center;
+}
+.galeria-imagens .sem-imagens {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--ion-color-medium);
+  background: var(--ion-color-light);
+  border-radius: 12px;
+  overflow: hidden;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+  min-height: 200px;
+}
+.galeria-imagens .sem-imagens p {
+  margin: 0;
+  font-size: 14px;
+}
+.galeria-imagens .sem-imagens .icone-vazio {
+  margin-bottom: 12px;
+}
+.galeria-imagens .sem-imagens .icone-vazio i {
+  font-size: 48px;
+  color: var(--ion-color-medium);
+}
+@media (min-width: 768px) {
+  .galeria-imagens .imagens-swiper {
+    height: 350px;
+  }
+}
+@media (min-width: 1024px) {
+  .galeria-imagens .imagens-swiper {
+    height: 400px;
+  }
+}
+
+:host ::ng-deep .info-modal.galeria-modal-imagem,
+.info-modal.galeria-modal-imagem {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  z-index: 999999 !important;
+  pointer-events: auto !important;
+}
+:host ::ng-deep .info-modal.galeria-modal-imagem .focus-overlay,
+.info-modal.galeria-modal-imagem .focus-overlay {
+  z-index: 999999 !important;
+  background: rgba(0, 0, 0, 0.95) !important;
+  backdrop-filter: blur(15px) !important;
+  -webkit-backdrop-filter: blur(15px) !important;
+}
+:host ::ng-deep .info-modal.galeria-modal-imagem .modal-imagem-content,
+.info-modal.galeria-modal-imagem .modal-imagem-content {
+  max-width: 90vw;
+  max-height: 90vh;
+  z-index: 999999 !important;
+}
+@media (max-width: 576px) {
+  :host ::ng-deep .info-modal.galeria-modal-imagem .modal-imagem-content,
+  .info-modal.galeria-modal-imagem .modal-imagem-content {
+    max-width: 95vw;
+    max-height: 95vh;
+  }
+}
+:host ::ng-deep .info-modal.galeria-modal-imagem .focus-header,
+.info-modal.galeria-modal-imagem .focus-header {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+:host ::ng-deep .info-modal.galeria-modal-imagem .focus-header .header-info,
+.info-modal.galeria-modal-imagem .focus-header .header-info {
+  flex: 1;
+}
+:host ::ng-deep .info-modal.galeria-modal-imagem .focus-header .header-info h3,
+.info-modal.galeria-modal-imagem .focus-header .header-info h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+@media (max-width: 576px) {
+  :host ::ng-deep .info-modal.galeria-modal-imagem .focus-header .header-info h3,
+  .info-modal.galeria-modal-imagem .focus-header .header-info h3 {
+    font-size: 1rem;
+  }
+}
+:host ::ng-deep .info-modal.galeria-modal-imagem .focus-header .header-info small,
+.info-modal.galeria-modal-imagem .focus-header .header-info small {
+  opacity: 0.8;
+  font-size: 0.85rem;
+}
+:host ::ng-deep .info-modal.galeria-modal-imagem .focus-header .btn-fechar-modal,
+.info-modal.galeria-modal-imagem .focus-header .btn-fechar-modal {
+  margin-left: 1rem;
+  --background: rgba(255, 255, 255, 0.1);
+  --border-radius: 50%;
+  width: 40px;
+  height: 40px;
+}
+:host ::ng-deep .info-modal.galeria-modal-imagem .focus-header .btn-fechar-modal:hover,
+.info-modal.galeria-modal-imagem .focus-header .btn-fechar-modal:hover {
+  --background: rgba(255, 255, 255, 0.2);
+}
+:host ::ng-deep .info-modal.galeria-modal-imagem .focus-details.imagem-container,
+.info-modal.galeria-modal-imagem .focus-details.imagem-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+}
+:host ::ng-deep .info-modal.galeria-modal-imagem .focus-details.imagem-container .imagem-wrapper,
+.info-modal.galeria-modal-imagem .focus-details.imagem-container .imagem-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+:host ::ng-deep .info-modal.galeria-modal-imagem .focus-details.imagem-container .imagem-wrapper .group-items,
+.info-modal.galeria-modal-imagem .focus-details.imagem-container .imagem-wrapper .group-items {
+  display: flex;
+  justify-content: center;
+}
+:host ::ng-deep .info-modal.galeria-modal-imagem .focus-details.imagem-container .imagem-modal,
+.info-modal.galeria-modal-imagem .focus-details.imagem-container .imagem-modal {
+  max-width: 100%;
+  max-height: 60vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+@media (max-width: 576px) {
+  :host ::ng-deep .info-modal.galeria-modal-imagem .focus-details.imagem-container .imagem-modal,
+  .info-modal.galeria-modal-imagem .focus-details.imagem-container .imagem-modal {
+    max-height: 50vh;
+  }
+}
+:host ::ng-deep .info-modal.galeria-modal-imagem .focus-footer,
+.info-modal.galeria-modal-imagem .focus-footer {
+  padding: 1rem 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.2);
+}
+:host ::ng-deep .info-modal.galeria-modal-imagem .focus-footer p,
+.info-modal.galeria-modal-imagem .focus-footer p {
+  opacity: 0.9;
+}
+:host ::ng-deep .info-modal.galeria-modal-imagem .navigation-controls,
+.info-modal.galeria-modal-imagem .navigation-controls {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
+  pointer-events: none;
+  z-index: 10;
+}
+:host ::ng-deep .info-modal.galeria-modal-imagem .navigation-controls .nav-btn,
+.info-modal.galeria-modal-imagem .navigation-controls .nav-btn {
+  position: absolute;
+  pointer-events: auto;
+  --background: rgba(0, 0, 0, 0.5);
+  --border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  backdrop-filter: blur(10px);
+}
+:host ::ng-deep .info-modal.galeria-modal-imagem .navigation-controls .nav-btn:hover:not(:disabled),
+.info-modal.galeria-modal-imagem .navigation-controls .nav-btn:hover:not(:disabled) {
+  --background: rgba(0, 0, 0, 0.7);
+}
+:host ::ng-deep .info-modal.galeria-modal-imagem .navigation-controls .nav-btn:disabled,
+.info-modal.galeria-modal-imagem .navigation-controls .nav-btn:disabled {
+  opacity: 0.3;
+}
+:host ::ng-deep .info-modal.galeria-modal-imagem .navigation-controls .nav-btn.nav-prev,
+.info-modal.galeria-modal-imagem .navigation-controls .nav-btn.nav-prev {
+  left: 1rem;
+}
+:host ::ng-deep .info-modal.galeria-modal-imagem .navigation-controls .nav-btn.nav-next,
+.info-modal.galeria-modal-imagem .navigation-controls .nav-btn.nav-next {
+  right: 1rem;
+}
+@media (max-width: 576px) {
+  :host ::ng-deep .info-modal.galeria-modal-imagem .navigation-controls .nav-btn,
+  .info-modal.galeria-modal-imagem .navigation-controls .nav-btn {
+    width: 40px;
+    height: 40px;
+  }
+  :host ::ng-deep .info-modal.galeria-modal-imagem .navigation-controls .nav-btn.nav-prev,
+  .info-modal.galeria-modal-imagem .navigation-controls .nav-btn.nav-prev {
+    left: 0.5rem;
+  }
+  :host ::ng-deep .info-modal.galeria-modal-imagem .navigation-controls .nav-btn.nav-next,
+  .info-modal.galeria-modal-imagem .navigation-controls .nav-btn.nav-next {
+    right: 0.5rem;
+  }
+  :host ::ng-deep .info-modal.galeria-modal-imagem .navigation-controls .nav-btn i,
+  .info-modal.galeria-modal-imagem .navigation-controls .nav-btn i {
+    font-size: 1.25rem !important;
+  }
+}

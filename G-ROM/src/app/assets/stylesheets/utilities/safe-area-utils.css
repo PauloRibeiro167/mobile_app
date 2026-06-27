@@ -1,0 +1,110 @@
+/**
+ * SAFE AREA UTILITIES - VERSÃO SIMPLIFICADA
+ *
+ * Utilitários essenciais para safe area seguindo KISS principle.
+ * Foco no que é realmente necessário para funcionar corretamente.
+ */
+/* ========================================
+   VARIÁVEIS CSS ESSENCIAIS
+   ======================================== */
+:root {
+  --safe-area-top: env(safe-area-inset-top, 0px);
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-left: env(safe-area-inset-left, 0px);
+  --safe-area-right: env(safe-area-inset-right, 0px);
+  --app-browser-chrome-bottom-gap: 0px;
+  --app-safe-area-top: var(--ion-safe-area-top, var(--safe-area-top));
+  --app-safe-area-bottom: var(--ion-safe-area-bottom, var(--safe-area-bottom));
+  --app-safe-area-bottom-effective: calc(
+    var(--app-safe-area-bottom) + var(--app-browser-chrome-bottom-gap)
+  );
+  --app-safe-area-left: var(--ion-safe-area-left, var(--safe-area-left));
+  --app-safe-area-right: var(--ion-safe-area-right, var(--safe-area-right));
+  --app-tab-bar-height: 64px;
+}
+
+/* ========================================
+   MIXINS BÁSICOS
+   ======================================== */
+/* ========================================
+   CLASSES UTILITÁRIAS ESSENCIAIS
+   ======================================== */
+.safe-padding-top {
+  padding-top: var(--ion-safe-area-top, var(--safe-area-top));
+}
+
+.safe-padding-bottom {
+  padding-bottom: var(--ion-safe-area-bottom, var(--safe-area-bottom));
+}
+
+.safe-padding-left {
+  padding-left: var(--ion-safe-area-left, var(--safe-area-left));
+}
+
+.safe-padding-right {
+  padding-right: var(--ion-safe-area-right, var(--safe-area-right));
+}
+
+.safe-padding-all {
+  padding: var(--ion-safe-area-top, var(--safe-area-top)) var(--ion-safe-area-right, var(--safe-area-right)) var(--ion-safe-area-bottom, var(--safe-area-bottom)) var(--ion-safe-area-left, var(--safe-area-left));
+}
+
+/* ========================================
+   CLASSES DE APLICAÇÃO DIRETA
+   ======================================== */
+.safe-area-app {
+  display: flex;
+  flex-direction: column;
+  min-height: 95vh;
+}
+
+.safe-area-horizontal {
+  padding-left: var(--app-safe-area-left);
+  padding-right: var(--app-safe-area-right);
+}
+
+.safe-area-top {
+  padding-top: var(--app-safe-area-top);
+}
+
+.safe-area-bottom {
+  padding-bottom: var(--app-safe-area-bottom-effective);
+}
+
+.safe-area-content {
+  flex: 1 1 auto;
+  min-height: 0;
+  box-sizing: border-box;
+  padding-bottom: calc(var(--app-safe-area-bottom-effective) + var(--app-tab-bar-height));
+  padding-left: var(--app-safe-area-left);
+  padding-right: var(--app-safe-area-right);
+}
+
+/* ========================================
+   DEBUGGING (DESENVOLVIMENTO)
+   ======================================== */
+.debug-safe-area {
+  position: relative;
+  background-image: linear-gradient(to right, rgba(0, 255, 0, 0.25) 0, rgba(0, 255, 0, 0.25) var(--app-safe-area-left), transparent var(--app-safe-area-left)), linear-gradient(to left, rgba(255, 255, 0, 0.25) 0, rgba(255, 255, 0, 0.25) var(--app-safe-area-right), transparent var(--app-safe-area-right));
+  background-repeat: no-repeat;
+  background-size: var(--app-safe-area-left) 100%, var(--app-safe-area-right) 100%;
+  background-position: left top, right top;
+}
+.debug-safe-area::before, .debug-safe-area::after {
+  content: "";
+  position: fixed;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+  z-index: 10000;
+}
+.debug-safe-area::before {
+  top: 0;
+  height: var(--ion-safe-area-top, var(--safe-area-top));
+  background: rgba(255, 0, 0, 0.35);
+}
+.debug-safe-area::after {
+  bottom: 0;
+  height: var(--ion-safe-area-bottom, var(--safe-area-bottom));
+  background: rgba(0, 0, 255, 0.35);
+}

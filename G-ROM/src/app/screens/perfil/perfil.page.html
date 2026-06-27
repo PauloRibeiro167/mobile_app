@@ -1,0 +1,29 @@
+<ion-content fullscreen class="profile-page">
+  <app-tab-bar
+    [activeTab]="activeTab"
+    (tabChange)="setActiveTab($event)"
+  ></app-tab-bar>
+
+  <main class="page-container p-5 pb-20">
+    <section class="tab-panel" *ngIf="activeTab === 'perfil'">
+      <app-perfil-tab
+        [userProfile]="userProfile"
+        (editProfile)="editProfile()"
+      ></app-perfil-tab>
+    </section>
+
+    <section class="tab-panel pb-20" *ngIf="activeTab === 'desempenho'">
+      <app-desempenho-tab></app-desempenho-tab>
+    </section>
+
+    <section class="tab-panel pb-20" *ngIf="activeTab === 'acompanhamento'">
+      <app-acompanhamento-tab></app-acompanhamento-tab>
+    </section>
+
+    <section class="tab-panel pb-20" *ngIf="activeTab === 'conquistas'">
+      <app-conquistas-tab></app-conquistas-tab>
+    </section>
+  </main>
+
+  <app-modal #modalRef [isInline]="true"></app-modal>
+</ion-content>

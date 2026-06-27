@@ -1,0 +1,30 @@
+<ion-content fullscreen class="page-screen">
+  <div class="login-page safe-area-horizontal">
+    <div class="login-page__ambient" aria-hidden="true"></div>
+    <div class="login-page__glow login-page__glow--primary"></div>
+    <div class="login-page__glow login-page__glow--secondary"></div>
+
+    <div class="login-shell">
+      <app-login-hero
+        [title]="title"
+        [subtitle]="'Centralize o caixa e acompanhe o turno com mais clareza.'"
+        [demoEmail]="DEFAULT_USER.email"
+        [demoPassword]="DEFAULT_USER.password"
+      ></app-login-hero>
+
+      <app-login-form-card class="form_login"
+        [email]="email"
+        [password]="password"
+        [rememberMe]="rememberMe"
+        [isLoading]="isLoading"
+        [showPassword]="showPassword"
+        (emailChange)="email = $event"
+        (passwordChange)="password = $event"
+        (rememberMeChange)="rememberMe = $event"
+        (togglePassword)="togglePasswordVisibility()"
+        (forgotPassword)="forgotPassword()"
+        (submitLogin)="login()"
+      ></app-login-form-card>
+    </div>
+  </div>
+</ion-content>

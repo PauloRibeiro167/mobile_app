@@ -1,0 +1,7 @@
+{
+  "name": "APP-Mercado",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

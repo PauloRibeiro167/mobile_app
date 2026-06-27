@@ -1,0 +1,10 @@
+{
+  "status": "sucesso",
+  "aberturaIdPrefixo": "abx-mock",
+  "statusCaixa": "ABERTO",
+  "caixaId": "12345",
+  "horarioPrevistoAbertura": "07:00",
+  "horarioPrevistoFechamento": "22:00",
+  "mensagemSistema": "Abertura simulada via arquivo local para desenvolvimento.",
+  "latenciaMs": 250
+}

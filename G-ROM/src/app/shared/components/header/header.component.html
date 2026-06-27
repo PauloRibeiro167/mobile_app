@@ -1,0 +1,51 @@
+<ion-header class="ion-no-border app-header">
+  <ion-toolbar class="header-toolbar">
+    <!-- Botão Menu Lateral -->
+    <ion-buttons slot="start">
+      <app-menu-toggle-button class="header-menu-toggle"></app-menu-toggle-button>
+    </ion-buttons>
+
+    <!-- Título Central Dinâmico -->
+    <ion-title>
+      <div class="title-container">
+        <i [class]="'bi ' + icon"></i>
+        <span>{{ title }}</span>
+      </div>
+    </ion-title>
+
+    <!-- Ações do Lado Direito -->
+    <ion-buttons slot="end">
+      <!-- Botão do Sino: O GATILHO DO MODAL -->
+      <ion-button
+        id="open-notifications"
+        class="header-action-btn notification-btn"
+      >
+        <i class="bi bi-bell-fill"></i>
+        <span
+          class="notification-badge"
+          *ngIf="(unreadCount$ | async) ?? 0 > 0"
+        >
+          {{ unreadCount$ | async }}
+        </span>
+      </ion-button>
+
+      <!-- Modal de Notificações Declarativo -->
+      <ion-modal
+        #modal
+        trigger="open-notifications"
+        [presentingElement]="presentingElement"
+        [initialBreakpoint]="0.75"
+        [breakpoints]="[0, 0.75, 1]"
+        [handle]="true"
+        class="notifications-modal-sheet"
+      >
+        <ng-template>
+          <app-notifications-modal></app-notifications-modal>
+        </ng-template>
+      </ion-modal>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <!-- Linha de Acento Neon Inferior -->
+  <div class="header-accent-line"></div>
+</ion-header>

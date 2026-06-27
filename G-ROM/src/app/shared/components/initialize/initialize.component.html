@@ -1,0 +1,9 @@
+<div class="initialize-overlay py-2" [class.hidden]="!isVisible" (click)="onOverlayClick($event)">
+  <div class="card bg-seconsary p-6 flex-column flex-items-center">
+    <h2 class="initialize-title text-center">{{ title }}</h2>
+    <p class="initialize-message text-center">{{ message }}</p>
+    <ion-button fill="solid" class="w-50 mx-auto" (click)="closeWelcome()" expand="block" color="primary">
+      {{ buttonText }}
+    </ion-button>
+  </div>
+</div>

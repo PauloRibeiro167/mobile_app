@@ -1,0 +1,30 @@
+<ion-content fullscreen class="dashboard-screen">
+  <div class="p-4 pb-6">
+    <!-- Conteúdo Operacional (Vindo do DashboardService) -->
+    <div *ngIf="dashboardData">
+      <section *ngIf="showIntroCards" class="mb-4">
+        <div class="flex-right mb-2">
+          <button
+            type="button"
+            class="intro-dismiss-btn glass-pill rounded-xl"
+            (click)="hideIntroCardsForSession()"
+            aria-label="Ocultar cards introdutórios nesta sessão"
+          >
+            <i class="bi bi-eye-slash"></i>
+            <span>Ocultar</span>
+          </button>
+        </div>
+
+        <app-dashboard-header [userProfile$]="userProfile$"></app-dashboard-header>
+
+      </section>
+      <!-- Meta de Vendas -->
+      <app-meta-de-vendas></app-meta-de-vendas>
+      <!-- Quick Actions -->
+      <app-dashboard-quick-actions></app-dashboard-quick-actions>
+      <!-- Tabela de ultimas vendas -->
+      <app-tabela-ultimas-vendas></app-tabela-ultimas-vendas>
+    </div>
+  </div>
+  <div class="mb-20"><span></span></div>
+</ion-content>

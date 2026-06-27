@@ -1,0 +1,11 @@
+<div class="loading-overlay" [ngClass]="customClass" *ngIf="isVisible">
+  <div class="loading-container">
+    <l-tail-chase
+      [attr.size]="size"
+      [attr.color]="color"
+      [attr.speed]="speed">
+    </l-tail-chase>
+    <p class="loading-message">{{ message }}</p>
+    <p class="loading-debug" *ngIf="debugText">{{ debugText }}</p>
+  </div>
+</div>

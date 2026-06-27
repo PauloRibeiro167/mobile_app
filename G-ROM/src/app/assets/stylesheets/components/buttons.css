@@ -1,0 +1,535 @@
+/**
+ * ESTILOS DE BOTÕES PADRONIZADOS
+ *
+ * Aplicação de variáveis de tema nos componentes button padrão.
+ * Mantém a consistência com o design system.
+ */
+/* ========================================
+   BOTÕES SOLID (fill="solid")
+   ======================================== */
+/* Botão primário sólido */
+ion-button[fill=solid] {
+  --background: var(--app-color-primary) !important;
+  --background-activated: var(--app-color-primary-darker) !important;
+  --background-focused: var(--app-color-primary-darker) !important;
+  --background-hover: var(--app-color-primary-darker) !important;
+  --color: var(--app-color-white) !important;
+  --border-radius: var(--app-radius-md) !important;
+}
+
+ion-button[fill=solid].primary {
+  --background: var(--app-color-primary-darker) !important;
+  --background-activated: var(--app-color-primary-darker) !important;
+  --background-focused: var(--app-color-primary-darker) !important;
+  --background-hover: var(--app-color-primary-darker) !important;
+  --color: var(--app-color-black) !important;
+  --border-radius: var(--app-radius-md) !important;
+}
+
+/* Botão secundário sólido */
+ion-button[fill=solid].secondary {
+  --background: var(--app-color-secondary) !important;
+  --background-activated: var(--app-color-secondary-darker) !important;
+  --background-focused: var(--app-color-secondary-darker) !important;
+  --background-hover: var(--app-color-secondary-darker) !important;
+  --color: var(--app-color-black) !important;
+  --border-radius: var(--app-radius-md) !important;
+}
+
+/* Botão de sucesso sólido */
+ion-button[fill=solid].success {
+  --background: var(--app-color-success) !important;
+  --background-activated: var(--app-color-success-light) !important;
+  --background-focused: var(--app-color-success-light) !important;
+  --background-hover: var(--app-color-success-light) !important;
+  --color: var(--app-color-white) !important;
+  --border-radius: var(--app-radius-md) !important;
+}
+
+/* Botão de aviso sólido */
+ion-button[fill=solid].warning {
+  --background: var(--app-color-warning) !important;
+  --background-activated: var(--app-color-warning-light) !important;
+  --background-focused: var(--app-color-warning-light) !important;
+  --background-hover: var(--app-color-warning-light) !important;
+  --color: var(--app-color-white) !important;
+  --border-radius: var(--app-radius-md) !important;
+}
+
+/* Botão de perigo sólido */
+ion-button[fill=solid].danger {
+  --background: var(--app-color-danger) !important;
+  --background-activated: var(--app-color-danger-light) !important;
+  --background-focused: var(--app-color-danger-light) !important;
+  --background-hover: var(--app-color-danger-light) !important;
+  --color: var(--app-color-white) !important;
+  --border-radius: var(--app-radius-md) !important;
+}
+
+/* Container para organização dos botões de ação */
+.action-buttons-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.action-buttons-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+}
+.action-buttons-row.single {
+  justify-content: center;
+}
+@media (max-width: 320px) {
+  .action-buttons-row {
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .action-buttons-row.single {
+    align-items: center;
+  }
+}
+
+/* Botão de ação separado com ícone e texto */
+.action-button {
+  position: relative;
+  border-radius: var(--app-radius-sm);
+  width: 140px;
+  height: 40px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  transition: all 0.3s;
+  touch-action: manipulation;
+  border: none;
+  outline: none;
+  flex-shrink: 0;
+}
+.action-button .action__text {
+  transform: translateX(30px);
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.3s;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.action-button .action__icon {
+  position: absolute;
+  transform: translateX(105px);
+  height: 100%;
+  width: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+}
+.action-button .action__icon i.bi {
+  font-size: 16px;
+  color: #fff;
+}
+.action-button:hover .action__text, .action-button:active .action__text, .action-button:focus .action__text {
+  color: transparent;
+}
+.action-button:hover .action__icon, .action-button:active .action__icon, .action-button:focus .action__icon {
+  width: 138px;
+  transform: translateX(0);
+}
+.action-button.edit {
+  border: 1px solid var(--app-color-primary-darker);
+  background-color: var(--app-color-primary-darker);
+}
+.action-button.edit .action__icon {
+  background-color: var(--app-color-primary-darker);
+}
+.action-button.edit:hover, .action-button.edit:active {
+  background: var(--app-color-primary-darker);
+}
+.action-button.password {
+  border: 1px solid var(--app-color-warning);
+  background-color: var(--app-color-warning);
+}
+.action-button.password .action__icon {
+  background-color: var(--app-color-warning);
+}
+.action-button.password:hover, .action-button.password:active {
+  background: var(--app-color-warning-light);
+}
+.action-button.logout {
+  border: 1px solid var(--app-color-danger);
+  background-color: var(--app-color-danger);
+}
+.action-button.logout .action__icon {
+  background-color: var(--app-color-danger-light);
+}
+.action-button.logout:hover, .action-button.logout:active {
+  background: var(--app-color-danger-light);
+}
+@media (max-width: 360px) {
+  .action-button {
+    width: 120px;
+    font-size: 12px;
+  }
+  .action-button .action__text {
+    transform: translateX(25px);
+    font-size: 12px;
+  }
+  .action-button .action__icon {
+    transform: translateX(85px);
+    width: 30px;
+  }
+  .action-button .action__icon i.bi {
+    font-size: 14px;
+  }
+  .action-button:hover .action__icon, .action-button:active .action__icon, .action-button:focus .action__icon {
+    width: 118px;
+  }
+}
+
+/* ========================================
+   BOTÕES OUTLINE (fill="outline")
+   ======================================== */
+/* Botão primário outline */
+ion-button[fill=outline] {
+  --background: transparent !important;
+  --background-activated: var(--app-color-primary-light) !important;
+  --background-focused: var(--app-color-primary-light) !important;
+  --background-hover: var(--app-color-primary-light) !important;
+  --color: var(--app-color-primary) !important;
+  --border-radius: 8px !important;
+  --border-width: 2px !important;
+  --border-color: var(--app-color-primary) !important;
+  --border-style: solid !important;
+  --box-shadow: none !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease !important;
+}
+
+/* Botão secundário outline */
+ion-button[fill=outline].secondary {
+  --background: transparent !important;
+  --background-activated: var(--app-color-secondary-light) !important;
+  --background-focused: var(--app-color-secondary-light) !important;
+  --background-hover: var(--app-color-secondary-light) !important;
+  --color: var(--app-color-secondary) !important;
+  --border-radius: 8px !important;
+  --border-width: 2px !important;
+  --border-color: var(--app-color-secondary) !important;
+  --border-style: solid !important;
+  --box-shadow: none !important;
+}
+
+/* Botão neutro outline */
+ion-button[fill=outline].neutral {
+  --background: transparent !important;
+  --background-activated: var(--app-color-gray-100) !important;
+  --background-focused: var(--app-color-gray-100) !important;
+  --background-hover: var(--app-color-gray-100) !important;
+  --color: var(--app-color-neutral) !important;
+  --border-radius: 8px !important;
+  --border-width: 1px !important;
+  --border-color: var(--app-color-gray-300) !important;
+  --border-style: solid !important;
+  --box-shadow: none !important;
+  font-weight: 500 !important;
+}
+
+/* ========================================
+   BOTÕES CLEAR (fill="clear")
+   ======================================== */
+/* Botão fantasma/clear */
+ion-button[fill=clear] {
+  --background: transparent !important;
+  --background-activated: var(--app-color-gray-100) !important;
+  --background-focused: var(--app-color-gray-100) !important;
+  --background-hover: var(--app-color-gray-100) !important;
+  --color: var(--app-color-neutral) !important;
+  --border-radius: 8px !important;
+  --box-shadow: none !important;
+  font-weight: 500 !important;
+  transition: all 0.2s ease !important;
+}
+
+/* ========================================
+   TAMANHOS DE BOTÃO
+   ======================================== */
+/* Botão pequeno */
+ion-button[size=small] {
+  --padding-top: 8px !important;
+  --padding-bottom: 8px !important;
+  --padding-start: 16px !important;
+  --padding-end: 16px !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+}
+
+/* Botão padrão (médio) */
+ion-button[size=default] {
+  --padding-top: 12px !important;
+  --padding-bottom: 12px !important;
+  --padding-start: 24px !important;
+  --padding-end: 24px !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+}
+
+/* Botão grande */
+ion-button[size=large] {
+  --padding-top: 16px !important;
+  --padding-bottom: 16px !important;
+  --padding-start: 32px !important;
+  --padding-end: 32px !important;
+  font-size: 1.125rem !important;
+  font-weight: 600 !important;
+}
+
+/* ========================================
+   FORMAS ESPECIAIS
+   ======================================== */
+/* Botão circular */
+ion-button.circle {
+  --border-radius: 50% !important;
+  --padding-top: 12px !important;
+  --padding-bottom: 12px !important;
+  --padding-start: 12px !important;
+  --padding-end: 12px !important;
+  width: 48px !important;
+  height: 48px !important;
+  min-width: 48px !important;
+}
+
+/* Botão full width */
+ion-button.full-width {
+  --padding-start: 16px !important;
+  --padding-end: 16px !important;
+  width: 100% !important;
+  display: block !important;
+}
+
+/* ========================================
+   ESTADOS ESPECIAIS
+   ======================================== */
+/* Estado de carregamento */
+ion-button.loading {
+  opacity: 0.7 !important;
+  pointer-events: none !important;
+}
+
+/* Estado desabilitado */
+ion-button:disabled {
+  --background: var(--app-color-gray-200) !important;
+  --color: var(--app-color-gray-500) !important;
+  opacity: 0.6 !important;
+  pointer-events: none !important;
+}
+
+/* ========================================
+   BOTÃO ESPECIAL DE LOGIN
+   ======================================== */
+/* Botão de login com estilo especial */
+ion-button.login-btn {
+  --background: var(--app-color-secondary) !important;
+  --background-activated: var(--app-color-secondary-darker) !important;
+  --background-focused: var(--app-color-secondary-darker) !important;
+  --background-hover: var(--app-color-secondary-darker) !important;
+  --color: var(--app-color-white) !important;
+  --border-radius: 25px !important;
+  --box-shadow: 0 4px 12px var(--app-color-secondary-light) !important;
+  --padding-top: 12px !important;
+  --padding-bottom: 12px !important;
+  --padding-start: 24px !important;
+  --padding-end: 24px !important;
+  font-weight: 600 !important;
+  transition: all 0.3s ease !important;
+}
+ion-button.login-btn:hover {
+  transform: translateY(-2px);
+  --box-shadow: 0 6px 20px var(--app-color-secondary-medium) !important;
+}
+
+/* ========================================
+   BOTÕES CUSTOMIZADOS PARA HOME
+   ======================================== */
+/* Botão primário customizado */
+.btn-primary-custom {
+  --background-activated: var(--app-color-primary-darker) !important;
+  --background-focused: var(--app-color-primary-darker) !important;
+  --background-hover: var(--app-color-primary-darker) !important;
+  --color: var(--app-color-white) !important;
+  --border-radius: 8px !important;
+  --padding-top: 12px !important;
+  --padding-bottom: 12px !important;
+  --padding-start: 24px !important;
+  --padding-end: 24px !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease !important;
+  min-height: 48px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Botão secundário outline customizado */
+.btn-secondary-outline {
+  --background: transparent !important;
+  --background-activated: var(--app-color-secondary-light) !important;
+  --background-focused: var(--app-color-secondary-light) !important;
+  --background-hover: var(--app-color-secondary-light) !important;
+  --color: var(--app-color-secondary) !important;
+  --border-radius: 8px !important;
+  --border-width: 2px !important;
+  --border-color: var(--app-color-secondary) !important;
+  --border-style: solid !important;
+  --box-shadow: none !important;
+  --padding-top: 12px !important;
+  --padding-bottom: 12px !important;
+  --padding-start: 24px !important;
+  --padding-end: 24px !important;
+  font-weight: 500 !important;
+  transition: all 0.2s ease !important;
+  min-height: 48px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Botão clear geral para ícones e ações */
+.btn-clear-general, .btn-clear-bulb {
+  --background: transparent !important;
+  --background-activated: var(--app-color-gray-100) !important;
+  --background-focused: var(--app-color-gray-100) !important;
+  --background-hover: var(--app-color-gray-100) !important;
+  --color: var(--app-color-neutral) !important;
+  --border-radius: 8px !important;
+  --box-shadow: none !important;
+  font-weight: 500 !important;
+  transition: all 0.2s ease !important;
+  min-height: 32px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+.btn-clear-general ion-icon, .btn-clear-bulb ion-icon {
+  margin-right: 4px !important;
+}
+.btn-clear-general:hover, .btn-clear-bulb:hover {
+  --color: var(--app-color-primary) !important;
+}
+
+/* Botão clear para lâmpada com efeitos especiais */
+.btn-clear-bulb {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+.btn-clear-bulb i.bi-lightbulb-fill {
+  color: var(--app-color-warning) !important;
+  transition: color 0.2s, filter 0.2s !important;
+  filter: drop-shadow(0 0 2px var(--app-color-warning)) !important;
+}
+.btn-clear-bulb:hover i.bi-lightbulb-fill, .btn-clear-bulb:focus i.bi-lightbulb-fill {
+  color: #ffd700 !important;
+  filter: drop-shadow(0 0 6px #ffd700) !important;
+  cursor: pointer !important;
+}
+
+.button-delet {
+  position: relative;
+  border-radius: 6px;
+  width: 150px;
+  height: 40px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  border: 1px solid #cc0000;
+  background-color: #e50000;
+  overflow: hidden;
+  transition: all 0.3s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.button-delet .delet__text {
+  transform: translateX(35px);
+  color: #fff;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+.button-delet .delet__icon {
+  position: absolute;
+  transform: translateX(109px);
+  height: 100%;
+  width: 39px;
+  background-color: #cc0000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+}
+.button-delet .delet__icon .svg {
+  width: 20px;
+}
+.button-delet .delet__icon i.bi {
+  font-size: 18px;
+  color: #fff;
+}
+.button-delet:hover {
+  background: #cc0000;
+}
+.button-delet:hover .delet__text {
+  color: transparent;
+}
+.button-delet:hover .delet__icon {
+  width: 148px;
+  transform: translateX(0);
+}
+.button-delet:active {
+  border: 1px solid #b20000;
+  background: #cc0000;
+}
+.button-delet:active .delet__text {
+  color: transparent;
+}
+.button-delet:active .delet__icon {
+  background-color: #b20000;
+  width: 148px;
+  transform: translateX(0);
+}
+@media (hover: none) and (pointer: coarse) {
+  .button-delet:active {
+    background: #cc0000;
+  }
+  .button-delet:active .delet__text {
+    color: transparent;
+  }
+  .button-delet:active .delet__icon {
+    width: 148px;
+    transform: translateX(0);
+    background-color: #b20000;
+  }
+}
+.button-delet:focus {
+  outline: none;
+  background: #cc0000;
+}
+.button-delet:focus .delet__text {
+  color: transparent;
+}
+.button-delet:focus .delet__icon {
+  width: 148px;
+  transform: translateX(0);
+}
+.button-delet.mobile-active {
+  background: #cc0000;
+}
+.button-delet.mobile-active .delet__text {
+  color: transparent;
+}
+.button-delet.mobile-active .delet__icon {
+  width: 148px;
+  transform: translateX(0);
+  background-color: #b20000;
+}

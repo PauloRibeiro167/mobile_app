@@ -1,0 +1,181 @@
+#!/bin/bash
+
+# ============================================================================
+# Script de Desenvolvimento - APK Modelo SITFOR
+# Inicializa servidor de desenvolvimento com hot reload e verificações
+# ============================================================================
+
+set -e  # Para execução em caso de erro
+
+# Constantes
+readonly PORTA_PADRAO=8100
+readonly PORTA_ALTERNATIVA=8101
+readonly INTERVALO_POLLING=2000
+
+# Cores para output
+readonly COR_ERRO='\033[0;31m'
+readonly COR_SUCESSO='\033[0;32m'
+readonly COR_AVISO='\033[0;33m'
+readonly COR_INFO='\033[0;36m'
+readonly COR_RESET='\033[0m'
+
+# ============================================================================
+# Funções Utilitárias
+# ============================================================================
+
+limpar_terminal() {
+    clear
+}
+
+exibir_spinner() {
+    local pid=$1
+    local delay=0.1
+    local spinstr="|/-\\"
+    
+    while ps -p "$pid" &>/dev/null; do
+        for i in $(seq 0 3); do
+            printf " [%c] Carregando..." "${spinstr:$i:1}"
+            sleep "$delay"
+            printf "\r"
+        done
+    done
+    printf "    \r"
+}
+
+exibir_erro() {
+    echo -e "${COR_ERRO}❌ $1${COR_RESET}" >&2
+}
+
+exibir_sucesso() {
+    echo -e "${COR_SUCESSO}✅ $1${COR_RESET}" >&2
+}
+
+exibir_aviso() {
+    echo -e "${COR_AVISO}⚠️  $1${COR_RESET}" >&2
+}
+
+exibir_info() {
+    echo -e "${COR_INFO}ℹ️  $1${COR_RESET}" >&2
+}
+
+
+# ============================================================================
+# Funções de Verificação
+# ============================================================================
+
+verificar_comando_existe() {
+    local comando=$1
+    local nome_display=$2
+    
+    if ! command -v "$comando" &> /dev/null; then
+        exibir_erro "$nome_display não encontrado. Por favor, instale o $nome_display primeiro."
+        return 1
+    fi
+    return 0
+}
+
+verificar_dependencias_instaladas() {
+    if [ ! -d "node_modules" ]; then
+        echo -n "📦 Instalando dependências..."
+        npm install &> /dev/null &
+        exibir_spinner $!
+        exibir_sucesso "Dependências instaladas"
+    fi
+}
+
+verificar_ionic_cli() {
+    if ! command -v ionic &> /dev/null; then
+        echo -n "📦 Instalando Ionic CLI..."
+        npm install -g @ionic/cli &> /dev/null &
+        exibir_spinner $!
+        exibir_sucesso "Ionic CLI instalado"
+    fi
+}
+
+verificar_porta_disponivel() {
+    local porta=$1
+    
+    if nc -z localhost "$porta" 2>/dev/null; then
+        return 1
+    fi
+    return 0
+}
+
+preparar_cache_angular() {
+    local cache_dir=".cache/ng"
+
+    mkdir -p "$cache_dir"
+    chmod -R u+rwX .cache 2>/dev/null || true
+
+    # Evita cair no cache antigo root-owned gerado por execucoes em container.
+    if [ -d ".angular/cache" ] && [ ! -w ".angular/cache" ]; then
+        exibir_aviso "Cache legado em .angular/cache sem permissao de escrita. Usando $cache_dir."
+    fi
+}
+
+# ============================================================================
+# Funções de Gerenciamento de Porta
+# ============================================================================
+
+obter_porta_disponivel() {
+    local porta=$PORTA_PADRAO
+    
+    if ! verificar_porta_disponivel "$porta"; then
+        exibir_aviso "Porta $porta já está em uso. Usando porta alternativa: $PORTA_ALTERNATIVA"
+        porta=$PORTA_ALTERNATIVA
+    fi
+    
+    echo "$porta"
+}
+
+# ============================================================================
+# Função Principal
+# ============================================================================
+
+iniciar_servidor_desenvolvimento() {
+    local porta=$1
+    
+    exibir_info "Iniciando servidor na porta $porta..."
+    echo "📱 Acesse: http://localhost:$porta"
+    echo ""
+    
+    # Flags para desenvolvimento:
+    # --host=0.0.0.0: Permite acesso de outros dispositivos na rede
+    # --allowed-hosts=all: Permite conexões de qualquer host (seguro em dev)
+    # --poll: Força polling para hot reload em Docker/containers
+    npx ng serve \
+        --host=0.0.0.0 \
+        --port="$porta" \
+        --allowed-hosts=all \
+        --poll="$INTERVALO_POLLING"
+}
+
+# ============================================================================
+# Execução Principal
+# ============================================================================
+
+main() {
+    # Limpa terminal se flag -c for passada
+    if [[ "$1" == "-c" ]]; then
+        limpar_terminal
+    fi
+    
+    # Verificações de pré-requisitos
+    verificar_comando_existe "node" "Node.js" || exit 1
+    verificar_comando_existe "npm" "npm" || exit 1
+    
+    # Instalação de dependências
+    verificar_dependencias_instaladas
+    verificar_ionic_cli
+    preparar_cache_angular
+    
+    # Obter porta disponível
+    local porta_selecionada
+    porta_selecionada=$(obter_porta_disponivel)
+    
+    # Iniciar servidor
+    iniciar_servidor_desenvolvimento "$porta_selecionada"
+}
+
+# Executa o script
+main "$@"

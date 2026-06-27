@@ -1,0 +1,114 @@
+<ion-content fullscreen class="page-screen">
+  <div class="page-container settings-container">
+    <div class="p-6 mt-8"></div>
+
+    <div class="content-container p-2 mt-5">
+      <!-- Personalização -->
+      <div class="card mb-4 page-card">
+        <div class="header p-1 bg-gradient-secondary">
+          <div class="flex-items-baseline flex-center-all">
+            <i class="bi bi-gear-fill text-fixed-white mt-4 size-2"></i>
+            <h3 class="flex-center-all text-h4 text-fixed-white mt-2 p-1">
+              Definições de Preferências
+            </h3>
+          </div>
+        </div>
+        <div class="content">
+          <p class="subtitle text-black indent-2 mt-2">
+            No App Sitfor você pode ajustar preferências e acompanhar novidades
+            para tornar o uso ainda melhor.
+          </p>
+        </div>
+      </div>
+
+      <!-- Preferências Disponíveis -->
+      <div class="card preferences-card mb-4 page-card">
+        <div class="header p-1 bg-gradient-primary">
+          <div class="flex-items-baseline flex-center-all">
+            <i class="bi bi-sliders text-fixed-white mt-4 size-2"></i>
+            <h3 class="flex-center-all text-h4 text-fixed-white mt-2 p-1">
+              Preferências Disponíveis
+            </h3>
+          </div>
+        </div>
+        <div class="content">
+          <div class="features-grid mt-3 p-3">
+            <div class="feature-card pref-feature-card">
+              <app-toggle
+                label="Modo Escuro"
+                [iconClass]="'text-h2 mr-3 ' + getIconClass('modoEscuro')"
+                [checked]="modoEscuro"
+                [labelClass]="getLabelClass('modoEscuro')"
+                (checkedChange)="handleToggle('modoEscuro', $event)"
+              >
+              </app-toggle>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Acesso Rápido -->
+      <div class="card tab-bar-spacing mb-0 page-card">
+        <div class="header p-1 bg-gradient-warning">
+          <div class="flex-items-baseline flex-center-all">
+            <i class="bi bi-lightning-fill text-fixed-white mt-4 size-2"></i>
+            <h3 class="flex-center-all text-h4 text-fixed-white mt-2 p-1">
+              Acesso Rápido
+            </h3>
+          </div>
+        </div>
+        <div class="content">
+          <div class="features-grid mt-3">
+            <button
+              type="button"
+              class="mb-3 bg-none border-none"
+              (click)="acessarOpcao('consulta')"
+            >
+              <div class="flex-left gap-3 py-2 px-3">
+                <i class="bi bi-search text-info text-h3 mr-4"></i>
+                <span class="text-h5 text-secondary ml-2"
+                  >Consulta de Imóveis</span
+                >
+                <i
+                  class="bi bi-chevron-right text-primary acesso-chevron ml-3"
+                ></i>
+              </div>
+            </button>
+            <button
+              type="button"
+              class="mb-3 bg-none border-none"
+              (click)="acessarOpcao('upload')"
+            >
+              <div class="feature-content flex-left gap-3 py-2 px-3">
+                <i class="bi bi-upload text-secondary text-h3 mr-3"></i>
+                <span class="text-h5 text-secondary ml-2"
+                  >Upload de Informações</span
+                >
+                <i
+                  class="bi bi-chevron-right text-primary acesso-chevron ml-3"
+                ></i>
+              </div>
+            </button>
+            <button
+              type="button"
+              class="bg-none border-none"
+              (click)="acessarOpcao('ajuda')"
+            >
+              <div class="feature-content flex-left gap-3 py-2 px-3">
+                <i class="bi bi-question-circle text-warning text-h3 mr-3"></i>
+                <span class="text-h5 text-secondary ml-2">Ajuda e Suporte</span>
+                <i
+                  class="bi bi-chevron-right text-primary acesso-chevron ml-3"
+                ></i>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ion-padding p-6 mb-10">
+      <div class="p-2 mb-1"></div>
+    </div>
+  </div>
+</ion-content>

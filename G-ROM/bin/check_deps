@@ -1,0 +1,547 @@
+#!/bin/bash
+
+# Script para verificação e instalação de dependências do projeto SITFOR
+# Este arquivo contém todas as funções relacionadas à verificação de dependências
+
+# Cores para o terminal
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+PURPLE='\033[0;35m'
+CYAN='\033[0;36m'
+BOLD='\033[1m'
+NC='\033[0m' # No Color
+
+# Função para verificar e instalar Node.js/npm
+check_nodejs() {
+    local node_min_version="18"
+    
+    if ! command -v node &> /dev/null; then
+        echo -e "${YELLOW}⚠️  Node.js não encontrado. Tentando instalar via NVM...${NC}"
+        
+        # Verificar se curl ou wget estão disponíveis
+        if command -v curl &> /dev/null; then
+            download_cmd="curl -o-"
+        elif command -v wget &> /dev/null; then
+            download_cmd="wget -qO-"
+        else
+            echo -e "${RED}❌ curl ou wget não encontrados${NC}"
+            echo -e "${YELLOW}💡 Instruções para instalação manual do Node.js:${NC}"
+            echo -e "   1. Instale o NVM: https://github.com/nvm-sh/nvm"
+            echo -e "   2. Execute: nvm install --lts"
+            echo -e "   3. Execute: nvm use --lts"
+            echo -e "   4. Ou baixe diretamente: https://nodejs.org/"
+            exit 1
+        fi
+        
+        # Tentar instalar NVM
+        echo -e "${CYAN}📦 Instalando NVM (Node Version Manager)...${NC}"
+        if $download_cmd https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash; then
+            # Carregar NVM no shell atual
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+            
+            # Instalar Node.js LTS
+            echo -e "${CYAN}📦 Instalando Node.js LTS via NVM...${NC}"
+            nvm install --lts
+            nvm use --lts
+            
+            # Verificar se funcionou
+            if command -v node &> /dev/null && command -v npm &> /dev/null; then
+                echo -e "${GREEN}✅ Node.js e npm instalados com sucesso via NVM!${NC}"
+                echo -e "${CYAN}📋 Versões instaladas:${NC}"
+                echo -e "   Node.js: $(node --version)"
+                echo -e "   npm: $(npm --version)"
+            else
+                echo -e "${RED}❌ Falha na instalação via NVM${NC}"
+                installation_failed
+            fi
+        else
+            echo -e "${RED}❌ Falha ao instalar NVM${NC}"
+            installation_failed
+        fi
+    else
+        local node_version=$(node --version | sed 's/v//' | cut -d'.' -f1)
+        echo -e "${GREEN}✅ Node.js encontrado: $(node --version)${NC}"
+        echo -e "${GREEN}✅ npm encontrado: $(npm --version)${NC}"
+        
+        # Verificar se a versão é adequada
+        if [ "$node_version" -lt "$node_min_version" ]; then
+            echo -e "${YELLOW}⚠️  Node.js versão $node_version encontrada. Recomendado: v$node_min_version+${NC}"
+            echo -e "${CYAN}💡 Para atualizar, considere usar NVM: https://github.com/nvm-sh/nvm${NC}"
+        fi
+    fi
+    echo ""
+}
+
+# Função auxiliar para quando a instalação falha
+installation_failed() {
+    echo -e "${YELLOW}💡 Opções para instalar Node.js manualmente:${NC}"
+    echo ""
+    echo -e "${CYAN}Opção 1 - NVM (Recomendado):${NC}"
+    echo -e "   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash"
+    echo -e "   source ~/.bashrc"
+    echo -e "   nvm install --lts"
+    echo ""
+    echo -e "${CYAN}Opção 2 - Download direto:${NC}"
+    echo -e "   Visite: https://nodejs.org/"
+    echo -e "   Baixe a versão LTS para Linux"
+    echo ""
+    echo -e "${CYAN}Opção 3 - Package Manager (se disponível):${NC}"
+    echo -e "   sudo apt-get update && sudo apt-get install nodejs npm"
+    echo ""
+    exit 1
+}
+
+# Função para verificar e instalar Angular CLI
+check_angular_cli() {
+    if ! command -v ng &> /dev/null; then
+        echo -e "${YELLOW}⚠️  Angular CLI não encontrado. Instalando...${NC}"
+        if npm install -g @angular/cli; then
+            echo -e "${GREEN}✅ Angular CLI instalado com sucesso!${NC}"
+            # Verificar versão instalada
+            if command -v ng &> /dev/null; then
+                echo -e "${CYAN}📋 Versão instalada: $(ng version --skip-git 2>/dev/null | head -1 | cut -d' ' -f1-2)${NC}"
+            fi
+        else
+            echo -e "${RED}❌ Falha na instalação do Angular CLI${NC}"
+            echo -e "${YELLOW}💡 Tente instalar manualmente:${NC}"
+            echo -e "   npm install -g @angular/cli"
+            exit 1
+        fi
+    else
+        echo -e "${GREEN}✅ Angular CLI encontrado${NC}"
+        # Mostrar versão apenas se conseguir obter
+        local ng_version=$(ng version --skip-git 2>/dev/null | head -1 | cut -d' ' -f1-2 2>/dev/null || echo "")
+        if [ ! -z "$ng_version" ]; then
+            echo -e "${CYAN}📋 Versão: $ng_version${NC}"
+        fi
+    fi
+    echo ""
+}
+
+# Função para verificar e instalar Ionic CLI
+check_ionic_cli() {
+    if ! command -v ionic &> /dev/null; then
+        echo -e "${YELLOW}⚠️  Ionic CLI não encontrado. Instalando...${NC}"
+        if npm install -g @ionic/cli; then
+            echo -e "${GREEN}✅ Ionic CLI instalado com sucesso!${NC}"
+        else
+            echo -e "${RED}❌ Falha na instalação do Ionic CLI${NC}"
+            echo -e "${YELLOW}💡 Tente instalar manualmente:${NC}"
+            echo -e "   npm install -g @ionic/cli"
+            exit 1
+        fi
+    else
+        echo -e "${GREEN}✅ Ionic CLI encontrado${NC}"
+    fi
+    echo ""
+}
+
+# Função para verificar Java JDK
+check_java_jdk() {
+    local java_min_version="11"
+    local java_home_set=false
+    
+    # Verificar se Java está disponível
+    if ! command -v java &> /dev/null; then
+        echo -e "${YELLOW}⚠️  Java não encontrado. Instalando OpenJDK...${NC}"
+        install_java_jdk
+    else
+        # Verificar versão do Java
+        local java_version=$(java -version 2>&1 | head -n 1 | awk -F '"' '{print $2}' | awk -F '.' '{print $1}' | sed 's/^1\.//')
+        echo -e "${GREEN}✅ Java encontrado: $(java -version 2>&1 | head -n 1)${NC}"
+        
+        # Verificar se a versão é adequada
+        if [ "$java_version" -lt "$java_min_version" ]; then
+            echo -e "${YELLOW}⚠️  Java versão $java_version encontrada. Recomendado: $java_min_version+${NC}"
+            echo -e "${CYAN}💡 Tentando instalar versão mais recente...${NC}"
+            install_java_jdk
+        fi
+    fi
+    
+    # Verificar JAVA_HOME
+    if [ -z "$JAVA_HOME" ]; then
+        echo -e "${YELLOW}⚠️  JAVA_HOME não está configurado. Configurando...${NC}"
+        configure_java_home
+    else
+        echo -e "${GREEN}✅ JAVA_HOME configurado: $JAVA_HOME${NC}"
+        # Verificar se o caminho é válido
+        if [ ! -d "$JAVA_HOME" ]; then
+            echo -e "${YELLOW}⚠️  JAVA_HOME aponta para diretório inexistente. Reconfigurando...${NC}"
+            configure_java_home
+        fi
+    fi
+    echo ""
+}
+
+# Função para instalar Java JDK
+install_java_jdk() {
+    echo -e "${CYAN}📦 Tentando instalar OpenJDK...${NC}"
+    
+    # Detectar sistema operacional e package manager
+    if command -v apt-get &> /dev/null; then
+        # Debian/Ubuntu
+        echo -e "${CYAN}🔍 Sistema Debian/Ubuntu detectado${NC}"
+        
+        # Tentar instalar sem sudo primeiro
+        if command -v snap &> /dev/null; then
+            echo -e "${CYAN}📦 Tentando instalar via snap...${NC}"
+            if snap install openjdk --classic 2>/dev/null; then
+                echo -e "${GREEN}✅ OpenJDK instalado via snap!${NC}"
+                configure_java_home
+                return
+            fi
+        fi
+        
+        # Instruções para instalação manual
+        echo -e "${YELLOW}💡 Para instalar Java automaticamente, execute como administrador:${NC}"
+        echo -e "   sudo apt-get update"
+        echo -e "   sudo apt-get install -y openjdk-11-jdk"
+        echo ""
+        echo -e "${CYAN}🔄 Tentando instalação manual do OpenJDK...${NC}"
+        
+        # Tentar download manual do OpenJDK
+        install_java_manually
+        
+    elif command -v yum &> /dev/null; then
+        # Red Hat/CentOS/Fedora
+        echo -e "${CYAN}🔍 Sistema Red Hat/CentOS/Fedora detectado${NC}"
+        echo -e "${YELLOW}💡 Para instalar Java automaticamente, execute como administrador:${NC}"
+        echo -e "   sudo yum install -y java-11-openjdk-devel"
+        echo ""
+        install_java_manually
+        
+    elif command -v dnf &> /dev/null; then
+        # Fedora moderno
+        echo -e "${CYAN}🔍 Sistema Fedora detectado${NC}"
+        echo -e "${YELLOW}💡 Para instalar Java automaticamente, execute como administrador:${NC}"
+        echo -e "   sudo dnf install -y java-11-openjdk-devel"
+        echo ""
+        install_java_manually
+        
+    else
+        echo -e "${YELLOW}⚠️  Sistema operacional não detectado automaticamente${NC}"
+        install_java_manually
+    fi
+}
+
+# Função para instalação manual do Java
+install_java_manually() {
+    local java_dir="$HOME/.local/java"
+    local openjdk_version="11.0.2"
+    local openjdk_build="9"
+    local openjdk_url=""
+    
+    # Detectar arquitetura
+    local arch=$(uname -m)
+    case $arch in
+        x86_64|amd64)
+            arch="x64"
+            ;;
+        aarch64|arm64)
+            arch="aarch64"
+            ;;
+        *)
+            echo -e "${RED}❌ Arquitetura $arch não suportada para instalação automática${NC}"
+            java_installation_failed
+            return 1
+            ;;
+    esac
+    
+    # URL do OpenJDK (usando Adoptium/Eclipse Temurin)
+    openjdk_url="https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.21%2B9/OpenJDK11U-jdk_${arch}_linux_hotspot_11.0.21_9.tar.gz"
+    
+    echo -e "${CYAN}📦 Tentando instalação manual do OpenJDK 11...${NC}"
+    echo -e "${CYAN}🔗 URL: $openjdk_url${NC}"
+    
+    # Criar diretório
+    mkdir -p "$java_dir"
+    cd "$java_dir"
+    
+    # Verificar se curl ou wget estão disponíveis
+    local download_cmd=""
+    if command -v curl &> /dev/null; then
+        download_cmd="curl -L"
+    elif command -v wget &> /dev/null; then
+        download_cmd="wget"
+    else
+        echo -e "${RED}❌ curl ou wget não encontrados${NC}"
+        java_installation_failed
+        return 1
+    fi
+    
+    # Baixar OpenJDK
+    echo -e "${CYAN}⬇️  Baixando OpenJDK...${NC}"
+    if $download_cmd "$openjdk_url" -o openjdk.tar.gz; then
+        echo -e "${GREEN}✅ Download concluído!${NC}"
+        
+        # Extrair
+        echo -e "${CYAN}📦 Extraindo OpenJDK...${NC}"
+        if tar -xzf openjdk.tar.gz; then
+            # Encontrar diretório extraído
+            local jdk_dir=$(find . -maxdepth 1 -type d -name "*jdk*" | head -1)
+            if [ ! -z "$jdk_dir" ]; then
+                # Mover para local padrão
+                if [ -d "jdk-11" ]; then
+                    rm -rf jdk-11
+                fi
+                mv "$jdk_dir" jdk-11
+                
+                # Limpar arquivo temporário
+                rm -f openjdk.tar.gz
+                
+                echo -e "${GREEN}✅ OpenJDK instalado em: $java_dir/jdk-11${NC}"
+                
+                # Configurar JAVA_HOME
+                export JAVA_HOME="$java_dir/jdk-11"
+                export PATH="$JAVA_HOME/bin:$PATH"
+                
+                # Verificar instalação
+                if command -v java &> /dev/null; then
+                    echo -e "${GREEN}✅ Java funcionando: $(java -version 2>&1 | head -n 1)${NC}"
+                    configure_java_home_persistent "$JAVA_HOME"
+                    return 0
+                else
+                    echo -e "${RED}❌ Java não funcionou após instalação${NC}"
+                fi
+            else
+                echo -e "${RED}❌ Diretório do JDK não encontrado após extração${NC}"
+            fi
+        else
+            echo -e "${RED}❌ Falha ao extrair OpenJDK${NC}"
+        fi
+    else
+        echo -e "${RED}❌ Falha ao baixar OpenJDK${NC}"
+    fi
+    
+    java_installation_failed
+}
+
+# Função para configurar JAVA_HOME
+configure_java_home() {
+    local java_home_path=""
+    
+    # Tentar encontrar instalação do Java
+    echo -e "${CYAN}🔍 Procurando instalação do Java...${NC}"
+    
+    # Possíveis locais do Java
+    local java_locations=(
+        "/usr/lib/jvm/java-11-openjdk-amd64"
+        "/usr/lib/jvm/java-11-openjdk"
+        "/usr/lib/jvm/java-8-openjdk-amd64"
+        "/usr/lib/jvm/java-8-openjdk"
+        "/usr/lib/jvm/default-java"
+        "/usr/java/latest"
+        "/opt/java/openjdk"
+        "$HOME/.local/java/jdk-11"
+        "/snap/openjdk/current"
+    )
+    
+    # Procurar Java em locais conhecidos
+    for location in "${java_locations[@]}"; do
+        if [ -d "$location" ] && [ -f "$location/bin/java" ]; then
+            java_home_path="$location"
+            break
+        fi
+    done
+    
+    # Se não encontrou, tentar usar which
+    if [ -z "$java_home_path" ] && command -v java &> /dev/null; then
+        local java_bin=$(which java)
+        if [ -L "$java_bin" ]; then
+            java_bin=$(readlink -f "$java_bin")
+        fi
+        java_home_path=$(dirname "$(dirname "$java_bin")")
+        echo -e "${CYAN}💡 Java encontrado via which: $java_home_path${NC}"
+    fi
+    
+    if [ ! -z "$java_home_path" ] && [ -d "$java_home_path" ]; then
+        export JAVA_HOME="$java_home_path"
+        export PATH="$JAVA_HOME/bin:$PATH"
+        
+        echo -e "${GREEN}✅ JAVA_HOME configurado: $JAVA_HOME${NC}"
+        
+        # Tornar configuração persistente
+        configure_java_home_persistent "$java_home_path"
+    else
+        echo -e "${RED}❌ Não foi possível encontrar uma instalação válida do Java${NC}"
+        java_installation_failed
+    fi
+}
+
+# Função para tornar JAVA_HOME persistente
+configure_java_home_persistent() {
+    local java_path="$1"
+    
+    echo -e "${CYAN}💾 Tornando configuração do JAVA_HOME persistente...${NC}"
+    
+    # Arquivos de configuração do shell
+    local shell_configs=(
+        "$HOME/.bashrc"
+        "$HOME/.profile"
+    )
+    
+    local java_export="export JAVA_HOME=\"$java_path\""
+    local path_export="export PATH=\"\$JAVA_HOME/bin:\$PATH\""
+    
+    for config_file in "${shell_configs[@]}"; do
+        if [ -f "$config_file" ]; then
+            if ! grep -q "JAVA_HOME.*$java_path" "$config_file"; then
+                echo "" >> "$config_file"
+                echo "# Java configuration added by SITFOR build script" >> "$config_file"
+                echo "$java_export" >> "$config_file"
+                echo "$path_export" >> "$config_file"
+                echo -e "${GREEN}✅ JAVA_HOME adicionado ao $(basename $config_file)${NC}"
+            fi
+        fi
+    done
+    
+    # Criar arquivo de ambiente específico para o projeto
+    local project_env_file="$PWD/.env.java"
+    cat > "$project_env_file" << EOF
+# Java environment for SITFOR project
+export JAVA_HOME="$java_path"
+export PATH="\$JAVA_HOME/bin:\$PATH"
+EOF
+    echo -e "${GREEN}✅ Configuração Java salva em: $project_env_file${NC}"
+}
+
+# Função auxiliar para quando a instalação do Java falha
+java_installation_failed() {
+    echo -e "${RED}❌ Falha na instalação automática do Java${NC}"
+    echo ""
+    echo -e "${YELLOW}💡 Opções para instalar Java manualmente:${NC}"
+    echo ""
+    echo -e "${CYAN}Opção 1 - Package Manager (Recomendado):${NC}"
+    echo -e "   # Ubuntu/Debian:"
+    echo -e "   sudo apt-get update"
+    echo -e "   sudo apt-get install -y openjdk-11-jdk"
+    echo ""
+    echo -e "   # CentOS/RHEL:"
+    echo -e "   sudo yum install -y java-11-openjdk-devel"
+    echo ""
+    echo -e "   # Fedora:"
+    echo -e "   sudo dnf install -y java-11-openjdk-devel"
+    echo ""
+    echo -e "${CYAN}Opção 2 - Download direto:${NC}"
+    echo -e "   Visite: https://adoptium.net/"
+    echo -e "   Baixe o OpenJDK 11+ para Linux"
+    echo ""
+    echo -e "${CYAN}Opção 3 - SDKMAN:${NC}"
+    echo -e "   curl -s https://get.sdkman.io | bash"
+    echo -e "   source ~/.sdkman/bin/sdkman-init.sh"
+    echo -e "   sdk install java 11.0.21-tem"
+    echo ""
+    echo -e "${CYAN}Após instalar, configure o JAVA_HOME:${NC}"
+    echo -e "   export JAVA_HOME=/caminho/para/java"
+    echo -e "   export PATH=\$JAVA_HOME/bin:\$PATH"
+    echo ""
+    exit 1
+}
+
+# Função para verificar Java e Android (para sync Android)
+check_java_android() {
+    echo -e "${CYAN}🔍 Verificando Java JDK para Android...${NC}"
+    
+    # Verificar se java está disponível
+    if command -v java &> /dev/null; then
+        local java_version=$(java -version 2>&1 | head -n 1)
+        echo -e "${GREEN}✅ Java encontrado: $java_version${NC}"
+        
+        # Verificar JAVA_HOME
+        if [ -n "$JAVA_HOME" ] && [ -d "$JAVA_HOME" ]; then
+            echo -e "${GREEN}✅ JAVA_HOME configurado: $JAVA_HOME${NC}"
+        else
+            echo -e "${YELLOW}⚠️  JAVA_HOME não configurado${NC}"
+            
+            # Tentar carregar de arquivo .env.java se existir
+            if [ -f ".env.java" ]; then
+                echo -e "${CYAN}📄 Carregando configuração Java do projeto...${NC}"
+                source .env.java
+                export JAVA_HOME
+                export PATH
+                echo -e "${GREEN}✅ JAVA_HOME carregado: $JAVA_HOME${NC}"
+            else
+                echo -e "${RED}❌ JAVA_HOME não encontrado. Execute o script de build primeiro para configurar.${NC}"
+                echo -e "${YELLOW}💡 Execute: ./bin/build android${NC}"
+                exit 1
+            fi
+        fi
+    else
+        echo -e "${RED}❌ Java JDK não encontrado${NC}"
+        echo -e "${YELLOW}💡 Execute o script de build primeiro para instalar:${NC}"
+        echo -e "   ./bin/build android"
+        exit 1
+    fi
+    
+    # Verificar se o diretório android existe
+    if [ ! -d "android" ]; then
+        echo -e "${RED}❌ Diretório 'android' não encontrado${NC}"
+        echo -e "${YELLOW}💡 Execute primeiro: ionic capacitor add android${NC}"
+        exit 1
+    fi
+    
+    # Verificar se gradlew existe
+    if [ ! -f "android/gradlew" ]; then
+        echo -e "${RED}❌ gradlew não encontrado em android/gradlew${NC}"
+        echo -e "${YELLOW}💡 O projeto Android pode estar mal configurado${NC}"
+        echo -e "${YELLOW}💡 Tente executar: ionic capacitor sync android${NC}"
+        exit 1
+    fi
+    
+    echo ""
+}
+
+# Função para verificar dependências do projeto
+check_project_dependencies() {
+    if [ ! -d "node_modules" ]; then
+        echo -e "${YELLOW}📦 Instalando dependências do projeto...${NC}"
+        if ! npm ci; then
+            echo -e "${RED}❌ Falha ao instalar dependências${NC}"
+            echo -e "${YELLOW}💡 Tentando com npm install...${NC}"
+            if ! npm install; then
+                echo -e "${RED}❌ Falha crítica na instalação de dependências${NC}"
+                exit 1
+            fi
+        fi
+        echo -e "${GREEN}✅ Dependências instaladas com sucesso!${NC}"
+    else
+        echo -e "${GREEN}✅ Dependências já instaladas${NC}"
+    fi
+    echo ""
+}
+
+# Função principal para verificar todas as dependências básicas
+check_basic_dependencies() {
+    echo -e "${CYAN}🔍 Verificando dependências básicas...${NC}"
+    echo ""
+    
+    check_nodejs
+    check_angular_cli
+    check_project_dependencies
+}
+
+# Função principal para verificar dependências Android
+check_android_dependencies() {
+    echo -e "${CYAN}🔍 Verificando dependências Android...${NC}"
+    echo ""
+    
+    check_nodejs
+    check_angular_cli
+    check_java_jdk
+    check_project_dependencies
+}
+
+# Função principal para verificar dependências do sync
+check_sync_dependencies() {
+    echo -e "${CYAN}🔍 Verificando dependências do sync...${NC}"
+    echo ""
+    
+    check_nodejs
+    check_ionic_cli
+    check_java_android
+    check_project_dependencies
+}

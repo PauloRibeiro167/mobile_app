@@ -1,0 +1,51 @@
+<!-- Componente Radio Customizado -->
+<div [class]="getContainerClasses()">
+  <!-- Label do grupo -->
+  <div class="radio-group-label" *ngIf="groupLabel">
+    <span class="group-label-text">{{ groupLabel }}</span>
+    <span class="required-indicator" *ngIf="mergedConfig.required">*</span>
+  </div>
+
+  <div *ngFor="let option of options; let i = index"
+    [class]="getOptionClasses(option)">
+    <input
+      type="radio"
+      [id]="inputName + '-' + i"
+      [name]="inputName"
+      [value]="option.value"
+      [checked]="isOptionSelected(option)"
+      [disabled]="isOptionDisabled(option)"
+      class="radio-input"
+      (change)="onRadioChange(option.value)"
+      (focus)="onFocus()"
+      (blur)="onBlur()"/>
+    <label
+      [for]="inputName + '-' + i"
+      class="radio"
+      [class.checked]="isOptionSelected(option)"
+      [class.disabled]="isOptionDisabled(option)" >
+      <span class="circle"></span>
+      <span class="icon" *ngIf="option.icon">
+        <i [class]="option.icon"></i>
+      </span>
+    </label>
+
+    <!-- Label da opção -->
+    <div class="option-content" *ngIf="mergedConfig.showLabels && option.label">
+      <span class="radio-label">{{ option.label }}</span>
+      <span class="radio-description" *ngIf="mergedConfig.showDescriptions && option.description">
+        {{ option.description }}
+      </span>
+    </div>
+  </div>
+
+  <!-- Mensagem de erro -->
+  <div class="error-message" *ngIf="!isValid && isTouched && getErrorMessage()">
+    <span class="error-text">{{ getErrorMessage() }}</span>
+  </div>
+
+  <!-- Placeholder quando nenhuma opção está selecionada -->
+  <div class="placeholder" *ngIf="resolvedPlaceholder && selectedValue === null && !isTouched">
+    <span class="placeholder-text">{{ resolvedPlaceholder }}</span>
+  </div>
+</div>

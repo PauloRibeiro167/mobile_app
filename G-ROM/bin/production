@@ -1,0 +1,92 @@
+#!/bin/bash
+
+# Script para ambiente de PRODUÇÃO
+# Utilizado para build final e deploy na Google Play Store
+
+set -e
+
+echo "🚀 Iniciando ambiente de PRODUÇÃO..."
+echo "==============================================="
+echo "⚠️  ATENÇÃO: Este é o ambiente de PRODUÇÃO!"
+echo "⚠️  Certifique-se de que todos os testes passaram!"
+echo "==============================================="
+
+# Confirmação de segurança
+read -p "Tem certeza que deseja fazer build para PRODUÇÃO? (digite 'SIM' para confirmar): " confirm
+
+if [ "$confirm" != "SIM" ]; then
+    echo "❌ Build cancelado pelo usuário."
+    exit 1
+fi
+
+# Configurações para ambiente de produção
+export NODE_ENV=production
+export IONIC_ENV=production
+
+# Verifica se todas as dependências estão instaladas
+if [ ! -d "node_modules" ]; then
+    echo "📦 Instalando dependências..."
+    npm ci
+fi
+
+# Executa todos os testes
+echo "🧪 Executando testes completos..."
+npm test -- --watch=false --browsers=ChromeHeadless
+
+# Build otimizado para produção
+echo "🔨 Fazendo build otimizado para produção..."
+ionic build --prod
+
+# Adiciona plataforma Android se não existir
+if [ ! -d "android" ]; then
+    echo "🤖 Adicionando plataforma Android..."
+    ionic capacitor add android
+fi
+
+# Copia arquivos para Android
+ionic capacitor copy android
+
+# Build AAB para produção
+echo "📱 Gerando AAB para Google Play Store..."
+cd android
+
+# Limpa builds anteriores
+./gradlew clean
+
+# Verifica se existe keystore para assinatura
+if [ ! -f "../keystore/production.keystore" ]; then
+    echo "❌ ERRO: Keystore de produção não encontrado!"
+    echo "📝 Crie o keystore em: keystore/production.keystore"
+    echo "💡 Use: keytool -genkey -v -keystore production.keystore -alias sitfor -keyalg RSA -keysize 2048 -validity 10000"
+    exit 1
+fi
+
+# Gera AAB assinado para produção
+echo "🔐 Assinando AAB com keystore de produção..."
+./gradlew bundleRelease
+
+# Cria diretório de output
+mkdir -p ../dist/production
+
+# Move AAB assinado
+if [ -f "app/build/outputs/bundle/release/app-release.aab" ]; then
+    cp app/build/outputs/bundle/release/app-release.aab ../dist/production/sitfor-production.aab
+    
+    # Gera informações do build
+    echo "Build: $(date)" > ../dist/production/build-info.txt
+    echo "Commit: $(git rev-parse HEAD)" >> ../dist/production/build-info.txt
+    echo "Branch: $(git branch --show-current)" >> ../dist/production/build-info.txt
+fi
+
+cd ..
+
+echo "✅ Build de produção concluído!"
+echo "📱 AAB disponível em: dist/production/sitfor-production.aab"
+echo ""
+echo "🚀 Próximos passos:"
+echo "1. Teste o AAB em dispositivos de produção"
+echo "2. Faça upload na Google Play Console"
+echo "3. Configure release notes e screenshots"
+echo "4. Publique na loja"
+echo ""
+echo "⚠️  Lembre-se de fazer backup do keystore de produção!"

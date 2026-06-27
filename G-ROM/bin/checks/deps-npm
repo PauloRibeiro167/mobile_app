@@ -1,0 +1,29 @@
+#!/bin/bash
+# Verifica se o npm (Node Package Manager) está instalado.
+
+# Cores
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # Sem Cor
+
+# Função principal que pode ser chamada por outros scripts.
+check_npm_dependencies() {
+    # 1. Verificar se o comando 'npm' existe
+    if ! command -v "npm" >/dev/null 2>&1; then
+        echo -e "${RED}❌ Comando 'npm' não encontrado.${NC}"
+        echo -e "   O npm é instalado automaticamente com o Node.js."
+        echo -e "   Verifique sua instalação do Node.js (https://nodejs.org/)."
+        return 1
+    fi
+
+    local VERSION
+    VERSION=$(npm -v)
+    echo -e "${GREEN}✅ npm encontrado: v${VERSION}${NC}"
+}
+
+# Permite que o script seja executado diretamente para teste.
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    check_npm_dependencies
+fi
+

@@ -1,0 +1,93 @@
+#!/bin/bash
+
+
+# Checagem do ambiente Android para SITFOR App
+
+log_info()    { echo -e "\033[0;34m[INFO]\033[0m $1"; }
+log_success() { echo -e "\033[0;32m[OK]\033[0m $1"; }
+log_error()   { echo -e "\033[0;31m[ERRO]\033[0m $1"; }
+
+echo -e "\n\033[1mChecagem completa do ambiente Android para SITFOR App\033[0m\n"
+
+# 1. Node.js
+bin/checks/deps-node || exit 1
+# 2. npm
+bin/checks/deps-npm || exit 1
+# 3. npx
+bin/checks/deps-npx || exit 1
+# 4. Java
+bin/checks/deps-java || exit 1
+# 5. Gradle
+if ! command -v gradle >/dev/null 2>&1; then
+    log_error "Gradle não encontrado. Instale com: sudo apt install gradle"
+    exit 1
+else
+    log_success "Gradle encontrado: $(gradle --version | head -n 1)"
+fi
+# 6. adb
+if ! command -v adb >/dev/null 2>&1; then
+    log_error "ADB não encontrado. Instale com: sudo apt install adb"
+    exit 1
+else
+    log_success "ADB encontrado: $(adb version | head -n 1)"
+fi
+# 7. Angular CLI
+if ! command -v ng >/dev/null 2>&1; then
+    log_error "Angular CLI (ng) não encontrado. Instale com: npm install -g @angular/cli"
+    exit 1
+else
+    log_success "Angular CLI encontrado: $(ng version | head -n 1)"
+fi
+# 8. Capacitor CLI
+if ! npx --no-install cap --version &>/dev/null; then
+    log_error "@capacitor/cli não encontrado. Instale com: npm install --save-dev @capacitor/cli"
+    exit 1
+else
+    log_success "@capacitor/cli encontrado: $(npx cap --version)"
+fi
+# 9. Test runner (Jest, Karma ou outro)
+if [ -f "node_modules/.bin/jest" ]; then
+    log_success "Test runner Jest encontrado."
+elif [ -f "node_modules/.bin/karma" ]; then
+    log_success "Test runner Karma encontrado."
+elif command -v jest >/dev/null 2>&1; then
+    log_success "Test runner Jest global encontrado."
+elif command -v karma >/dev/null 2>&1; then
+    log_success "Test runner Karma global encontrado."
+else
+    log_error "Nenhum test runner encontrado (Jest ou Karma). Instale com: npm install --save-dev jest ou npm install --save-dev karma"
+    echo -e "Sugestão: npm install --save-dev jest"
+    exit 1
+fi
+# 9. Android SDK, Emulador, AVD Manager, AVDs
+bin/checks/deps-sdk || exit 1
+echo -e "\n\033[1;32mAmbiente Android pronto para desenvolvimento!\033[0m\n"
+# 10. Dispositivo Android conectado
+bin/checks/deps-android check_android_device || true
+
+log_info "Instalando dependências do projeto (npm install)..."
+if npm install; then
+    log_success "Dependências do projeto instaladas com sucesso!"
+else
+    log_error "Falha ao instalar dependências do projeto. Verifique os erros acima."
+    exit 1
+fi
+
+echo -e "\n\033[1;32mAmbiente Android pronto para desenvolvimento!\033[0m\n"
+
+# Só mostra a tela de escolha se todas as dependências foram validadas
+dialog --clear \
+    --title "Finalizar Checagem" \
+    --yes-label "Sim, voltar ao menu" \
+    --no-label "Não, desejo sair" \
+    --yesno "Você deseja voltar para a página inicial do menu?" 8 60
+rc=$?
+
+if [ $rc -eq 0 ]; then
+    # Sim, voltar ao menu (simplesmente retorna)
+    exit 0
+else
+    # Não, desejo sair
+    echo -e "\033[1;31mSaindo do script de checagem...\033[0m"
+    exit 1
+fi

@@ -1,0 +1,5 @@
+{
+  "status": "sucesso",
+  "message": "Fechamento diário enviado para o mock de backend.",
+  "protocolPrefix": "daily-close"
+}

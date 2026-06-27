@@ -1,0 +1,383 @@
+#!/bin/bash
+# --- Funções importadas do antigo build para instalação/configuração do Java ---
+
+# Função para instalar Java JDK (OpenJDK 11, compatível com build antigo)
+install_java_jdk_11() {
+    echo -e "${CYAN}📦 Tentando instalar OpenJDK 11...${NC}"
+    if command -v apt-get &> /dev/null; then
+        echo -e "${CYAN}🔍 Sistema Debian/Ubuntu detectado${NC}"
+        if command -v snap &> /dev/null; then
+            echo -e "${CYAN}📦 Tentando instalar via snap...${NC}"
+            if snap install openjdk --classic 2>/dev/null; then
+                echo -e "${GREEN}✅ OpenJDK instalado via snap!${NC}"
+                return
+            fi
+        fi
+        echo -e "${YELLOW}💡 Para instalar Java automaticamente, execute como administrador:${NC}"
+        echo -e "   sudo apt-get update"
+        echo -e "   sudo apt-get install -y openjdk-11-jdk"
+        echo ""
+        echo -e "${CYAN}🔄 Tentando instalação manual do OpenJDK...${NC}"
+        install_java_manually_11
+    elif command -v yum &> /dev/null; then
+        echo -e "${CYAN}🔍 Sistema Red Hat/CentOS/Fedora detectado${NC}"
+        echo -e "${YELLOW}💡 Para instalar Java automaticamente, execute como administrador:${NC}"
+        echo -e "   sudo yum install -y java-11-openjdk-devel"
+        echo ""
+        install_java_manually_11
+    elif command -v dnf &> /dev/null; then
+        echo -e "${CYAN}🔍 Sistema Fedora detectado${NC}"
+        echo -e "${YELLOW}💡 Para instalar Java automaticamente, execute como administrador:${NC}"
+        echo -e "   sudo dnf install -y java-11-openjdk-devel"
+        echo ""
+        install_java_manually_11
+    else
+        echo -e "${YELLOW}⚠️  Sistema operacional não detectado automaticamente${NC}"
+        install_java_manually_11
+    fi
+}
+
+# Função para instalação manual do Java 11
+install_java_manually_11() {
+    local java_dir="$HOME/.local/java"
+    local openjdk_url=""
+    local arch
+    arch=$(uname -m)
+    case $arch in
+        x86_64|amd64)
+            arch="x64";;
+        aarch64|arm64)
+            arch="aarch64";;
+        *)
+            echo -e "${RED}❌ Arquitetura $arch não suportada para instalação automática${NC}"
+            java_installation_failed
+            ;;
+    esac
+    openjdk_url="https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.21%2B9/OpenJDK11U-jdk_${arch}_linux_hotspot_11.0.21_9.tar.gz"
+    echo -e "${CYAN}📦 Tentando instalação manual do OpenJDK 11...${NC}"
+    echo -e "${CYAN}🔗 URL: $openjdk_url${NC}"
+    mkdir -p "$java_dir"
+    cd "$java_dir" || exit
+    local download_cmd=""
+    if command -v curl &> /dev/null; then
+        download_cmd="curl -L"
+    elif command -v wget &> /dev/null; then
+        download_cmd="wget"
+    else
+        echo -e "${RED}❌ curl ou wget não encontrados${NC}"
+        java_installation_failed
+    fi
+    echo -e "${CYAN}⬇️  Baixando OpenJDK...${NC}"
+    if $download_cmd "$openjdk_url" -o openjdk.tar.gz; then
+        echo -e "${GREEN}✅ Download concluído!${NC}"
+        echo -e "${CYAN}📦 Extraindo OpenJDK...${NC}"
+        if tar -xzf openjdk.tar.gz; then
+            local jdk_dir
+            jdk_dir=$(find . -maxdepth 1 -type d -name "*jdk*" | head -1)
+            if [ ! -z "$jdk_dir" ]; then
+                if [ -d "jdk-11" ]; then
+                    rm -rf jdk-11
+                fi
+                mv "$jdk_dir" jdk-11
+                rm -f openjdk.tar.gz
+                echo -e "${GREEN}✅ OpenJDK instalado em: $java_dir/jdk-11${NC}"
+                export JAVA_HOME="$java_dir/jdk-11"
+                export PATH="$JAVA_HOME/bin:$PATH"
+                if command -v java &> /dev/null; then
+                    echo -e "${GREEN}✅ Java funcionando: $(java -version 2>&1 | head -n 1)${NC}"
+                    configure_java_home_persistent "$JAVA_HOME"
+                    return 0
+                else
+                    echo -e "${RED}❌ Java não funcionou após instalação${NC}"
+                fi
+            else
+                echo -e "${RED}❌ Diretório do JDK não encontrado após extração${NC}"
+            fi
+        else
+            echo -e "${RED}❌ Falha ao extrair OpenJDK${NC}"
+        fi
+    else
+        echo -e "${RED}❌ Falha ao baixar OpenJDK${NC}"
+    fi
+    java_installation_failed
+}
+
+# Função para configurar JAVA_HOME (OpenJDK 11)
+configure_java_home_11() {
+    local java_home_path=""
+    echo -e "${CYAN}🔍 Procurando instalação do Java 11...${NC}"
+    local java_locations=(
+        "/usr/lib/jvm/java-11-openjdk-amd64"
+        "/usr/lib/jvm/java-11-openjdk"
+        "/usr/lib/jvm/default-java"
+        "/usr/java/latest"
+        "/opt/java/openjdk"
+        "$HOME/.local/java/jdk-11"
+        "/snap/openjdk/current"
+    )
+    for location in "${java_locations[@]}"; do
+        if [ -d "$location" ] && [ -f "$location/bin/java" ]; then
+            java_home_path="$location"
+            echo -e "${GREEN}✅ Java encontrado em: $location${NC}"
+            break
+        fi
+    done
+    if [ -z "$java_home_path" ] && command -v java &> /dev/null; then
+        local java_bin
+        java_bin=$(which java)
+        if [ -L "$java_bin" ]; then
+            java_bin=$(readlink -f "$java_bin")
+        fi
+        java_home_path=$(dirname "$(dirname "$java_bin")")
+        echo -e "${CYAN}💡 Java encontrado via which: $java_home_path${NC}"
+    fi
+    if [ ! -z "$java_home_path" ] && [ -d "$java_home_path" ]; then
+        export JAVA_HOME="$java_home_path"
+        export PATH="$JAVA_HOME/bin:$PATH"
+        echo -e "${GREEN}✅ JAVA_HOME configurado: $JAVA_HOME${NC}"
+        configure_java_home_persistent "$java_home_path"
+    else
+        echo -e "${RED}❌ Não foi possível encontrar uma instalação válida do Java${NC}"
+        java_installation_failed
+    fi
+}
+
+# --- Fim das funções importadas do build ---
+#!/bin/bash
+
+# Dependências e utilitários para Java JDK
+
+# Função para verificar Java JDK
+check_java_jdk() {
+    echo -e "${CYAN}🔍 Verificando Java JDK...${NC}"
+    # Verificar se java está disponível
+    if command -v java &> /dev/null; then
+        local java_version
+        java_version=$(java -version 2>&1 | head -n 1)
+        echo -e "${GREEN}✅ Java encontrado: $java_version${NC}"
+        # Verificar JAVA_HOME
+        if [ -n "$JAVA_HOME" ] && [ -d "$JAVA_HOME" ]; then
+            echo -e "${GREEN}✅ JAVA_HOME configurado: $JAVA_HOME${NC}"
+        else
+            echo -e "${YELLOW}⚠️  JAVA_HOME não configurado. Configurando...${NC}"
+            configure_java_home
+        fi
+    else
+        echo -e "${YELLOW}⚠️  Java JDK não encontrado. Instalando...${NC}"
+        install_java_jdk
+    fi
+    echo ""
+}
+
+# Função para instalar Java JDK
+install_java_jdk() {
+    echo -e "${CYAN}📦 Tentando instalar Java JDK...${NC}"
+    if command -v apt-get &> /dev/null; then
+        echo -e "${CYAN}🔧 Tentando instalação via apt...${NC}"
+        if sudo apt-get update && sudo apt-get install -y openjdk-17-jdk; then
+            echo -e "${GREEN}✅ Java JDK instalado via apt!${NC}"
+            configure_java_home
+            return 0
+        else
+            echo -e "${YELLOW}⚠️  Instalação via apt falhou ou foi recusada${NC}"
+        fi
+    fi
+    if command -v snap &> /dev/null; then
+        echo -e "${CYAN}🔧 Tentando instalação via snap...${NC}"
+        if sudo snap install openjdk; then
+            echo -e "${GREEN}✅ Java JDK instalado via snap!${NC}"
+            configure_java_home
+            return 0
+        else
+            echo -e "${YELLOW}⚠️  Instalação via snap falhou ou foi recusada${NC}"
+        fi
+    fi
+    echo -e "${CYAN}🔧 Tentando download e instalação manual...${NC}"
+    local java_dir="$HOME/.local/java"
+    mkdir -p "$java_dir"
+    if command -v curl &> /dev/null; then
+        download_cmd="curl -L -o"
+    elif command -v wget &> /dev/null; then
+        download_cmd="wget -O"
+    else
+        echo -e "${RED}❌ curl ou wget não encontrados para download${NC}"
+        java_installation_failed
+        return 1
+    fi
+    local jdk_url="https://api.adoptium.net/v3/binary/latest/17/ga/linux/x64/jdk/hotspot/normal/adoptium"
+    local jdk_file="$java_dir/openjdk-17.tar.gz"
+    echo -e "${CYAN}📥 Baixando OpenJDK 17...${NC}"
+    if $download_cmd "$jdk_file" "$jdk_url"; then
+        echo -e "${CYAN}📂 Extraindo Java JDK...${NC}"
+        cd "$java_dir" || exit
+        if tar -xzf openjdk-17.tar.gz; then
+            local extracted_dir
+            extracted_dir=$(find . -maxdepth 1 -type d -name "jdk*" | head -1)
+            if [ -n "$extracted_dir" ]; then
+                mv "$extracted_dir" "jdk-17"
+                rm -f openjdk-17.tar.gz
+                export JAVA_HOME="$java_dir/jdk-17"
+                export PATH="$JAVA_HOME/bin:$PATH"
+                echo -e "${GREEN}✅ Java JDK instalado manualmente!${NC}"
+                configure_java_home_persistent "$java_dir/jdk-17"
+                return 0
+            else
+                echo -e "${RED}❌ Falha ao encontrar diretório extraído${NC}"
+            fi
+        else
+            echo -e "${RED}❌ Falha na extração do arquivo${NC}"
+        fi
+    else
+        echo -e "${RED}❌ Falha no download do OpenJDK${NC}"
+    fi
+    java_installation_failed
+}
+
+# Função para configurar JAVA_HOME automaticamente
+configure_java_home() {
+    echo -e "${CYAN}🔧 Configurando JAVA_HOME...${NC}"
+    local java_paths=(
+        "/usr/lib/jvm/java-17-openjdk"
+        "/usr/lib/jvm/java-17-openjdk-amd64"
+        "/usr/lib/jvm/java-11-openjdk"
+        "/usr/lib/jvm/java-11-openjdk-amd64"
+        "/usr/lib/jvm/default-java"
+        "/snap/openjdk/current"
+        "$HOME/.local/java/jdk-17"
+    )
+    for java_path in "${java_paths[@]}"; do
+        if [ -d "$java_path" ] && [ -f "$java_path/bin/java" ]; then
+            export JAVA_HOME="$java_path"
+            export PATH="$JAVA_HOME/bin:$PATH"
+            echo -e "${GREEN}✅ JAVA_HOME configurado: $JAVA_HOME${NC}"
+            configure_java_home_persistent "$java_path"
+            return 0
+        fi
+    done
+    if command -v java &> /dev/null; then
+        local java_real_path
+        java_real_path=$(readlink -f "$(which java)")
+        local java_home_candidate
+        java_home_candidate=$(dirname "$(dirname "$java_real_path")")
+        if [ -d "$java_home_candidate" ]; then
+            export JAVA_HOME="$java_home_candidate"
+            export PATH="$JAVA_HOME/bin:$PATH"
+            echo -e "${GREEN}✅ JAVA_HOME configurado automaticamente: $JAVA_HOME${NC}"
+            configure_java_home_persistent "$java_home_candidate"
+            return 0
+        fi
+    fi
+    echo -e "${RED}❌ Não foi possível configurar JAVA_HOME automaticamente${NC}"
+    return 1
+}
+
+# Função para tornar a configuração do JAVA_HOME persistente
+configure_java_home_persistent() {
+    local java_home_path="$1"
+    echo -e "${CYAN}💾 Configurando JAVA_HOME persistente...${NC}"
+    if [ -f "$HOME/.bashrc" ]; then
+        if ! grep -q "JAVA_HOME.*$java_home_path" "$HOME/.bashrc"; then
+            {
+                echo ""
+                echo "# Java configuration added by SITFOR build script"
+                echo "export JAVA_HOME=\"$java_home_path\""
+                echo "export PATH=\"\$JAVA_HOME/bin:\$PATH\""
+            } >> "$HOME/.bashrc"
+            echo -e "${GREEN}✅ JAVA_HOME adicionado ao .bashrc${NC}"
+        fi
+    fi
+    if [ -f "$HOME/.profile" ]; then
+        if ! grep -q "JAVA_HOME.*$java_home_path" "$HOME/.profile"; then
+            {
+                echo ""
+                echo "# Java configuration added by SITFOR build script"
+                echo "export JAVA_HOME=\"$java_home_path\""
+                echo "export PATH=\"\$JAVA_HOME/bin:\$PATH\""
+            } >> "$HOME/.profile"
+            echo -e "${GREEN}✅ JAVA_HOME adicionado ao .profile${NC}"
+        fi
+    fi
+    echo "JAVA_HOME=\"$java_home_path\"" > .env.java
+    echo "PATH=\"\$JAVA_HOME/bin:\$PATH\"" >> .env.java
+    echo -e "${GREEN}✅ Configuração salva em .env.java${NC}"
+}
+
+# Função para quando a instalação do Java falha
+java_installation_failed() {
+    echo -e "${RED}❌ Falha na instalação automática do Java JDK${NC}"
+    echo ""
+    echo -e "${YELLOW}💡 Opções para instalar Java manualmente:${NC}"
+    echo ""
+    echo -e "${CYAN}Opção 1 - APT (Ubuntu/Debian):${NC}"
+    echo -e "   sudo apt-get update"
+    echo -e "   sudo apt-get install openjdk-17-jdk"
+    echo ""
+    echo -e "${CYAN}Opção 2 - SNAP:${NC}"
+    echo -e "   sudo snap install openjdk"
+    echo ""
+    echo -e "${CYAN}Opção 3 - Download manual:${NC}"
+    echo -e "   1. Visite: https://adoptium.net/"
+    echo -e "   2. Baixe OpenJDK 17 para Linux x64"
+    echo -e "   3. Extraia em ~/java/"
+    echo -e "   4. Configure JAVA_HOME no ~/.bashrc"
+    echo ""
+    echo -e "${CYAN}Após instalar, execute novamente o script de build.${NC}"
+    echo ""
+}
+
+# Função para verificar Java e Android (para sync Android)
+check_java_android() {
+    # Verificar se java está disponível
+    if command -v java &> /dev/null; then
+        # Verificar JAVA_HOME
+        if [ -n "$JAVA_HOME" ] && [ -d "$JAVA_HOME" ]; then
+            # JAVA_HOME ok, sem mensagem
+            true
+        else
+            echo -e "${YELLOW}⚠️  JAVA_HOME não configurado${NC}"
+            
+            # Tentar carregar de arquivo .env.java se existir
+            if [ -f ".env.java" ]; then
+                echo -e "${CYAN}📄 Carregando configuração Java do projeto...${NC}"
+                source .env.java
+                export JAVA_HOME
+                export PATH
+                echo -e "${GREEN}✅ JAVA_HOME carregado: $JAVA_HOME${NC}"
+            else
+                echo -e "${RED}❌ JAVA_HOME não encontrado. Execute o script de build primeiro para configurar.${NC}"
+                echo -e "${YELLOW}💡 Execute: ./bin/build android${NC}"
+                exit 1
+            fi
+        fi
+    else
+        echo -e "${RED}❌ Java JDK não encontrado${NC}"
+        echo -e "${YELLOW}💡 Execute o script de build primeiro para instalar:${NC}"
+        echo -e "   ./bin/build android"
+        exit 1
+    fi
+    
+    # Verificar se o diretório android existe
+    if [ ! -d "android" ]; then
+        echo -e "${RED}❌ Diretório 'android' não encontrado${NC}"
+        echo -e "${YELLOW}💡 Execute primeiro: ionic capacitor add android${NC}"
+        exit 1
+    fi
+    
+    # Verificar se gradlew existe
+    if [ ! -f "android/gradlew" ]; then
+        echo -e "${RED}❌ gradlew não encontrado em android/gradlew${NC}"
+        echo -e "${YELLOW}💡 O projeto Android pode estar mal configurado${NC}"
+        echo -e "${YELLOW}💡 Tente executar: ionic capacitor sync android${NC}"
+        exit 1
+    fi
+    
+    # Verificar dispositivos Android conectados (silencioso, apenas armazena info)
+    if command -v adb &> /dev/null; then
+        local devices
+        devices=$(adb devices | grep -v "List" | grep "device" | wc -l)
+        export ANDROID_DEVICES_COUNT=$devices
+        if [ "$devices" -gt 0 ]; then
+            export ANDROID_DEVICES_LIST=$(adb devices | grep "device" | awk '{print $1}' | tr '\n' ' ')
+        fi
+    fi
+}

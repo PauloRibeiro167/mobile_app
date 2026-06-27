@@ -1,0 +1,54 @@
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--secondary-medium, rgba(0, 151, 167, 0.3));
+  border-radius: 4px;
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--app-color-secondary, #0097a7);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--secondary-medium, rgba(0, 151, 167, 0.3)) transparent;
+}
+
+ion-content {
+  --scrollbar-width: 8px;
+  --scrollbar-color: var(--secondary-medium, rgba(0, 151, 167, 0.3));
+  --scrollbar-track-color: transparent;
+}
+
+ion-content::-webkit-scrollbar {
+  width: var(--scrollbar-width, 8px);
+}
+
+ion-content::-webkit-scrollbar-track {
+  background: var(--scrollbar-track-color, transparent);
+  border-radius: 4px;
+}
+
+ion-content::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-color, var(--secondary-medium, rgba(0, 151, 167, 0.3)));
+  border-radius: 4px;
+}
+
+ion-content::-webkit-scrollbar-thumb:hover,
+ion-menu ion-content::-webkit-scrollbar-thumb:hover {
+  background: var(--app-color-secondary, #0097a7);
+}
+
+ion-menu ion-content::-webkit-scrollbar-thumb {
+  background: var(--secondary-medium, rgba(0, 151, 167, 0.3));
+}

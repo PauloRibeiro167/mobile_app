@@ -1,0 +1,56 @@
+/* Componente Checkbox Customizado SITFOR */
+/* ========================================
+   CHECKBOX CUSTOMIZADO
+   ======================================== */
+.custom-checkbox {
+  --background: transparent;
+  --background-checked: var(--secondary);
+  --border-color: var(--secondary);
+  --border-color-checked: #e5e5e5; /* Cinza claro para contrastar com o fundo branco */
+  --border-radius: 6px;
+  --border-width: 2px;
+  --checkmark-color: #ffffff;
+  --checkmark-width: 3px;
+  --size: 20px;
+  /* Bordas arredondadas */
+  border-radius: var(--border-radius);
+  /* Estado normal */
+  /* Estado marcado */
+  /* Marca de seleção */
+  /* Hover effect */
+  /* Focus effect */
+}
+.custom-checkbox::part(container) {
+  border-radius: var(--border-radius);
+  border: var(--border-width) solid var(--border-color);
+  background: var(--background);
+  transition: all 0.2s ease;
+}
+.custom-checkbox.checkbox-checked::part(container) {
+  background: var(--background-checked);
+  border-color: var(--border-color-checked);
+}
+.custom-checkbox.checkbox-checked::part(mark) {
+  color: var(--checkmark-color);
+  font-weight: bold;
+  stroke-width: var(--checkmark-width);
+}
+.custom-checkbox:hover::part(container) {
+  border-color: var(--secondary-dark);
+  box-shadow: 0 0 0 2px var(--secondary-light);
+}
+.custom-checkbox:focus::part(container) {
+  border-color: var(--secondary-dark);
+  box-shadow: 0 0 0 3px var(--secondary-light);
+}
+
+/* Container para alinhar checkbox com label */
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.checkbox-container .checkbox-label {
+  margin: 0;
+  cursor: pointer;
+}

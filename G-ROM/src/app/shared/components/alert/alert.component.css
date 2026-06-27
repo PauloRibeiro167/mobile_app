@@ -1,0 +1,325 @@
+/* Força bordas arredondadas no wrapper do alert, independente do tema */
+ion-alert .alert-wrapper,
+ion-alert .ion-overlay-wrapper {
+  border-radius: 28px !important;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+}
+/* Força bordas arredondadas no wrapper do alert para máxima compatibilidade */
+ion-alert.custom-ion-alert::part(wrapper),
+ion-alert.custom-ion-alert::part(alert-wrapper),
+.custom-ion-alert .alert-wrapper,
+ion-alert.custom-ion-alert .alert-wrapper {
+  border-radius: 28px !important;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+  overflow: hidden;
+}
+/* Estilos base do alert */
+ion-alert.custom-alert {
+  --backdrop-opacity: 0.7;
+  --border-radius: 12px;
+  border-radius: 12px !important;
+  --max-width: 95vw;
+}
+
+/* Estilos para alerts melhorados */
+.enhanced-alert {
+  --width: 90%;
+  --max-width: 400px;
+  
+  .alert-wrapper {
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  }
+  
+  .alert-head {
+    padding: 20px 20px 10px;
+    
+    .alert-title {
+      font-weight: 600;
+      font-size: 1.2rem;
+      color: var(--ion-color-primary);
+    }
+    
+    .alert-sub-title {
+      font-size: 0.9rem;
+      color: var(--ion-color-medium);
+      margin-top: 4px;
+    }
+  }
+}
+
+ion-alert.custom-alert::part(title) {
+  text-align: center !important;
+  color: var(--sitfor-secondary, #0097a7);
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+
+/* Header customizado moderno */
+.alert-header-custom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+  padding-top: 18px;
+}
+
+.alert-icon {
+  font-size: 3.2rem;
+  margin-bottom: 8px;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.10));
+}
+
+.alert-title-custom {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  text-align: center;
+  color: var(--sitfor-secondary, #0097a7);
+}
+
+.alert-sub-title {
+  font-size: 1.05rem;
+  color: var(--ion-color-medium);
+  margin-top: 4px;
+  text-align: center;
+}
+
+.alert-button-group {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px 8px 12px 8px;
+}
+
+.alert-button-group button {
+  min-width: 90px;
+  padding: 10px 18px;
+  border-radius: 22px;
+  border: none;
+  font-size: 1rem;
+  font-weight: 600;
+  background: var(--sitfor-secondary, #0097a7);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  transition: background 0.2s;
+  cursor: pointer;
+}
+
+.alert-button-group button.alert-button-secondary {
+  background: #e0e7ef;
+  color: #0097a7;
+}
+
+.alert-button-group button.alert-button-confirm {
+  background: linear-gradient(90deg, #0097a7 0%, #16a34a 100%);
+  color: #fff;
+}
+
+.alert-button-group button:active {
+  filter: brightness(0.95);
+}
+
+
+/* Platform specific styles */
+.md .alert-button-confirm {
+  border-radius: 12px;
+}
+
+.ios .custom-alert .alert-button {
+  border: 0.55px solid rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.2);
+  border-radius: 12px;
+}
+
+.ios .alert-button-cancel {
+  border-right: 0;
+  border-bottom-left-radius: 12px;
+  border-top-left-radius: 12px;
+}
+
+.ios .alert-button-confirm {
+  border-bottom-right-radius: 12px;
+  border-top-right-radius: 12px;
+}
+
+/* Estilos para conteúdo HTML dos alerts */
+.alert-message-custom {
+  padding: 10px 0;
+  
+  .alert-content {
+    line-height: 1.5;
+    
+    p {
+      margin: 10px 0;
+      color: var(--ion-color-dark);
+    }
+    
+    ul {
+      margin: 10px 0;
+      padding-left: 20px;
+      
+      li {
+        margin: 8px 0;
+        color: var(--ion-color-dark);
+        
+        /98*{
+          margin-right: 8px;
+          color: var(--ion-color-primary);
+          vertical-align: middle;
+        }
+      }
+    }
+  }
+  
+  .example-container {
+    .example-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 8px 0;
+      padding: 10px;
+      background: var(--ion-color-light);
+      border-radius: 6px;
+      
+      .example-label {
+        font-weight: 500;
+        color: var(--ion-color-dark);
+      }
+      
+      code {
+        background: var(--ion-color-primary);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        font-family: 'Courier New', monospace;
+      }
+    }
+  }
+  
+  .error-content {
+    .error-list {
+      li {
+        color: var(--ion-color-danger);
+        
+        ion-icon {
+          color: var(--ion-color-danger);
+        }
+      }
+    }
+  }
+  
+  .tip-section {
+    margin: 15px 0;
+    
+    h4 {
+      display: flex;
+      align-items: center;
+      margin: 12px 0 8px;
+      color: var(--ion-color-primary);
+      font-size: 1rem;
+      font-weight: 600;
+      
+      ion-icon {
+        margin-right: 8px;
+        font-size: 1.1rem;
+      }
+    }
+    
+    ul {
+      margin-top: 8px;
+    }
+  }
+}
+
+/* Estilo moderno para ion-alert customizado */
+
+
+.custom-ion-alert {
+  --background: #fff;
+  --border-radius: 28px !important;
+  --box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+  --width: 95vw;
+  --max-width: 400px;
+  --color: #222;
+  border-radius: 28px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.custom-ion-alert .alert-header-custom {
+  margin-top: 24px;
+}
+
+.custom-ion-alert ion-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 320px;
+  max-width: 400px;
+  margin: 0 auto;
+  background: transparent;
+  box-shadow: none;
+}
+
+.custom-ion-alert .alert-title-custom {
+  margin-bottom: 0.5rem;
+}
+
+.custom-ion-alert .alert-button-group {
+  margin-bottom: 18px;
+}
+
+ion-alert.custom-ion-alert::part(alert-wrapper) {
+  border-radius: 28px !important;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+}
+
+
+
+
+
+ion-icon {
+  font-size: 1.2em;
+}
+
+/* Header customizado */
+ion-alert.custom-ion-alert .alert-head {
+  background: linear-gradient(90deg, #0097a7 0%, #16a34a 100%);
+  color: #fff;
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+  padding: 16px 0 8px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+ion-alert.custom-ion-alert .alert-title,
+.alert-title.sc-ion-alert-md {
+  text-align: center;
+  color: var(--sitfor-secondary, #0097a7) !important;
+  font-weight: 700;
+  font-size: 1.3rem;
+}
+
+ion-alert.custom-ion-alert .alert-sub-title {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--sitfor-secondary, #0097a7);
+  text-align: center;
+}
+
+/* Responsivo */
+@media (max-width: 480px) {
+  .custom-ion-alert {
+    --max-width: 98vw;
+    font-size: 0.95rem;
+  }
+}

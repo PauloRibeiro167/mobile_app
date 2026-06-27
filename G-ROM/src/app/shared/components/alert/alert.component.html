@@ -1,0 +1,30 @@
+<ion-modal 
+  [isOpen]="isOpen" 
+  [backdropDismiss]="backdropDismiss" 
+  class="custom-ion-alert" 
+  (didDismiss)="onButtonClick({ detail: { role: 'cancel' }, type: 'didDismiss' })"
+  [translucent]="translucent"
+  [animated]="animated"
+  [keyboardClose]="keyboardClose"
+  [mode]="mode"
+>
+  <ion-content class="ion-padding text-center">
+    <div class="alert-header-custom">
+      <i *ngIf="icon" [class]="'alert-icon ' + icon"></i>
+      <div class="alert-title-custom">{{ header }}</div>
+      <div class="alert-subtitle-custom" *ngIf="subHeader">{{ subHeader }}</div>
+    </div>
+    <div class="alert-message-custom" *ngIf="htmlMessage" [innerHTML]="safeMessage"></div>
+    <div class="alert-message-custom" *ngIf="!htmlMessage">{{ message }}</div>
+    <div class="alert-button-group flex-justify-center mt-6">
+      <ng-container *ngFor="let btn of buttons">
+        <button 
+          [ngClass]="btn.cssClass || 'alert-button-confirm'" 
+          (click)="onButtonClick({ detail: { role: btn.role || 'confirm' }, type: 'buttonClick' })"
+        >
+          {{ btn.text }}
+        </button>
+      </ng-container>
+    </div>
+  </ion-content>
+</ion-modal>

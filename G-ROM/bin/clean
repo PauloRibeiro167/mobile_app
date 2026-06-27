@@ -1,0 +1,71 @@
+#!/bin/bash
+
+# Script utilitário para limpeza completa de build, cache e dependências.
+# Deixa o projeto em um estado "de fábrica", pronto para um novo build.
+
+set -e
+
+# Cores para o terminal (padrão dos outros scripts)
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+# Funções de log simplificadas
+log_info() { echo -e "${BLUE}[INFO]${NC} $1"; }
+log_success() { echo -e "${GREEN}[OK]${NC} $1"; }
+log_warning() { echo -e "${YELLOW}[AVISO]${NC} $1"; }
+
+# --- Limpeza Completa Automática ---
+
+main() {
+    echo
+    log_info "Iniciando limpeza completa do projeto..."
+    echo
+
+    # 1. Limpeza de artefatos web e node
+    log_info "Limpando artefatos web (.angular, dist, www, node_modules)..."
+    rm -rf .angular/ dist/ www/ node_modules/
+    npm cache clean --force >/dev/null 2>&1
+    log_success "Artefatos web limpos"
+
+
+    # 2. Limpeza completa Android
+    log_info "Removendo plataforma Android..."
+    [ -d "android" ] && rm -rf android
+    log_success "Plataforma Android removida"
+
+    # 3. Limpeza cache Gradle
+    log_info "Limpando cache Gradle..."
+    rm -rf "$HOME/.gradle/caches" "$HOME/.gradle/daemon" "$HOME/.gradle/wrapper" 2>/dev/null || true
+    # Corrigir permissões se necessário
+    [ -d "$HOME/.gradle" ] && sudo chown -R "$USER:$USER" "$HOME/.gradle" . 2>/dev/null || true
+    log_success "Cache Gradle limpo"
+
+    # 4. Limpeza completa iOS (se existir)
+    if [ -d "ios" ] || [ -d "$HOME/Library/Developer/Xcode/DerivedData" ]; then
+        log_info "Removendo plataforma iOS e cache Xcode..."
+        rm -rf ios/
+        [ -d "$HOME/Library/Developer/Xcode/DerivedData" ] && rm -rf "$HOME/Library/Developer/Xcode/DerivedData"
+        command -v pod >/dev/null 2>&1 && pod cache clean --all >/dev/null 2>&1 || true
+        log_success "iOS e cache Xcode limpos"
+    fi
+
+    # 5. Reinstalar dependências
+    log_info "Reinstalando dependências..."
+    npm install >/dev/null 2>&1
+    log_success "Dependências reinstaladas"
+
+    echo
+    log_success "✅ Limpeza completa concluída!"
+    log_info "🚀 Para recriar plataformas use: npx cap add android/ios"
+    echo
+
+    echo
+    if [[ $REPLY =~ ^[Ss]$ ]]; then
+        exec "$PWD/bin/app"
+    fi
+}
+
+main "$@"

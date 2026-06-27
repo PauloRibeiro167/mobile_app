@@ -1,0 +1,75 @@
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# IDEs and editors
+.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# Visual Studio Code
+.vscode/
+
+# Miscellaneous
+.angular
+.angular/cache
+.sass-cache/
+.nx
+.nx/cache
+connect.lock
+coverage
+libpeerconnection.log
+testem.log
+typings
+.history/*
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Android
+android/
+
+# Ionic
+.ionic
+www
+platforms
+plugins
+
+# Compiled output
+dist
+tmp
+out-tsc
+bazel-out
+
+# Logs
+*.log
+log.txt
+logs/
+
+# Cypress
+cypress/
+
+# Electron
+electron/
+
+# Source maps
+.sourcemaps
+
+# Versions
+.versions
+
+# Temporary files
+*~
+*.sw[mnpcod]
+.tmp
+*.tmp
+*.tmp.*
+UserInterfaceState.xcuserstate
+$RECYCLE.BIN/

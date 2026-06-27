@@ -1,0 +1,19 @@
+// For format details, see https://containers.dev/implementors/json_reference/.
+{
+  "name": "frontend-container",
+  "dockerComposeFile": "compose.yaml",
+  "service": "mercado-frontend-app",
+  "workspaceFolder": "/workspaces/frontend",
+
+  // Features para desenvolvimento Frontend
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
+  },
+
+  // Porta padrão do Frontend
+  "forwardPorts": [4200],
+
+  // Comando pós-criação para instalar dependências do Node.js
+  "postCreateCommand": "npm install"
+}

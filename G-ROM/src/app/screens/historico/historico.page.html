@@ -1,0 +1,81 @@
+<ion-content fullscreen class="history-screen">
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="history-container">
+    
+    <!-- Header e Título -->
+    <header class="history-header">
+      <div class="top-row">
+        <h1>Histórico</h1>
+        <div class="date-badge">
+          <i class="fa-solid fa-calendar-day"></i>
+          Hoje
+        </div>
+      </div>
+
+      <!-- Métricas de Resumo -->
+      <div class="stats-grid">
+        <div class="stat-card total">
+          <span class="label">Total Vendido</span>
+          <strong class="value">{{ totalDia | currency:'BRL' }}</strong>
+        </div>
+        <div class="stat-card count">
+          <span class="label">Vendas</span>
+          <strong class="value">{{ vendasCount }}</strong>
+        </div>
+      </div>
+    </header>
+
+    <!-- Barra de Pesquisa e Filtros -->
+    <div class="filter-section">
+      <ion-searchbar 
+        placeholder="Buscar por ID ou Valor" 
+        class="custom-search"
+        mode="ios">
+      </ion-searchbar>
+      
+      <div class="filter-chips">
+        <ion-chip [class.active]="filtroAtivo === 'todas'" (click)="setFiltro('todas')">Todas</ion-chip>
+        <ion-chip [class.active]="filtroAtivo === 'concluida'" (click)="setFiltro('concluida')">Concluídas</ion-chip>
+        <ion-chip [class.active]="filtroAtivo === 'cancelada'" (click)="setFiltro('cancelada')">Canceladas</ion-chip>
+      </div>
+    </div>
+
+    <!-- Lista de Vendas -->
+    <main class="history-list">
+      <div class="list-label">Transações de Hoje</div>
+      
+      <div class="modern-sale-card" 
+           *ngFor="let venda of vendasFiltradas"
+           [class.cancelled]="venda.status === 'cancelada'">
+        
+        <div class="card-left">
+          <div class="method-icon" [class]="venda.pagamento">
+            <i [class]="getPaymentIcon(venda.pagamento)"></i>
+          </div>
+          <div class="info">
+            <div class="sale-id">{{ venda.id }} <span class="time">• {{ venda.horario }}</span></div>
+            <div class="items-count">{{ venda.itensCount }} {{ venda.itensCount === 1 ? 'item' : 'itens' }}</div>
+          </div>
+        </div>
+
+        <div class="card-right">
+          <div class="amount">{{ venda.total | currency:'BRL' }}</div>
+          <div class="status-indicator">
+            <span class="dot"></span>
+            {{ venda.status === 'concluida' ? 'Concluída' : 'Cancelada' }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Estado Vazio caso não haja resultados -->
+      <div class="empty-results" *ngIf="vendasFiltradas.length === 0">
+        <i class="fa-solid fa-receipt"></i>
+        <p>Nenhuma venda encontrada com este filtro.</p>
+      </div>
+    </main>
+
+  </div>
+</ion-content>

@@ -1,0 +1,167 @@
+<section class="mt-5" *ngIf="painelVendasRecentes$ | async as painel">
+  <div class="space-y-4">
+    <div class="relative overflow-hidden rounded-2xl border border-[rgba(var(--app-color-primary-rgb),0.12)] bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02)),linear-gradient(135deg,rgba(13,19,24,0.92),rgba(9,15,20,0.96))] p-3.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_18px_34px_rgba(7,12,18,0.24)] sm:p-4">
+      <div class="pointer-events-none absolute -right-8 -top-10 h-28 w-28 rounded-full bg-[rgba(var(--app-color-primary-rgb),0.14)] blur-3xl"></div>
+
+      <div class="relative flex items-center justify-between gap-3">
+        <div class="min-w-0 text-center sm:text-left">
+          <span class="m-0 text-md font-black tracking-[-0.04em] text-zinc-50 sm:text-3xl">
+            Vendas recentes
+          </span>
+        </div>
+
+        <div class="inline-flex shrink-0 items-center gap-1 rounded-xl border border-white/8 bg-black/20 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-sm">
+          <button
+            *ngFor="let opcao of modosVisualizacao"
+            type="button"
+            [attr.aria-label]="opcao.ariaLabel"
+            [attr.aria-pressed]="modoVisualizacao === opcao.modo"
+            class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-[10px] font-bold uppercase tracking-[0.14em] transition-all duration-200"
+            [ngClass]="obterClasseBotaoModoVisualizacao(opcao.modo)"
+            (click)="definirModoVisualizacao(opcao.modo)"
+          >
+            <i class="bi text-[11px]" [ngClass]="opcao.icone"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    <ng-container *ngIf="painel.vendas.length > 0; else semVendasRecentes">
+      <ng-container [ngSwitch]="modoVisualizacao">
+        <app-recent-sales-table-view
+          *ngSwitchCase="'table'"
+          [vendas]="painel.vendas"
+          (selecionarVenda)="abrirDetalhesVenda($event)"
+        />
+
+        <app-recent-sales-cards-view
+          *ngSwitchCase="'cards'"
+          [vendas]="painel.vendas"
+          (selecionarVenda)="abrirDetalhesVenda($event)"
+        />
+
+        <app-recent-sales-grid-view
+          *ngSwitchCase="'grid'"
+          [vendas]="painel.vendas"
+          (selecionarVenda)="abrirDetalhesVenda($event)"
+        />
+      </ng-container>
+    </ng-container>
+
+    <ng-template #semVendasRecentes>
+      <div class="rounded-2xl border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.025),rgba(255,255,255,0.01)),linear-gradient(135deg,rgba(13,19,24,0.92),rgba(9,15,20,0.96))] px-4 py-6 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.04),0_16px_28px_rgba(7,12,18,0.18)]">
+        <p class="text-sm font-semibold text-zinc-100">
+          Nenhuma venda recente para exibir
+        </p>
+        <p class="mt-1 text-xs text-zinc-400">
+          Assim que o caixa registrar novas vendas, elas aparecem aqui.
+        </p>
+      </div>
+    </ng-template>
+  </div>
+
+  <ion-modal
+    [isOpen]="vendaSelecionada !== null"
+    [backdropDismiss]="true"
+    [showBackdrop]="true"
+    [style.--background]="'transparent'"
+    [style.--box-shadow]="'none'"
+    [style.--backdrop-opacity]="0.72"
+    (didDismiss)="fecharDetalhesVenda()"
+  >
+    <ng-template>
+      <div
+        class="flex min-h-full items-end justify-center overflow-y-auto bg-black/70 p-2 pb-[calc(5.25rem+env(safe-area-inset-bottom,0px))] backdrop-blur-[10px] overscroll-contain sm:p-4 md:items-center md:p-6 md:pb-6"
+        role="presentation"
+      >
+        <section
+          *ngIf="vendaSelecionada as venda"
+          class="my-auto flex w-full max-w-2xl flex-col overflow-hidden rounded-[1.5rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02)),linear-gradient(135deg,rgba(13,19,24,0.98),rgba(9,15,20,0.99))] text-zinc-50 shadow-[0_24px_70px_rgba(0,0,0,0.45)] max-[480px]:max-h-[calc(100dvh-5.75rem-env(safe-area-inset-bottom,0px))] min-[481px]:max-h-[92vh] md:rounded-[1.75rem] lg:max-h-[88vh]"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Detalhes da venda"
+        >
+          <div class="relative border-b border-white/6 px-4 pb-4 pt-5 md:px-5 md:pt-6">
+            <div class="max-w-[calc(100%-3.5rem)] space-y-1">
+              <p class="m-0 text-[0.72rem] pb-1 font-bold uppercase tracking-[0.14em] text-[var(--app-color-primary-light)]">
+                Detalhes da venda
+              </p>
+              <h3 class="m-0 pb-1 text-[1.55rem] font-black tracking-[-0.04em] text-zinc-50">
+                {{ venda.id }}
+              </h3>
+            </div>
+
+            <button
+              type="button"
+              aria-label="Fechar detalhes da venda"
+              class="absolute right-4 top-5 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-zinc-300 transition-colors hover:bg-white/15 hover:text-zinc-100 md:right-5 md:top-6"
+              (click)="fecharDetalhesVenda()"
+            >
+              <i class="bi bi-x-lg text-sm"></i>
+            </button>
+          </div>
+
+          <div class="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4 [webkit-overflow-scrolling:touch] md:px-5 md:py-5">
+            <div class="grid gap-4">
+              <div class="grid grid-cols-2 gap-3 md:grid-cols-4">
+                <article class="rounded-2xl text-center border border-white/8 bg-white/5 px-1 py-3">
+                  <p class="text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-500">Valor</p>
+                  <p class="mt-1 text-base font-black text-zinc-50">{{ venda.valorLabel }}</p>
+                </article>
+
+                <article class="rounded-2xl text-center border border-white/8 bg-white/5 px-3 py-3">
+                  <p class="text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-500">Itens</p>
+                  <p class="mt-1 text-base font-black text-zinc-50">{{ venda.quantidadeItensLabel }}</p>
+                </article>
+
+                <article class="rounded-2xl text-center border border-white/8 bg-white/5 px-3 py-3">
+                  <p class="text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-500">Hora</p>
+                  <p class="mt-1 text-base font-black text-zinc-50">{{ venda.horaLabel }}</p>
+                </article>
+
+                <article class="rounded-2xl text-center border border-white/8 bg-white/5 px-3 py-3">
+                  <p class="text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-500">Pagamento</p>
+                  <div class="mt-1 flex-center flex-col gap-1">
+                    <span
+                      class="inline-flex w-fit rounded-full border px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.14em]"
+                      [ngClass]="obterClasseBadgePagamento(venda.tomPagamento)"
+                    >
+                      {{ venda.pagamentoLabel }}
+                    </span>
+                    <span *ngIf="venda.pagamentoMetaLabel" class="text-[11px] font-medium text-zinc-400">
+                      {{ venda.pagamentoMetaLabel }}
+                    </span>
+                  </div>
+                </article>
+              </div>
+
+              <div class="overflow-hidden rounded-2xl border border-white/8 bg-white/5">
+                <div class="border-b border-white/6 px-4 py-3">
+                  <span class="m-0 text-sm font-bold uppercase tracking-[0.16em] text-zinc-300">
+                    Itens da venda
+                  </span>
+                </div>
+
+                <div class="divide-y divide-white/6">
+                  <div
+                    *ngFor="let item of venda.itens"
+                    class="grid grid-cols-[1fr_auto] gap-3 px-4 py-3"
+                  >
+                    <div class="min-w-0">
+                      <p class="truncate text-sm font-semibold text-zinc-100">{{ item.nome }}</p>
+                      <p class="mt-1 text-xs font-medium text-zinc-500">
+                        {{ item.quantidade }}x {{ item.valorUnitarioLabel }}
+                      </p>
+                    </div>
+                    <div class="text-right text-sm font-black text-zinc-50">
+                      {{ item.subtotalLabel }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </ng-template>
+  </ion-modal>
+</section>

@@ -1,0 +1,49 @@
+/* To learn more about this file see: https://angular.io/config/tsconfig. */
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "./dist/out-tsc",
+    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "strict": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "sourceMap": true,
+    "declaration": false,
+    "experimentalDecorators": true,
+    "moduleResolution": "bundler",
+    "importHelpers": true,
+    "target": "es2022",
+    "module": "es2020",
+    "lib": ["es2018", "es2020", "es2021", "dom"],
+    "paths": {
+      "@services": ["src/app/core/services/index.ts"],
+      "@services/*": ["src/app/core/services/*"],
+      "@shared/*": ["src/app/shared/*"],
+      "@core/*": ["src/app/core/*"],
+      "@utils": ["src/app/shared/utils/index.ts"],
+      "@components": ["src/app/shared/components/index.ts"],
+      "@models/*": ["src/app/core/models/*"],
+      "@auth/*": ["src/app/core/services/auth/*"],
+      "@accordion/*": ["src/app/core/services/UI/accordion/*"],
+      "@ui-temas": ["src/app/core/services/UI/temas/index.ts"],
+      "@ui-area-segura": ["src/app/core/services/UI/area-segura/index.ts"],
+      "@ui-modal": ["src/app/core/services/UI/modal/index.ts"],
+      "@ui-inicializacao": ["src/app/core/services/UI/inicializacao/index.ts"],
+      "@styles": ["src/global.css"],
+      "@accordion_config": ["src/app/screens/resultado-pesquisa/helpers/accordion.config.ts"],
+      "@accordion_helpers": ["src/app/screens/resultado-pesquisa/helpers/accordion.helpers.ts"],
+      "@accordion_mock": ["src/app/screens/resultado-pesquisa/base64.mock.ts"]
+    }
+  },
+  "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
+  }
+}

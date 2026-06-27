@@ -1,0 +1,116 @@
+.action-sheet-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 1rem 0.75rem;
+  background: rgba(5, 10, 16, 0.58);
+  backdrop-filter: blur(6px);
+}
+
+.action-sheet-panel {
+  width: min(100%, 22rem);
+  overflow: hidden;
+  border: 1px solid rgba(112, 232, 127, 0.12);
+  border-radius: 1.1rem;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.015)),
+    linear-gradient(180deg, rgba(12, 21, 28, 0.98), rgba(10, 16, 23, 0.98));
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  animation: action-sheet-enter 180ms ease-out;
+}
+
+.action-sheet-handle {
+  width: 2.4rem;
+  height: 0.28rem;
+  margin: 0.5rem auto 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.24);
+}
+
+.action-sheet-header {
+  padding: 0.4rem 0 0;
+  background: linear-gradient(180deg, rgba(112, 232, 127, 0.96), rgba(101, 217, 115, 0.94));
+}
+
+.action-sheet-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0.9rem 1rem;
+  color: #102014;
+  font-size: 1.18rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.action-sheet-content {
+  padding: 1rem 1.15rem 1.25rem;
+}
+
+ion-button.action-sheet-button {
+  --border-radius: 0.7rem !important;
+  --box-shadow: none !important;
+  --padding-top: 0 !important;
+  --padding-bottom: 0 !important;
+  --padding-start: 0 !important;
+  --padding-end: 0 !important;
+  min-height: 3rem;
+  margin-bottom: 0.8rem;
+}
+
+ion-button.action-sheet-button:last-child {
+  margin-bottom: 0;
+}
+
+ion-button.action-sheet-button .button-native {
+  font-weight: 700 !important;
+}
+
+ion-button.action-sheet-button--cancel {
+  --background: #ff8a83 !important;
+  --background-activated: #ff8179 !important;
+  --background-focused: #ff8179 !important;
+  --background-hover: #ff8179 !important;
+  --color: #fff5f4 !important;
+  --border-color: transparent !important;
+}
+
+ion-button.action-sheet-button--selected {
+  --background: var(--app-color-success) !important;
+  --background-activated: rgba(var(--app-color-success-rgb), 0.95) !important;
+  --background-focused: rgba(var(--app-color-success-rgb), 0.95) !important;
+  --background-hover: rgba(var(--app-color-success-rgb), 0.95) !important;
+  --color: #ffffff !important;
+  --border-color: var(--app-color-success) !important;
+  --border-width: 2px !important;
+  --border-style: solid !important;
+  --box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3) !important;
+}
+
+ion-button.action-sheet-button i {
+  font-size: 1rem;
+}
+
+ion-button.action-sheet-button--selected i.bi-check-circle {
+  color: #ffffff !important;
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.45)) !important;
+}
+
+@keyframes action-sheet-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

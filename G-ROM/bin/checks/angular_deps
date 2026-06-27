@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# Dependências e utilitários para Angular CLI
+
+# Função para verificar e instalar Angular CLI
+global_check_angular_cli() {
+    if ! command -v ng &> /dev/null; then
+        echo -e "${YELLOW}⚠️  Angular CLI não encontrado. Instalando...${NC}"
+        if npm install -g @angular/cli; then
+            echo -e "${GREEN}✅ Angular CLI instalado com sucesso!${NC}"
+            # Verificar versão instalada
+            if command -v ng &> /dev/null; then
+                echo -e "${CYAN}📋 Versão instalada: $(ng version --skip-git 2>/dev/null | head -1 | cut -d' ' -f1-2)${NC}"
+            fi
+        else
+            echo -e "${RED}❌ Falha na instalação do Angular CLI${NC}"
+            echo -e "${YELLOW}💡 Tente instalar manualmente:${NC}"
+            echo -e "   npm install -g @angular/cli"
+            exit 1
+        fi
+    else
+        echo -e "${GREEN}✅ Angular CLI encontrado${NC}"
+        # Mostrar versão apenas se conseguir obter
+        local ng_version
+        ng_version=$(ng version --skip-git 2>/dev/null | head -1 | cut -d' ' -f1-2 2>/dev/null || echo "")
+        if [ ! -z "$ng_version" ]; then
+            echo -e "${CYAN}📋 Versão: $ng_version${NC}"
+        fi
+    fi
+    echo ""
+}

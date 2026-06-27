@@ -1,0 +1,97 @@
+<ion-card class="login-card glass-card rounded-xl m-0">
+  <div class="login-card__glow" aria-hidden="true"></div>
+
+  <ion-card-content class="login-card__content p-4">
+    <div class="login-card__header mb-3 text-center">
+      <h2 class="login-card__title m-0">Acesse sua sessão</h2>
+      <p class="login-card__subtitle m-0 text-body-small">
+        Use seu email e senha para continuar no painel operacional.
+      </p>
+    </div>
+
+    <form novalidate (ngSubmit)="onSubmit()" class="login-form">
+      <div class="login-field login-field__shell">
+        <label class="login-field__label text-label d-block">E-mail</label>
+        <div class="login-input-item">
+          <input
+            type="email"
+            [ngModel]="email"
+            (ngModelChange)="emailChange.emit($event)"
+            name="email"
+            autocomplete="username"
+            autocapitalize="off"
+            spellcheck="false"
+            placeholder="voce@mercadinho.com"
+            required
+          />
+        </div>
+      </div>
+
+      <div class="login-field login-field__shell">
+        <div class="flex-between flex-items-start">
+          <label class="login-field__label text-label d-block">Senha</label>
+          <button
+            type="button"
+            class="login-link-btn text-label text-primary"
+            (click)="forgotPassword.emit()"
+          >
+            Esqueci minha senha
+          </button>
+        </div>
+
+        <div class="login-input-item">
+          <input
+            [type]="showPassword ? 'text' : 'password'"
+            [ngModel]="password"
+            (ngModelChange)="passwordChange.emit($event)"
+            name="password"
+            autocomplete="current-password"
+            placeholder="Digite sua senha"
+            required
+          />
+          <button
+            type="button"
+            class="login-password-toggle"
+            (click)="togglePassword.emit()"
+            aria-label="Alternar visualização da senha"
+          >
+            <i [class]="showPassword ? 'bi bi-eye-slash-fill' : 'bi bi-eye-fill'"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="login-form__meta flex-between flex-items-center gap-2 mb-3">
+        <div class="checkbox">
+          <label class="container login-remember flex-left flex-items-center gap-1 text-body-small">
+            
+            <input
+              type="checkbox"
+              [ngModel]="rememberMe"
+              (ngModelChange)="rememberMeChange.emit($event)"
+              name="rememberMe"
+            />
+            
+            <div class="checkmark"></div>
+            
+            <span>Lembrar meu acesso</span>
+            
+          </label>
+        </div>
+
+        <span class="login-security-note text-caption">
+          <i class="bi bi-shield-lock-fill"></i>
+          Sessão protegida
+        </span>
+      </div>
+
+      <ion-button
+        expand="block"
+        type="submit"
+        [disabled]="isLoading"
+        class="login-submit-btn"
+      >
+        {{ isLoading ? 'Entrando...' : 'Fazer login' }}
+      </ion-button>
+    </form>
+  </ion-card-content>
+</ion-card>

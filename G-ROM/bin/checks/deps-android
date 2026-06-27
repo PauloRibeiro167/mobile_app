@@ -1,0 +1,51 @@
+#!/bin/bash
+
+MISSING=0
+
+check() {
+    if ! command -v "$1" >/dev/null 2>&1; then
+        echo -e "❌ $1 não encontrado."
+        echo -e "   Instale com: $2"
+        MISSING=1
+    fi
+}
+
+# Checagem de dependências
+check "node" "sudo apt install nodejs"
+check "npm" "sudo apt install npm"
+check "npx" "npm install -g npx"
+check "ng" "npm install -g @angular/cli"
+check "gradle" "sudo apt install gradle"
+check "java" "sudo apt install default-jre"
+check "adb" "sudo apt install adb"
+
+if [ -z "$ANDROID_HOME" ] && [ -z "$ANDROID_SDK_ROOT" ]; then
+    echo "❌ Android SDK não configurado (ANDROID_HOME ou ANDROID_SDK_ROOT)."
+    echo "   Veja: https://developer.android.com/studio#downloads"
+    MISSING=1
+fi
+
+# Checagem de dispositivo Android conectado
+check_android_device() {
+    if ! command -v "adb" >/dev/null 2>&1; then
+        echo "❌ ADB não encontrado."
+        return 1
+    fi
+    local devices=$(adb devices | grep -v "List" | grep "device" | wc -l)
+    if [ "$devices" -eq 0 ]; then
+        echo "❌ Nenhum dispositivo Android conectado encontrado."
+        echo "   Conecte um dispositivo via USB e habilite a depuração USB."
+        return 1
+    fi
+    echo "✅ Dispositivos Android conectados: $devices"
+    return 0
+}
+
+if [ $MISSING -eq 1 ]; then
+    echo -e "\nAlgumas dependências estão faltando. Instale conforme instruções acima."
+    exit 1
+fi
+
+# Para usar no seu script principal:
+# bin/checks/deps-android || exit 1
+# bin/checks/deps-android check_android_device || exit 1

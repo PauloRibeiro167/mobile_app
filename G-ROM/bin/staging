@@ -1,0 +1,72 @@
+#!/bin/bash
+
+# Script para ambiente de STAGING (Homologação)
+# Utilizado para validação final e distribuição para testers
+
+set -e
+
+echo "🎭 Iniciando ambiente de STAGING..."
+echo "==============================================="
+
+# Configurações para ambiente de staging
+export NODE_ENV=staging
+export IONIC_ENV=staging
+
+# Verifica se todas as dependências estão instaladas
+if [ ! -d "node_modules" ]; then
+    echo "📦 Instalando dependências..."
+    npm ci
+fi
+
+# Executa testes antes do build
+echo "🧪 Executando testes..."
+npm test -- --watch=false --browsers=ChromeHeadless
+
+# Build otimizado para staging
+echo "🔨 Fazendo build otimizado para staging..."
+ionic build --configuration=staging --prod
+
+# Adiciona plataforma Android se não existir
+if [ ! -d "android" ]; then
+    echo "🤖 Adicionando plataforma Android..."
+    ionic capacitor add android
+fi
+
+# Copia arquivos para Android
+ionic capacitor copy android
+
+# Build APK/AAB de release para staging
+echo "📱 Gerando APK de release para staging..."
+cd android
+
+# Limpa builds anteriores
+./gradlew clean
+
+# Gera APK de release (não assinado com chave de produção)
+./gradlew assembleRelease
+
+# Gera AAB se necessário
+./gradlew bundleRelease
+
+# Cria diretório de output
+mkdir -p ../dist/staging
+
+# Move arquivos gerados
+if [ -f "app/build/outputs/apk/release/app-release-unsigned.apk" ]; then
+    cp app/build/outputs/apk/release/app-release-unsigned.apk ../dist/staging/sitfor-staging.apk
+fi
+
+if [ -f "app/build/outputs/bundle/release/app-release.aab" ]; then
+    cp app/build/outputs/bundle/release/app-release.aab ../dist/staging/sitfor-staging.aab
+fi
+
+cd ..
+
+echo "✅ Build de staging concluído!"
+echo "📱 Arquivos disponíveis em dist/staging/"
+echo ""
+echo "🚀 Próximos passos para distribuição:"
+echo "1. Teste o APK em dispositivos físicos"
+echo "2. Distribua via Firebase App Distribution ou TestFlight"
+echo "3. Colete feedback dos testers"
+echo "4. Após aprovação, proceda para produção"

@@ -1,0 +1,185 @@
+/**
+ * COMPONENTES IONIC PERSONALIZADOS
+ * 
+ * Estilos customizados para componentes nativos do Ionic.
+ */
+/* Configurações gerais */
+/**
+ * GLASSMORPHISM UTILITIES
+ *
+ * Classes and mixins for macOS-style glass surfaces.
+ */
+.glass {
+  background: var(--app-glass-bg);
+  border: 1px solid var(--app-glass-border);
+  box-shadow: var(--app-glass-shadow);
+  backdrop-filter: blur(var(--app-glass-blur)) saturate(var(--app-glass-saturate));
+  -webkit-backdrop-filter: blur(var(--app-glass-blur)) saturate(var(--app-glass-saturate));
+}
+
+.glass-strong {
+  background: var(--app-glass-bg-strong);
+  border: 1px solid var(--app-glass-border-strong);
+  box-shadow: var(--app-glass-shadow-strong);
+  backdrop-filter: blur(var(--app-glass-blur-strong)) saturate(var(--app-glass-saturate));
+  -webkit-backdrop-filter: blur(var(--app-glass-blur-strong)) saturate(var(--app-glass-saturate));
+}
+
+.glass-subtle {
+  background: var(--app-glass-bg-subtle);
+  border: 1px solid var(--app-glass-border);
+  box-shadow: var(--app-glass-shadow);
+  backdrop-filter: blur(var(--app-glass-blur)) saturate(var(--app-glass-saturate));
+  -webkit-backdrop-filter: blur(var(--app-glass-blur)) saturate(var(--app-glass-saturate));
+}
+
+.glass-card {
+  background: var(--app-glass-bg);
+  border: 1px solid var(--app-glass-border);
+  box-shadow: var(--app-glass-shadow);
+  backdrop-filter: blur(var(--app-glass-blur)) saturate(var(--app-glass-saturate));
+  -webkit-backdrop-filter: blur(var(--app-glass-blur)) saturate(var(--app-glass-saturate));
+  border-radius: var(--app-radius-lg);
+}
+
+.glass-pill {
+  background: var(--app-glass-bg-subtle);
+  border: 1px solid var(--app-glass-border);
+  box-shadow: var(--app-glass-shadow);
+  backdrop-filter: blur(var(--app-glass-blur)) saturate(var(--app-glass-saturate));
+  -webkit-backdrop-filter: blur(var(--app-glass-blur)) saturate(var(--app-glass-saturate));
+  padding: 2px 8px;
+}
+
+.glass-border {
+  border: 1px solid var(--app-glass-border-strong) !important;
+}
+
+ion-card {
+  --background: transparent;
+  border-radius: var(--app-radius-lg);
+  background: var(--app-glass-bg);
+  border: 1px solid var(--app-glass-border);
+  box-shadow: var(--app-glass-shadow);
+  backdrop-filter: blur(var(--app-glass-blur)) saturate(var(--app-glass-saturate));
+  -webkit-backdrop-filter: blur(var(--app-glass-blur)) saturate(var(--app-glass-saturate));
+}
+
+ion-item {
+  --border-color: transparent;
+  --color: var(--app-color-on-surface);
+}
+
+ion-toolbar {
+  --background: var(--app-color-surface);
+  --color: var(--app-color-on-surface);
+  --border-color: var(--app-color-outline-variant);
+}
+
+/* Container da toolbar */
+.toolbar-container {
+  background: var(--app-color-background) !important;
+  --background: var(--app-color-background) !important;
+}
+
+ion-list {
+  background: var(--app-color-surface);
+}
+
+/* Formulários */
+ion-input, ion-textarea, ion-select {
+  --background: var(--app-color-surface);
+  --border-color: var(--app-color-outline-variant);
+  --color: var(--app-color-on-surface);
+}
+
+/* Menu lateral */
+ion-menu {
+  --background: var(--app-color-surface);
+  --color: var(--app-color-on-surface);
+}
+
+/* Barra do menu lateral */
+ion-menu ion-header ion-toolbar {
+  --background: var(--app-color-primary-darker) !important;
+  --color: var(--app-color-white) !important;
+  --border-color: var(--app-color-primary);
+}
+
+ion-menu ion-title {
+  color: var(--app-color-white) !important;
+}
+
+#background-content {
+  left: 0px;
+  right: 0px;
+  top: calc(var(--ion-safe-area-top, 0px) * -1);
+  /* Usa variável do Ionic com fallback */
+  bottom: calc(var(--ion-safe-area-bottom, 0px) * -1);
+  position: absolute;
+  background: var(--app-color-background-content) !important;
+}
+
+/* Cabeçalhos e rótulos */
+ion-list-header {
+  color: var(--app-color-on-surface) !important;
+}
+
+ion-label {
+  color: var(--app-color-on-surface) !important;
+}
+
+ion-icon {
+  color: var(--app-color-on-surface-variant) !important;
+}
+
+/* ========================================
+   SAFE AREA - INTEGRAÇÃO GLOBAL
+   ======================================== */
+ion-app.safe-area-app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  position: relative;
+}
+
+ion-app.safe-area-app > .safe-area-content,
+ion-app.safe-area-app ion-router-outlet.safe-area-content {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: block;
+  box-sizing: border-box;
+  padding-bottom: calc(var(--app-safe-area-bottom) + var(--app-tab-bar-height));
+  padding-left: var(--app-safe-area-left);
+  padding-right: var(--app-safe-area-right);
+}
+
+ion-header.safe-area-top,
+.safe-area-top ion-header {
+  padding-top: var(--app-safe-area-top);
+}
+
+ion-header.safe-area-horizontal,
+.safe-area-horizontal ion-header {
+  padding-left: var(--app-safe-area-left);
+  padding-right: var(--app-safe-area-right);
+}
+
+ion-footer.safe-area-bottom,
+.safe-area-bottom ion-footer {
+  padding-bottom: var(--app-safe-area-bottom);
+}
+
+ion-tab-bar.safe-area-bottom {
+  padding-bottom: calc(var(--app-safe-area-bottom));
+}
+
+ion-tab-bar.safe-area-horizontal {
+  padding-left: var(--app-safe-area-left);
+  padding-right: var(--app-safe-area-right);
+}
+
+ion-fab {
+  bottom: calc(var(--app-safe-area-bottom) + 16px);
+  right: calc(var(--app-safe-area-right) + 16px);
+}

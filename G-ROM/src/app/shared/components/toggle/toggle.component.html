@@ -1,0 +1,11 @@
+
+<div class="feature-content w-100 flex-between">
+  <div class="flex-center-all gap-2 mb-2">
+    <i [ngClass]="iconClass"></i>
+    <span class="font-size-1-05">{{ label }}</span>
+  </div>
+  <label class="switch">
+    <input type="checkbox" [(ngModel)]="internalChecked" (ngModelChange)="onToggleModel($event)" name="toggle">
+    <span class="slider"></span>
+  </label>
+</div>

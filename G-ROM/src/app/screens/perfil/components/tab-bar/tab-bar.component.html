@@ -1,0 +1,12 @@
+<nav class="top-tabs p-4 ps-2" role="tablist" aria-label="Seções do perfil">
+  <button
+    *ngFor="let tab of tabs"
+    class="tab-item"
+    type="button"
+    [class.active]="activeTab === tab.id"
+    (click)="setTab(tab.id)"
+  >
+    <i class="bi" [class]="'bi ' + tab.icon"></i>
+    <span>{{ tab.label }}</span>
+  </button>
+</nav>

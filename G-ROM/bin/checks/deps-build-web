@@ -1,0 +1,94 @@
+#!/bin/bash
+# Função para build web centralizada
+build_web() {
+    local env=$1
+    local config=$2
+    echo -e "${GREEN}📦 Iniciando build WEB para ambiente: ${YELLOW}$env${NC}"
+    echo ""
+    # Verificar e instalar Node.js/npm se necessário
+    check_nodejs
+    # Verificar e instalar Angular CLI se necessário
+    check_angular_cli
+    # Instalar dependências se necessário
+    if [ ! -d "node_modules" ]; then
+        echo -e "${YELLOW}📦 Instalando dependências...${NC}"
+        if ! npm ci; then
+            echo -e "${RED}❌ Falha ao instalar dependências${NC}"
+            echo -e "${YELLOW}💡 Tentando com npm install...${NC}"
+            if ! npm install; then
+                echo -e "${RED}❌ Falha crítica na instalação de dependências${NC}"
+                exit 1
+            fi
+        fi
+    else
+        echo -e "${GREEN}✅ Dependências já instaladas${NC}"
+    fi
+    # Preparar estrutura para Stencil (evitar warnings)
+    echo -e "${CYAN}🗂️  Preparando estrutura de arquivos...${NC}"
+    mkdir -p www
+    # Nota: O warning do Stencil sobre .entry.js é comum em projetos Ionic
+    # e não afeta o funcionamento da aplicação. É apenas informativo.
+    # Executar build
+    echo -e "${YELLOW}🔨 Executando build...${NC}"
+    if [ "$config" = "development" ]; then
+        if ! ng build --configuration=development; then
+            echo -e "${RED}❌ Falha no build de development${NC}"
+            exit 1
+        fi
+    else
+        if ! ng build --configuration="$config"; then
+            echo -e "${RED}❌ Falha no build de $config${NC}"
+            exit 1
+        fi
+    fi
+    # Limpar arquivo temporário após o build
+    if [ -f "placeholder.entry.js" ]; then
+        rm -f placeholder.entry.js
+    fi
+    echo -e "${GREEN}✅ Build concluído com sucesso!${NC}"
+    echo -e "${CYAN}📁 Arquivos gerados em: www/${NC}"
+}
+#!/bin/bash
+# Checagem de dependências para build web do SITFOR
+
+# Verificar e instalar Node.js/npm se necessário
+check_nodejs() {
+    if ! command -v node &> /dev/null; then
+        echo -e "${YELLOW}Node.js não encontrado. Instalando...${NC}"
+        installation_failed
+    else
+        echo -e "${GREEN}✅ Node.js encontrado: $(node -v)${NC}"
+    fi
+}
+
+# Verificar e instalar Angular CLI se necessário
+check_angular_cli() {
+    if ! command -v ng &> /dev/null; then
+        echo -e "${YELLOW}Angular CLI não encontrado. Instalando...${NC}"
+        if ! npm install -g @angular/cli; then
+            echo -e "${RED}❌ Falha ao instalar Angular CLI${NC}"
+            exit 1
+        fi
+    else
+        echo -e "${GREEN}✅ Angular CLI encontrado: $(ng version | grep 'Angular CLI:' | awk '{print $3}')${NC}"
+    fi
+}
+
+# Função auxiliar para quando a instalação falha
+installation_failed() {
+    echo -e "${YELLOW}💡 Opções para instalar Node.js manualmente:${NC}"
+    echo ""
+    echo -e "${CYAN}Opção 1 - NVM (Recomendado):${NC}"
+    echo -e "   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash"
+    echo -e "   source ~/.bashrc"
+    echo -e "   nvm install --lts"
+    echo ""
+    echo -e "${CYAN}Opção 2 - Download direto:${NC}"
+    echo -e "   Visite: https://nodejs.org/"
+    echo -e "   Baixe a versão LTS para Linux"
+    echo ""
+    echo -e "${CYAN}Opção 3 - Package Manager (se disponível):${NC}"
+    echo -e "   sudo apt-get update && sudo apt-get install nodejs npm"
+    echo ""
+    exit 1
+}

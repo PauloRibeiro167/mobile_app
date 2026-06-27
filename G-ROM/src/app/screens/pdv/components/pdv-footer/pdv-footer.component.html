@@ -1,0 +1,43 @@
+<footer class="fixed bottom-0 mb-20 left-0 z-50 w-full border-t border-white/10 p-1 pb-5 pt-3 bg-[#1A1E24]">
+  <div class="mb-3 flex items-center justify-between gap-3 px-4 pt-1">
+    <div  class="flex items-center">
+      <strong class="text-sm text-gray-800">{{ totalItens }} item(ns)</strong>
+    </div>
+
+    <div class="text-right">
+      <span class="block text-[0.68rem] font-bold uppercase tracking-[0.18em]text-gray-200">Total da venda</span>
+      <strong class="text-base text-emerald-400">R$ {{ totalVenda | number: '1.2-2' }}</strong>
+    </div>
+  </div>
+
+  <div class="flex gap-3 px-6 mb-2">
+    <button
+      type="button"
+      class="relative inline-flex h-9 flex-1 items-center justify-center gap-2.5 rounded-lg p-1 text-sm font-semibold transition-all duration-200 hover:scale-[1.02] active:scale-95"
+      (click)="choosePayment.emit()"
+    >
+    <i class="bi bi-wallet2 text-base text-emerald-500"></i>
+      <span>{{ paymentLabel }}</span>
+      <i class="bi bi-chevron-down text-[0.65rem]" style="color: #879484"></i>
+    </button>
+
+    <button
+      type="button"
+      class="relative inline-flex h-9 flex-1 items-center justify-center gap-2.5 p-1 text-sm font-semibold transition-all duration-200 hover:scale-[1.02] active:scale-95 disabled:cursor-not-allowed disabled:opacity-35 disabled:hover:scale-100 disabled:active:scale-100 bg-emerald-600 rounded-lg"
+      [disabled]="!canConclude || isSubmitting || !paymentMethod"
+      (click)="concludeSale.emit()"
+    >
+      <ng-container *ngIf="!isSubmitting; else loading">
+        <i class="bi bi-check2-circle text-base"></i>
+        <span>Finalizar venda</span>
+      </ng-container>
+      <ng-template #loading>
+        <svg class="h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+        </svg>
+        <span>Enviando venda...</span>
+      </ng-template>
+    </button>
+  </div>
+</footer>

@@ -1,0 +1,66 @@
+#!/bin/bash
+# Verifica todas as dependências do Android SDK necessárias para emulação.
+
+# Cores
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # Sem Cor
+
+# Função principal que pode ser chamada por outros scripts.
+check_android_sdk_dependencies() {
+    local SDK_ROOT
+
+    # 1. Verificar variável de ambiente do SDK
+    if [ -n "$ANDROID_SDK_ROOT" ] && [ -d "$ANDROID_SDK_ROOT" ]; then
+        SDK_ROOT="$ANDROID_SDK_ROOT"
+        echo -e "${GREEN}✅ Variável ANDROID_SDK_ROOT encontrada:${NC} $SDK_ROOT"
+    elif [ -n "$ANDROID_HOME" ] && [ -d "$ANDROID_HOME" ]; then
+        SDK_ROOT="$ANDROID_HOME"
+        echo -e "${GREEN}✅ Variável ANDROID_HOME encontrada:${NC} $SDK_ROOT"
+    else
+        echo -e "${RED}❌ Variável de ambiente do Android SDK não encontrada (ANDROID_SDK_ROOT ou ANDROID_HOME).${NC}"
+        echo -e "   Configure uma delas apontando para o diretório do seu Android SDK."
+        return 1
+    fi
+
+    # 2. Verificar o executável do Emulador
+    local EMULATOR_PATH="$SDK_ROOT/emulator/emulator"
+    if [ ! -x "$EMULATOR_PATH" ]; then
+        echo -e "${RED}❌ Executável do Emulador Android não encontrado em: $EMULATOR_PATH${NC}"
+        echo -e "   Instale o 'Android Emulator' através do SDK Manager do Android Studio."
+        return 1
+    fi
+    echo -e "${GREEN}✅ Emulador Android encontrado.${NC}"
+
+    # 3. Verificar o AVD Manager
+    local AVDMANAGER_PATH="$SDK_ROOT/cmdline-tools/latest/bin/avdmanager"
+    if [ ! -x "$AVDMANAGER_PATH" ]; then
+        echo -e "${RED}❌ AVD Manager (avdmanager) não encontrado.${NC}"
+        echo -e "   Instale o 'Android SDK Command-line Tools (latest)' através do SDK Manager."
+        return 1
+    fi
+    echo -e "${GREEN}✅ AVD Manager encontrado.${NC}"
+
+    # 4. Verificar se existe pelo menos um AVD (Dispositivo Virtual)
+    echo -e "${YELLOW}🔍 Verificando dispositivos virtuais (AVDs)...${NC}"
+    local EMULATOR_AVDS
+    EMULATOR_AVDS=$(ANDROID_AVD_HOME="$HOME/.android/avd" "$EMULATOR_PATH" -list-avds | grep -v '^$')
+    echo -e "[DEBUG] Saída do comando de AVDs:"
+    echo "$EMULATOR_AVDS"
+    if [ -z "$EMULATOR_AVDS" ]; then
+        echo -e "${RED}❌ Nenhum AVD (Android Virtual Device) configurado.${NC}"
+        echo -e "   Crie um emulador usando o AVD Manager no Android Studio (Tools > AVD Manager)."
+        return 1
+    fi
+    echo -e "${GREEN}✅ Pelo menos um AVD foi encontrado:${NC}"
+    while IFS= read -r avd; do
+        [ -n "$avd" ] && echo -e "  - $avd"
+    done <<< "$EMULATOR_AVDS"
+}
+
+# Permite que o script seja executado diretamente para teste.
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    check_android_sdk_dependencies
+fi
+

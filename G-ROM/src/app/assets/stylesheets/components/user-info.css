@@ -1,0 +1,62 @@
+/* Componentes de Informações do Usuário */
+/* ========================================
+   CONTAINER DE INFORMAÇÕES DO USUÁRIO
+   ======================================== */
+.user-info-container {
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin: 8px;
+}
+.user-info-container .user-logged {
+  text-align: center;
+}
+.user-info-container .user-logged ion-avatar {
+  margin: 0 auto 8px auto;
+  display: block;
+}
+.user-info-container .user-logged ion-note {
+  font-weight: 500;
+  color: #333 !important;
+}
+.user-info-container .user-logged ion-note:first-of-type {
+  font-size: 1em;
+  font-weight: 600;
+}
+.user-info-container .user-logged button {
+  --color: #dc3545;
+  font-size: 0.9em;
+}
+
+/* ========================================
+   AVATARES E ÍCONES DE USUÁRIO
+   ======================================== */
+.user-avatar-icon {
+  font-size: 40px;
+}
+
+.acesso-restrito-avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: #f1f1f1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ========================================
+   CONTAINER DE ACESSO RESTRITO
+   ======================================== */
+.acesso-restrito-container {
+  min-height: 320px;
+}
+.acesso-restrito-container .acesso-restrito-icon {
+  font-size: 2.5rem;
+}
+.acesso-restrito-container .acesso-restrito-title {
+  color: var(--secondary);
+}
+.acesso-restrito-container .acesso-restrito-msg {
+  max-width: 250px;
+}

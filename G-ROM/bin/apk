@@ -1,0 +1,193 @@
+#!/bin/bash
+
+# Checagens essenciais para emulação Android
+bin/checks/deps-java || exit 1
+bin/checks/deps-sdk  || exit 1
+bin/checks/deps-node || exit 1
+
+# Script para compilar e gerar o app Android do MERCADO
+# Automatiza todo o processo de build para Android
+
+set -e
+
+# Cores para o terminal
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+PURPLE='\033[0;35m'
+NC='\033[0m'
+
+# Função para ler teclas especiais (versão simplificada e robusta)
+read_key() {
+    local key
+    if read -rsn1 -t 0.1 key 2>/dev/null; then
+        case $key in
+            $'\x1b')
+                if read -rsn2 -t 0.1 key2 2>/dev/null; then
+                    case $key2 in
+                        '[A') echo "up" ;;
+                        '[B') echo "down" ;;
+                        '[C') echo "right" ;;
+                        '[D') echo "left" ;;
+                        *) echo "escape" ;;
+                    esac
+                else
+                    echo "escape"
+                fi
+                ;;
+            '') echo "enter" ;;
+            ' ') echo "space" ;;
+            'q'|'Q') echo "quit" ;;
+            [1-6]) echo "$key" ;;
+            *) echo "other" ;;
+        esac
+    else
+        echo "timeout"
+    fi
+}
+
+# --- Verificação de dependências ---
+check() {
+    if ! command -v "$1" >/dev/null 2>&1; then
+        echo -e "${RED}❌ $1 não encontrado.${NC}"
+        echo -e "   Instale com: $2"
+        return 1
+    else
+    return 0
+    fi
+}
+
+
+# Funções de log colorido
+log_info() { echo -e "${BLUE}[INFO]${NC} $1"; }
+log_success() { echo -e "${GREEN}[SUCCESS]${NC} $1"; }
+log_warning() { echo -e "${YELLOW}[WARNING]${NC} $1"; }
+log_error() { echo -e "${RED}[ERROR]${NC} $1"; }
+log_step() { echo -e "${PURPLE}[STEP]${NC} $1"; }
+
+# Verifica se comando existe
+command_exists() { command -v "$1" >/dev/null 2>&1; }
+
+
+# Menu interativo usando dialog
+interactive_menu() {
+    # options removido, não utilizado
+    local choice
+    # Menu com apenas uma coluna, sem descrições
+    choice=$(dialog --clear --stdout \
+        --title "MERCADO Android Build Tool" \
+        --menu "Selecione uma opção (ESC para sair):" 16 40 7 \
+            "Build de desenvolvimento (debug)" "" \
+            "Build de produção (release)" "" \
+            "Build e instalar no dispositivo conectado" "" \
+            "Apenas sincronizar arquivos web" "" \
+            "Limpar projeto Android" "" \
+            "Voltar ao menu principal" "" \
+            "Sair" "")
+    local status=$?
+    if [ $status -eq 1 ] || [ "$choice" = "Sair" ]; then
+        log_info "Saindo..."
+        clear
+        exit 0
+    fi
+    case "$choice" in
+        "Build de desenvolvimento (debug)") build_android_debug ;;
+        "Build de produção (release)") build_android_release ;;
+        "Build e instalar no dispositivo conectado") install_on_device ;;
+        "Apenas sincronizar arquivos web") build_web; sync_capacitor ;;
+        "Limpar projeto Android") clean_project ;;
+        "Voltar ao menu principal") exec "$PWD/bin/app" ;;
+        *) log_error "Opção inválida." ;;
+    esac
+    local status=$?
+    if [ $status -eq 1 ] || [ "$choice" = "exit" ]; then
+        log_info "Saindo..."
+        clear
+        exit 0
+    fi
+    case $choice in
+        debug) build_android_debug ;;
+        release) build_android_release ;;
+        install) install_on_device ;;
+        sync) build_web; sync_capacitor ;;
+        clean) clean_project ;;
+        *) log_error "Opção inválida." ;;
+    esac
+}
+
+
+# Menu simples removido, pois dialog é usado
+
+
+# Importa funções dos módulos
+source "$(dirname "$0")/android_modules/build_debug.sh"
+source "$(dirname "$0")/android_modules/build_release.sh"
+source "$(dirname "$0")/android_modules/install_device.sh"
+source "$(dirname "$0")/android_modules/sync_web.sh"
+source "$(dirname "$0")/android_modules/clean_android.sh"
+
+
+# Suporte ao modo verbose
+VERBOSE=false
+for arg in "$@"; do
+    if [[ "$arg" == "--verbose" ]]; then
+        VERBOSE=true
+    fi
+done
+
+
+# Funções de log adaptadas para verbose
+log_info_verbose() { $VERBOSE && echo -e "${BLUE}[INFO]${NC} $1"; }
+log_step_verbose() { $VERBOSE && echo -e "${PURPLE}[STEP]${NC} $1"; }
+
+# Tratamento de erros global
+trap 'log_error "Ocorreu um erro inesperado. Saindo..."; exit 1' ERR
+
+main() {
+    if [ ! -f "package.json" ] || [ ! -f "capacitor.config.ts" ]; then
+        log_error "Este script deve ser executado na raiz do projeto MERCADO."
+        exit 1
+    fi
+
+    # Verifica se a plataforma android está presente
+    if [ ! -d "android" ]; then
+        log_step "Plataforma Android não encontrada. Adicionando..."
+        npx cap add android
+        log_success "Plataforma Android adicionada."
+    fi
+    if [ $# -ge 1 ] && [[ "$1" != "--verbose" ]]; then
+        case "$1" in
+            debug) build_android_debug ;;
+            release) build_android_release ;;
+            install) install_on_device ;;
+            sync) build_web; sync_capacitor ;;
+            clean) clean_project ;;
+            *) exit 1 ;;
+        esac
+    else
+        while true; do
+            interactive_menu
+        done
+    fi
+}
+
+emulator="$HOME/Android/Sdk/emulator/emulator"
+avds=$(ANDROID_AVD_HOME="$HOME/.android/avd" "$emulator" -list-avds | grep -v '^$')
+echo "[DEBUG] Saída do comando de AVDs:"
+echo "$avds"
+if [ -z "$avds" ]; then
+    echo "Nenhum AVD configurado."
+    echo "[DEBUG] Verifique se o comando acima mostra algum nome de AVD."
+    echo "[DEBUG] Execute manualmente: ANDROID_AVD_HOME=\"$HOME/.android/avd\" $emulator -list-avds"
+    exit 1
+else
+    echo "AVDs disponíveis:"
+    while IFS= read -r avd; do
+        [ -n "$avd" ] && echo "  - $avd"
+    done <<< "$avds"
+fi
+
+main "$@"
+
+    # Função build_android removida, não utilizada

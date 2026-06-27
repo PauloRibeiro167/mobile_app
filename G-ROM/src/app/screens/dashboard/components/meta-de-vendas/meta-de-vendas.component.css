@@ -1,0 +1,166 @@
+@property --meta-reveal-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+.meta-shell-compact {
+  animation: meta-shell-in 320ms ease-out;
+}
+
+.meta-donut-button {
+  transition:
+    transform 260ms ease,
+    filter 260ms ease,
+    opacity 220ms ease;
+}
+
+.meta-donut-button:hover {
+  transform: translateY(-1px) scale(1.02);
+  filter: brightness(1.04);
+}
+
+.meta-donut-button:active {
+  transform: scale(0.98);
+}
+
+.meta-donut-ring {
+  --meta-reveal-angle: 0deg;
+  animation: meta-donut-reveal 1100ms cubic-bezier(0.2, 0.9, 0.25, 1) forwards;
+  mask: conic-gradient(
+    from -90deg,
+    #000 0deg var(--meta-reveal-angle),
+    transparent calc(var(--meta-reveal-angle) + 0.5deg) 360deg
+  );
+  -webkit-mask: conic-gradient(
+    from -90deg,
+    #000 0deg var(--meta-reveal-angle),
+    transparent calc(var(--meta-reveal-angle) + 0.5deg) 360deg
+  );
+}
+
+.meta-donut-core {
+  animation: meta-core-in 500ms 180ms ease-out both;
+}
+
+.meta-donut-center {
+  animation: meta-center-in 420ms 260ms ease-out both;
+}
+
+.meta-card-enter {
+  animation: meta-card-in 320ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.meta-details {
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-12px) scaleY(0.96);
+  transform-origin: top center;
+  transition:
+    max-height 420ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    opacity 300ms ease,
+    transform 360ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  pointer-events: none;
+}
+
+.meta-details-expanded {
+  max-height: 560px;
+  opacity: 1;
+  transform: translateY(0) scaleY(1);
+  pointer-events: auto;
+}
+
+.meta-fade-item {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.meta-details-expanded .meta-fade-item {
+  animation: meta-fade-up 380ms ease-out both;
+}
+
+.meta-details-expanded .meta-delay-1 {
+  animation-delay: 80ms;
+}
+
+.meta-details-expanded .meta-delay-2 {
+  animation-delay: 150ms;
+}
+
+.meta-details-expanded .meta-delay-3 {
+  animation-delay: 220ms;
+}
+
+@keyframes meta-donut-reveal {
+  from {
+    --meta-reveal-angle: 0deg;
+    transform: rotate(-140deg) scale(0.9);
+    opacity: 0.2;
+  }
+
+  to {
+    --meta-reveal-angle: 360deg;
+    transform: rotate(0deg) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes meta-core-in {
+  from {
+    opacity: 0;
+    transform: scale(0.82);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes meta-center-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes meta-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes meta-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes meta-shell-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

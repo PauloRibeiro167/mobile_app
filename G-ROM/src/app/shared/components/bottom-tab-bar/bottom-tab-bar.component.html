@@ -1,0 +1,44 @@
+<div
+  aria-hidden="true"
+  class="pointer-events-none fixed inset-x-0 bottom-[calc(64px+var(--app-safe-area-bottom-effective,env(safe-area-inset-bottom)))] z-[99] h-[18px] bg-[linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,0.06)_50%,rgba(0,0,0,0.16))]"
+></div>
+
+<ion-tab-bar class="safe-area-bottom safe-area-horizontal fixed inset-x-0 bottom-0 z-[100] h-16 justify-around gap-1.5 overflow-visible rounded-t-[var(--app-radius-xl)] border-t border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.015)),linear-gradient(180deg,rgba(12,21,28,0.98),rgba(10,16,23,0.98))] px-2 pt-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.04),0_-6px_20px_rgba(7,12,18,0.42)] [padding-bottom:var(--app-safe-area-bottom-effective,env(safe-area-inset-bottom))]">
+  <ion-tab-button
+    *ngFor="let tab of tabs; trackBy: trackByTab"
+    class="relative flex h-full min-w-0 flex-1 items-center justify-center overflow-hidden bg-transparent p-0 transition-all duration-200"
+    [tab]="tab.tab"
+    [attr.aria-label]="tab.label"
+    [attr.aria-current]="isActiveTab(tab.routerLink) ? 'page' : null"
+    (click)="handleTabClick($event, tab)"
+  >
+    <div
+      class="relative flex items-center justify-center transition-all duration-200"
+      [ngClass]="
+        isActiveTab(tab.routerLink)
+          ? 'h-11 w-[3.65rem] rounded-[1.15rem] border border-[rgba(var(--app-color-primary-rgb),0.26)] bg-[linear-gradient(180deg,rgba(var(--app-color-primary-rgb),0.95),rgba(var(--app-color-primary-rgb),0.78))] shadow-[0_10px_22px_rgba(var(--app-color-primary-rgb),0.24),inset_0_1px_0_rgba(255,255,255,0.18)]'
+          : 'h-10 w-10 rounded-2xl'
+      "
+    >
+        <i
+          class="bi transition-all duration-200"
+          [class.scale-105]="isActiveTab(tab.routerLink)"
+          [class.text-[1.15rem]]="!isActiveTab(tab.routerLink)"
+          [class.min-[360px]:text-[1.2rem]]="!isActiveTab(tab.routerLink)"
+          [class.text-[1.2rem]]="isActiveTab(tab.routerLink)"
+          [class.min-[360px]:text-[1.3rem]]="isActiveTab(tab.routerLink)"
+          [class.text-gray-400]="isActiveTab(tab.routerLink)"
+          [class.drop-shadow-[0_0_8px_rgba(255,255,255,0.14)]]="isActiveTab(tab.routerLink)"
+          [class.text-zinc-400]="!isActiveTab(tab.routerLink)"
+          [ngClass]="tab.icon"
+        ></i>
+    </div>
+  </ion-tab-button>
+</ion-tab-bar>
+
+<app-open-register-modal
+  [isOpen]="isOpenRegisterModalOpen"
+  [origem]="modalOrigin"
+  (closed)="handleOpenRegisterClosed()"
+  (opened)="handleRegisterOpened()"
+></app-open-register-modal>

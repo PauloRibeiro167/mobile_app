@@ -1,0 +1,153 @@
+
+:root {
+  font-family: "Be Vietnam Pro", sans-serif;
+  --app-font-family-display: "Plus Jakarta Sans", sans-serif;
+  --app-font-family-body: "Be Vietnam Pro", sans-serif;
+
+  --primary: #66df75;
+  --primary-contrast: #00390f;
+  --primary-light: rgba(102, 223, 117, 0.2);
+  --primary-medium: #28a745;
+  --primary-dark: #00531a;
+
+  --secondary: #ffb77d;
+  --secondary-contrast: #4d2600;
+  --secondary-light: rgba(255, 183, 125, 0.2);
+  --secondary-medium: #fd8b00;
+  --secondary-dark: #6e3900;
+
+  --background: #0d141a;
+  --card-shadow: 0 10px 24px rgba(7, 12, 18, 0.45);
+
+  --app-color-primary: #66df75;
+  --app-color-primary-light: #83fc8e;
+  --app-color-primary-medium: #28a745;
+  --app-color-primary-darker: #00531a;
+  --app-color-primary-contrast: #00390f;
+
+  --app-color-secondary: #ffb77d;
+  --app-color-secondary-light: #ffdcc3;
+  --app-color-secondary-medium: #fd8b00;
+  --app-color-secondary-darker: #6e3900;
+  --app-color-secondary-contrast: #4d2600;
+
+  --app-color-accent: #c5c7c8;
+  --app-color-accent-light: #e1e3e4;
+  --app-color-accent-medium: #909293;
+  --app-color-accent-darker: #454748;
+
+  --app-color-white: #dce3ec;
+  --app-color-black: #0d141a;
+  --app-color-on-surface: #dce3ec;
+  --app-color-on-surface-variant: #bdcab9;
+  --app-color-outline: #879484;
+  --app-color-outline-variant: #3e4a3c;
+
+  --fixed-black: #000000;
+  --fixed-white: #ffffff;
+
+  --app-color-gray-50: #f3f6f7;
+  --app-color-gray-light: #192027;
+  --app-color-gray-medium: #2f363c;
+  --app-color-gray-dark: #333a41;
+  --app-color-gray-100: #080f15;
+  --app-color-gray-200: #151c22;
+  --app-color-gray-300: #192027;
+  --app-color-gray-400: #242b31;
+  --app-color-gray-500: #2f363c;
+  --app-color-gray-600: #333a41;
+  --app-color-gray-700: #879484;
+  --app-color-gray-800: #bdcab9;
+  --app-color-gray-900: #dce3ec;
+
+  --app-color-success: #66df75;
+  --app-color-success-light: #83fc8e;
+  --app-color-warning: #ffb77d;
+  --app-color-warning-light: #ffdcc3;
+  --app-color-danger: #ffb4ab;
+  --app-color-danger-light: #ffdad6;
+  --app-color-info: #c5c7c8;
+  --app-color-info-light: #e1e3e4;
+
+  --app-color-background: #0d141a;
+  --app-color-surface: #192027;
+  --app-color-surface-variant: #2f363c;
+  --app-color-neutral: #bdcab9;
+  --app-color-dark: #0d141a;
+  --app-color-border: #3e4a3c;
+  --app-color-divider: #3e4a3c;
+  --app-color-background-content: #0d141a;
+
+  --app-color-primary-rgb: 102, 223, 117;
+  --app-color-secondary-rgb: 255, 183, 125;
+  --app-color-accent-rgb: 197, 199, 200;
+  --app-color-success-rgb: 102, 223, 117;
+  --app-color-warning-rgb: 255, 183, 125;
+  --app-color-danger-rgb: 255, 180, 171;
+  --app-color-info-rgb: 197, 199, 200;
+  --app-color-gray-100-rgb: 8, 15, 21;
+  --app-color-gray-200-rgb: 21, 28, 34;
+  --app-color-gray-300-rgb: 25, 32, 39;
+  --app-color-gray-400-rgb: 36, 43, 49;
+  --app-color-gray-500-rgb: 47, 54, 60;
+  --app-color-gray-600-rgb: 51, 58, 65;
+  --app-color-gray-700-rgb: 135, 148, 132;
+  --app-color-gray-800-rgb: 189, 202, 185;
+  --app-color-gray-900-rgb: 220, 227, 236;
+
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.5rem;
+  --font-size-2xl: 2rem;
+  --font-size-3xl: 2.25rem;
+  --font-size-4xl: 2.5rem;
+  --app-type-display-lg: 32px;
+  --app-type-headline-md: 24px;
+  --app-type-title-sm: 18px;
+  --app-type-body-md: 16px;
+  --app-type-label-sm: 12px;
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.4;
+  --line-height-relaxed: 1.6;
+  --line-height-loose: 1.8;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --app-radius-sm: var(--radius-sm);
+  --app-radius-md: var(--radius-md);
+  --app-radius-lg: var(--radius-lg);
+  --app-radius-xl: var(--radius-xl);
+  --app-radius-full: 9999px;
+
+  --app-glass-bg: rgba(25, 32, 39, 0.72);
+  --app-glass-bg-strong: rgba(21, 28, 34, 0.84);
+  --app-glass-bg-subtle: rgba(25, 32, 39, 0.42);
+  --app-glass-border: rgba(220, 227, 236, 0.08);
+  --app-glass-border-strong: rgba(220, 227, 236, 0.14);
+  --app-glass-shadow: 0 18px 40px rgba(7, 12, 18, 0.24);
+  --app-glass-shadow-strong: 0 24px 52px rgba(7, 12, 18, 0.34);
+  --app-glass-blur: 18px;
+  --app-glass-blur-strong: 24px;
+  --app-glass-saturate: 160%;
+
+  --offset-top: 0px;
+  --offset-bottom: 0px;
+}
+
+.dark {
+  --ion-background-color: var(--app-color-background);
+  --ion-background-color-rgb: 13, 20, 26;
+  --ion-text-color: var(--app-color-on-surface);
+  --ion-text-color-rgb: 220, 227, 236;
+}

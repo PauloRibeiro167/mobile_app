@@ -1,0 +1,36 @@
+@charset "UTF-8";
+
+/**
+ * ENTRYPOINT DE ESTILOS GLOBAIS
+ *
+ * O global.css centraliza apenas os imports. As regras ficam distribuídas em
+ * módulos de base, utilities e components.
+ */
+
+@import url("https://fonts.bunny.net/css?family=plus-jakarta-sans:400,600,700,800|be-vietnam-pro:400,500,600,700");
+@import "./app/assets/stylesheets/base/theme-tokens.css";
+@import "./app/assets/stylesheets/base/theme-ionic.css";
+@import "./app/assets/stylesheets/base/typography.css";
+
+@import "./app/assets/stylesheets/utilities/safe-area-utils.css";
+@import "./app/assets/stylesheets/utilities/colors.css";
+@import "./app/assets/stylesheets/utilities/spacing-utils.css";
+@import "./app/assets/stylesheets/utilities/rounded.css";
+@import "./app/assets/stylesheets/utilities/glass.css";
+@import "./app/assets/stylesheets/utilities/scrollbar.css";
+@import "./app/assets/stylesheets/utilities/layout.css";
+
+@import "./app/assets/stylesheets/components/buttons.css";
+@import "./app/assets/stylesheets/components/cards.css";
+@import "./app/assets/stylesheets/components/checkbox.css";
+@import "./app/assets/stylesheets/components/forms.css";
+@import "./app/assets/stylesheets/components/ionic-components.css";
+@import "./app/assets/stylesheets/components/ionic-overrides.css";
+@import "./app/assets/stylesheets/components/menu.css";
+@import "./app/assets/stylesheets/components/modal.css";
+@import "./app/assets/stylesheets/components/radio.css";
+@import "./app/assets/stylesheets/components/user-info.css";
+@import "./app/assets/stylesheets/components/feedback.css";
+@import "tailwindcss";
+
+@source "./**/*.{html,ts}";

@@ -1,0 +1,215 @@
+#!/bin/bash
+
+# Script para testes unitários
+# Uso: bin/test [nome-do-teste]
+# Se nenhum nome for passado, executa todos os testes
+
+# --- Cores ANSI ---
+RED='\033[31m'
+GREEN='\033[32m'
+YELLOW='\033[33m'
+BLUE='\033[34m'
+MAGENTA='\033[35m'
+CYAN='\033[36m'
+WHITE='\033[37m'
+BOLD='\033[1m'
+NC='\033[0m' # No Color
+
+# --- Configuração ---
+LOG_DIR="logs"
+TEST_STATUS_FILE="$LOG_DIR/test-status.tmp"
+mkdir -p $LOG_DIR
+
+# --- Array para lista de testes ---
+TEST_LIST=()
+
+# --- Funções ---
+function run_test() {
+  local test_name="$1"
+  local test_command="$2"
+
+  echo -e "${CYAN}🧪${NC} ${BOLD}Executando:${NC} ${BLUE}$test_name${NC}"
+  echo -e "${BLUE}============================================${NC}"
+
+  # Executa o comando e captura tanto stdout quanto stderr
+  local output
+  output=$(eval "$test_command" 2>&1)
+
+  local exit_code=$?
+
+  # Salva o output completo no arquivo de status
+  echo "$output" > "$TEST_STATUS_FILE"
+  echo "EXIT_CODE:$exit_code" >> "$TEST_STATUS_FILE"
+  echo "TEST_NAME:$test_name" >> "$TEST_STATUS_FILE"
+
+  # Mostra o output no terminal
+  echo "$output"
+
+  echo -e "${BLUE}============================================${NC}"
+
+  if [ $exit_code -eq 0 ]; then
+    echo -e "${GREEN}✅ $test_name - SUCESSO${NC}"
+  else
+    echo -e "${RED}❌ $test_name - FALHA${NC}"
+  fi
+
+  echo ""
+  return $exit_code
+}
+
+function load_test_list() {
+  TEST_LIST=()
+  local test_files
+  test_files=$(find src/app -name "*.spec.ts" -type f | sort)
+  while IFS= read -r file; do
+    local test_name
+    test_name=$(echo "$file" | sed 's|src/app/||' | sed 's|\.spec\.ts||')
+    TEST_LIST+=("$test_name")
+  done <<< "$test_files"
+}
+
+function list_tests() {
+  echo -e "${CYAN}📋${NC} ${BOLD}Testes Unitários Disponíveis${NC}"
+  echo -e "${BLUE}==================================${NC}"
+  echo ""
+
+  if [ ${#TEST_LIST[@]} -eq 0 ]; then
+    echo -e "${RED}❌ Nenhum arquivo de teste encontrado em src/app${NC}"
+    return 1
+  fi
+
+  echo -e "${YELLOW}Selecione um teste para executar:${NC}"
+  echo ""
+
+  for i in "${!TEST_LIST[@]}"; do
+    printf "${GREEN}%2d)${NC} ${WHITE}%s${NC}\n" $((i+1)) "${TEST_LIST[$i]}"
+  done
+}
+
+function show_status() {
+  if [ ! -f "$TEST_STATUS_FILE" ]; then
+    echo -e "${RED}❌ Nenhum status de teste encontrado${NC}"
+    echo -e "${YELLOW}Execute um teste primeiro para gerar o status${NC}"
+    return 1
+  fi
+
+  echo -e "${CYAN}📊${NC} ${BOLD}Status do Último Teste${NC}"
+  echo -e "${BLUE}==========================${NC}"
+
+  # Lê o arquivo de status
+  local exit_code
+  local test_name
+  local output
+
+  while IFS= read -r line; do
+    if [[ $line == EXIT_CODE:* ]]; then
+      exit_code="${line#EXIT_CODE:}"
+    elif [[ $line == TEST_NAME:* ]]; then
+      test_name="${line#TEST_NAME:}"
+    else
+      output="$output$line\n"
+    fi
+  done < "$TEST_STATUS_FILE"
+
+  echo -e "${BOLD}Teste:${NC} ${BLUE}$test_name${NC}"
+  echo -e "${BOLD}Status:${NC} $([ "$exit_code" -eq 0 ] && echo -e "${GREEN}✅ SUCESSO${NC}" || echo -e "${RED}❌ FALHA${NC}")"
+  echo -e "${BOLD}Código de saída:${NC} ${YELLOW}$exit_code${NC}"
+  echo ""
+  echo -e "${BOLD}Output completo:${NC}"
+  echo "$output"
+}
+
+function show_help() {
+  echo -e "${CYAN}🧪${NC} ${BOLD}Script de Testes Unitários - APK Modelo SITFOR${NC}"
+  echo -e "${BLUE}==================================================${NC}"
+  echo ""
+  echo -e "${BOLD}DESCRIÇÃO:${NC}"
+  echo -e "  Executa testes unitários do projeto Ionic/Angular"
+  echo ""
+  echo -e "${BOLD}USO:${NC}"
+  echo -e "  ${GREEN}./bin/test${NC} [opção] [argumento]"
+  echo ""
+  echo -e "${BOLD}OPÇÕES:${NC}"
+  echo -e "  ${CYAN}--help, -h${NC}          Mostra esta ajuda"
+  echo -e "  ${CYAN}--list, -l${NC}          Lista todos os testes disponíveis"
+  echo -e "  ${CYAN}status${NC}              Mostra status do último teste executado"
+  echo -e "  ${CYAN}<número>${NC}            Executa teste específico (use --list para ver números)"
+  echo -e "  ${CYAN}<nome>${NC}              Executa teste por nome (ex: app.component)"
+  echo -e "  ${CYAN}(sem argumentos)${NC}    Executa todos os testes com code coverage"
+  echo ""
+  echo -e "${BOLD}EXEMPLOS:${NC}"
+  echo -e "  ${GREEN}./bin/test --help${NC}          # Mostra esta ajuda"
+  echo -e "  ${GREEN}./bin/test --list${NC}          # Lista todos os testes disponíveis"
+  echo -e "  ${GREEN}./bin/test 1${NC}               # Executa o primeiro teste da lista"
+  echo -e "  ${GREEN}./bin/test app.component${NC}   # Executa teste do componente app"
+  echo -e "  ${GREEN}./bin/test status${NC}          # Mostra status do último teste"
+  echo -e "  ${GREEN}./bin/test${NC}                 # Executa todos os testes"
+  echo ""
+}
+
+# --- Execução direta ---
+echo -e "${CYAN}🧪${NC} ${BOLD}Iniciando testes unitários...${NC}"
+echo ""
+
+# Configurações para ambiente de teste
+export NODE_ENV=test
+export IONIC_ENV=test
+
+# Verifica se foi passado um argumento
+if [ $# -gt 0 ]; then
+  case "$1" in
+    "--help"|"-h")
+      show_help
+      exit $?
+      ;;
+    "--list"|"-l")
+      load_test_list
+      list_tests
+      exit $?
+      ;;
+    "status")
+      show_status
+      exit $?
+      ;;
+    *)
+      if [[ "$1" =~ ^[0-9]+$ ]]; then
+        # Trata como índice numérico
+        load_test_list
+        index=$(( $1 - 1 ))
+        if [ $index -lt 0 ] || [ $index -ge ${#TEST_LIST[@]} ]; then
+          echo -e "${RED}❌ Índice inválido: $1${NC}"
+          echo -e "${YELLOW}Use --list para ver os testes disponíveis${NC}"
+          exit 1
+        fi
+        TEST_NAME="${TEST_LIST[$index]}"
+        TEST_FILE="src/app/${TEST_NAME}.spec.ts"
+        echo -e "${MAGENTA}🎯${NC} ${BOLD}Executando teste específico:${NC} ${BLUE}$TEST_FILE${NC}"
+        run_test "Teste Unitário: ${TEST_NAME}" "ng test --watch=false --browsers=ChromeHeadlessCI --include=\"$TEST_FILE\""
+      else
+        # Trata como nome de teste
+        TEST_NAME="$1"
+
+        # Remove a extensão .spec.ts se foi passada
+        TEST_NAME="${TEST_NAME%.spec.ts}"
+
+        # Procura pelo arquivo de teste
+        TEST_FILE=$(find src/app -name "${TEST_NAME}.spec.ts" -type f | head -1)
+
+        if [ -z "$TEST_FILE" ]; then
+          echo -e "${RED}❌ Teste '${TEST_NAME}.spec.ts' não encontrado em src/app${NC}"
+          echo ""
+          echo -e "${YELLOW}Testes disponíveis:${NC}"
+          find src/app -name "*.spec.ts" -type f | sed 's|src/app/||' | sed 's|\.spec\.ts||' | sort
+          exit 1
+        fi
+
+        echo -e "${MAGENTA}🎯${NC} ${BOLD}Executando teste específico:${NC} ${BLUE}$TEST_FILE${NC}"
+        run_test "Teste Unitário: ${TEST_NAME}" "ng test --watch=false --browsers=ChromeHeadlessCI --include=\"$TEST_FILE\""
+      fi
+      ;;
+  esac
+else
+  # Executa todos os testes unitários encontrados
+  echo -e "${MAGENTA}🎯${NC} ${BOLD}Executando todos os testes unitários...${NC}"
+  run_test "Testes Unitários (Todos)" "ng test --watch=false --browsers=ChromeHeadlessCI --code-coverage"
+fi

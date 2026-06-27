@@ -1,0 +1,41 @@
+<ion-app>
+  <app-menu *ngIf="showAuthenticatedChrome"></app-menu>
+
+  <div
+    [class]="appShellClass"
+    id="main-content"
+  >
+    <app-header *ngIf="showAuthenticatedChrome" [title]="headerTitle" [icon]="headerIcon"></app-header>
+      
+    
+    <ion-content>
+      <ion-refresher slot="fixed" (ionRefresh)="suaFuncaoDeAtualizar($event)">
+        <ion-refresher-content
+          [pullingIcon]="''"
+          refreshingSpinner="null"
+        >
+          <div class="flex min-h-16 flex-col items-center justify-center gap-2 pt-2 text-center">
+            <p class="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-zinc-400">
+              {{ isRefreshing ? 'Atualizando painel' : 'Puxe para atualizar' }}
+            </p>
+
+            <l-line-wobble
+              [attr.size]="isRefreshing ? '72' : '56'"
+              [attr.stroke]="'4'"
+              [attr.bg-opacity]="'.12'"
+              [attr.speed]="isRefreshing ? '1.2' : '1'"
+              [attr.color]="'rgb(var(--app-color-primary-rgb))'"
+            ></l-line-wobble>
+          </div>
+        </ion-refresher-content>
+      </ion-refresher>
+    </ion-content>
+        
+      </ion-refresher>
+    <main class="app-main">
+      <ion-router-outlet [class.safe-area-content]="showAuthenticatedChrome"></ion-router-outlet>
+    </main>
+
+    <app-bottom-tab-bar *ngIf="showAuthenticatedChrome"></app-bottom-tab-bar>
+  </div>
+</ion-app>

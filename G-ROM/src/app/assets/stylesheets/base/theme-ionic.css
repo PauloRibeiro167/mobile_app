@@ -1,0 +1,110 @@
+
+:root {
+  --ion-color-primary: var(--app-color-primary);
+  --ion-color-primary-rgb: var(--app-color-primary-rgb);
+  --ion-color-primary-contrast: var(--primary-contrast);
+  --ion-color-primary-contrast-rgb: 0, 57, 15;
+  --ion-color-primary-shade: var(--app-color-primary-darker);
+  --ion-color-primary-tint: var(--app-color-primary-light);
+
+  --ion-color-secondary: var(--app-color-secondary);
+  --ion-color-secondary-rgb: var(--app-color-secondary-rgb);
+  --ion-color-secondary-contrast: var(--secondary-contrast);
+  --ion-color-secondary-contrast-rgb: 77, 38, 0;
+  --ion-color-secondary-shade: var(--app-color-secondary-darker);
+  --ion-color-secondary-tint: var(--app-color-secondary-light);
+
+  --ion-color-tertiary: var(--app-color-accent);
+  --ion-color-tertiary-rgb: var(--app-color-accent-rgb);
+  --ion-color-tertiary-contrast: var(--app-color-black);
+  --ion-color-tertiary-contrast-rgb: 13, 20, 26;
+  --ion-color-tertiary-shade: var(--app-color-accent-darker);
+  --ion-color-tertiary-tint: var(--app-color-accent-light);
+
+  --ion-color-success: var(--app-color-success);
+  --ion-color-warning: var(--app-color-warning);
+  --ion-color-danger: var(--app-color-danger);
+  --ion-color-dark: var(--app-color-black);
+  --ion-color-medium: var(--app-color-gray-medium);
+  --ion-color-light: var(--app-color-gray-light);
+
+  --ion-font-family: var(--app-font-family-body);
+  --ion-background-color: var(--app-color-background);
+  --ion-background-color-rgb: 13, 20, 26;
+  --ion-text-color: var(--app-color-on-surface);
+  --ion-text-color-rgb: 220, 227, 236;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ion-background-color: var(--app-color-background);
+    --ion-background-color-rgb: 13, 20, 26;
+    --ion-text-color: var(--app-color-on-surface);
+    --ion-text-color-rgb: 220, 227, 236;
+  }
+}
+
+* {
+  transition:
+    color 0.3s ease,
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+ion-content {
+  --background: var(--app-color-background-content);
+  --color: var(--app-color-on-surface);
+  --min-height: 100vh;
+  --padding-top: 0px !important;
+  --padding-bottom: 0px !important;
+  position: relative;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+ion-page,
+.ion-page,
+ion-app,
+ion-router-outlet {
+  background: var(--app-color-background-content);
+  color: var(--app-color-on-surface);
+}
+
+ion-split-pane {
+  --background: var(--app-color-background-content);
+}
+
+ion-header,
+ion-toolbar,
+ion-footer,
+ion-card,
+ion-item,
+ion-button,
+ion-list,
+ion-modal,
+ion-alert {
+  transition:
+    color 0.3s ease,
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+#background-content {
+  position: absolute;
+  top: calc(var(--ion-safe-area-top, 0px) * -1);
+  right: 0;
+  bottom: calc(var(--ion-safe-area-bottom, 0px) * -1);
+  left: 0;
+  background: var(--app-color-background-content) !important;
+}
+
+ion-content .scroll-content {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+ion-tab-bar {
+  padding-bottom: var(--app-safe-area-bottom-effective, env(safe-area-inset-bottom, 0px));
+}

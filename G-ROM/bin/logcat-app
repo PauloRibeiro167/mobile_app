@@ -1,0 +1,100 @@
+#!/bin/bash
+# logcat-app: filtro enxuto de logs Android para o app Capacitor/Ionic e porta de live-reload.
+#
+# Objetivo: reduzir ruído exibindo somente linhas relevantes (appId, WebView, erros de rede, porta).
+#
+# Uso rápido:
+#   ./bin/logcat-app              # stream padrão
+#   ./bin/logcat-app --dump       # mostra snapshot (últimos N) e sai
+#   ./bin/logcat-app net          # só rede
+#   ./bin/logcat-app js           # só console JS
+#   DEV_LIVERELOAD_PORT=8200 ./bin/logcat-app
+#   APP_ID=meu.app ./bin/logcat-app
+#
+# Variáveis honradas:
+#   APP_ID                (override manual) 
+#   DEV_LIVERELOAD_PORT   (porta; default 8100)
+#   LINES                 (para --dump; default 300)
+#   DEVICE_ID             (se múltiplos devices, informe)
+
+set -euo pipefail
+
+PORT="${DEV_LIVERELOAD_PORT:-8100}"
+LINES="${LINES:-300}"
+MODE="all"
+DUMP=0
+for arg in "$@"; do
+  case "$arg" in
+    net) MODE="net" ;;
+    js) MODE="js" ;;
+    errs|err) MODE="errs" ;;
+    all) MODE="all" ;;
+    --dump) DUMP=1 ;;
+    -h|--help)
+      sed -n '1,55p' "$0" | grep -E '^#' | sed 's/^# \{0,1\}//'
+      exit 0
+      ;;
+  esac
+done
+
+# Detectar APP_ID se não fornecido
+APP_ID="${APP_ID:-}"
+if [[ -z "$APP_ID" ]]; then
+  # tentar capacitor.config.* (ts ou json)
+  if grep -R "appId" -n ./capacitor.config.* >/dev/null 2>&1; then
+    # Usa awk para evitar escapismos complicados com sed
+    APP_ID=$(grep -R "appId" -n ./capacitor.config.* | head -1 | awk -F'appId' '{print $2}' | awk -F'"' '{for(i=1;i<=NF;i++){if($i ~ /\./){print $i; exit}}}')
+  fi
+fi
+APP_ID=${APP_ID:-sefin.apkmodelo}
+
+# Selecionar device (se múltiplos, user precisa definir DEVICE_ID)
+if command -v adb >/dev/null 2>&1; then
+  if [[ -z "${DEVICE_ID:-}" ]]; then
+    CNT=$(adb devices | awk 'NR>1 && /device$/' | wc -l | awk '{print $1}')
+    if [[ "$CNT" -gt 1 ]]; then
+      echo "[AVISO] Vários devices detectados. Defina DEVICE_ID=<serial> antes de rodar." >&2
+      adb devices
+      exit 1
+    fi
+    DEVICE_ID=$(adb devices | awk 'NR>1 && /device$/{print $1; exit}')
+  fi
+else
+  echo "[ERRO] adb não encontrado no PATH." >&2
+  exit 1
+fi
+
+if [[ -z "$DEVICE_ID" ]]; then
+  echo "[ERRO] Nenhum dispositivo adb 'device' detectado." >&2
+  exit 1
+fi
+
+echo "[INFO] APP_ID=$APP_ID PORT=$PORT DEVICE_ID=$DEVICE_ID MODE=$MODE DUMP=$DUMP" >&2
+
+# Construir padrão de filtro
+BASE_PAT="${PORT}|${APP_ID}|Capacitor|CapacitorConsole|chromium|WebView|ERR_CONNECTION|cr_Network|cr_net|CapacitorHttp"
+case "$MODE" in
+  net)  GREP_PAT="${PORT}|ERR_CONNECTION|chromium|cr_Network|cr_net" ;;
+  js)   GREP_PAT="CapacitorConsole" ;;
+  errs) GREP_PAT="ERR_|Exception|AndroidRuntime" ;;
+  all)  GREP_PAT="$BASE_PAT" ;;
+esac
+
+# Função de cor
+colorize() {
+  sed -E \
+    -e "s/(ERR_[A-Z_]+)/\x1b[31m\1\x1b[0m/g" \
+    -e "s/(Exception)/\x1b[35m\1\x1b[0m/g" \
+    -e "s/(${APP_ID})/\x1b[32m\1\x1b[0m/g" \
+    -e "s/(:${PORT})/\x1b[36m\1\x1b[0m/g" \
+    -e "s/(Capacitor(Console)?)/\x1b[33m\1\x1b[0m/g"
+}
+
+if [[ "$DUMP" == "1" ]]; then
+  echo "[INFO] Dump filtrado (últimos $LINES):" >&2
+  adb -s "$DEVICE_ID" logcat -d -v time | grep -Ei "$GREP_PAT" | tail -n "$LINES" | colorize
+  exit 0
+fi
+
+echo "[INFO] Streaming (Ctrl+C para sair). Use --dump para snapshot." >&2
+adb -s "$DEVICE_ID" logcat -v time | grep -Ei "$GREP_PAT" | colorize

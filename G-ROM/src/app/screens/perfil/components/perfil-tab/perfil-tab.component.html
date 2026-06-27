@@ -1,0 +1,163 @@
+@if (userProfile) {
+<section class="hero-section">
+  <!-- Removido o aria-hidden="true" do container principal -->
+  <div class="avatar-container">
+    @if (userProfile.avatarUrl) {
+    <img
+      [ngSrc]="userProfile.avatarUrl"
+      width="120"
+      height="120"
+      alt="Foto de perfil de {{ userProfile.nome }}"
+      priority
+    />
+    } @else {
+    <div class="avatar-placeholder" aria-hidden="true">
+      <i class="bi bi-person"></i>
+    </div>
+    }
+
+    <!-- Badge de verificação (agora acessível) -->
+    @if (userProfile.isVerificado) {
+    <div
+      class="verified-badge"
+      title="Perfil verificado"
+      aria-label="Perfil verificado"
+    >
+      <i class="bi bi-check" aria-hidden="true"></i>
+    </div>
+    }
+  </div>
+
+  <h2>{{ userProfile.nome }}</h2>
+  <p class="role">{{ userProfile.cargo || "Operador" }}</p>
+
+  <button class="edit-btn" type="button" (click)="editProfile.emit()">
+    <i class="bi bi-pencil" aria-hidden="true"></i>
+    <span>Editar Perfil</span>
+  </button>
+</section>
+
+<section class="section pb-3" aria-label="Informações do colaborador">
+  <header class="section-header pb-2">
+    <h3>Informações</h3>
+  </header>
+
+  <div class="info-grid">
+    <article class="info-card p-3 id">
+      <span class="info-label"><i class="bi bi-person-badge-fill text-gray-500"></i></span>
+      <div class="info-value info-value--id">
+        {{ userProfile.id ? "#" + userProfile.id : "N/A" }}
+      </div>
+    </article>
+
+    <article class="info-card p-3">
+      <span class="info-label">Turno</span>
+      <div class="info-value">{{ userProfile.turno || "Não definido" }}</div>
+    </article>
+
+    <article class="info-card p-3 full">
+      <span class="info-label">Departamento</span>
+      <div class="info-value">
+        {{ userProfile.departamento || "Não informado" }}
+      </div>
+    </article>
+  </div>
+</section>
+
+<section class="metrics-group p-4 mb-20" aria-label="Desempenho e horas">
+  <header class="group-header">
+    <h3>Análise de trabalho</h3>
+    <p>Indicadores e carga semanal</p>
+  </header>
+
+  <section
+    class="section metrics-section p-3"
+    aria-label="Métricas de trabalho"
+  >
+    <header class="section-header mt-2">
+      <h4>Métricas de trabalho</h4>
+      <span class="metric-badge">Últimos 7 dias</span>
+    </header>
+
+    <div
+      class="metrics-chart"
+      role="img"
+      aria-label="Métricas de trabalho em barras"
+    >
+      <div class="metric-row">
+        <span class="metric-label">Precisão</span>
+        <div class="metric-bar">
+          <div class="metric-fill" style="width: 92%"></div>
+        </div>
+        <span class="metric-value">92%</span>
+      </div>
+      <div class="metric-row">
+        <span class="metric-label">Velocidade</span>
+        <div class="metric-bar">
+          <div class="metric-fill" style="width: 85%"></div>
+        </div>
+        <span class="metric-value">85%</span>
+      </div>
+      <div class="metric-row">
+        <span class="metric-label">Colaboração</span>
+        <div class="metric-bar">
+          <div class="metric-fill" style="width: 88%"></div>
+        </div>
+        <span class="metric-value">88%</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section hours-section" aria-label="Horas trabalhadas">
+    <header class="section-header">
+      <h4>Horas trabalhadas</h4>
+      <span class="metric-badge">Semana atual</span>
+    </header>
+
+    <div class="hours-chart" role="img" aria-label="Horas trabalhadas por dia">
+      <div class="hours-bar">
+        <div class="hours-fill" style="height: 72%"></div>
+        <span>Seg</span>
+      </div>
+      <div class="hours-bar">
+        <div class="hours-fill" style="height: 88%"></div>
+        <span>Ter</span>
+      </div>
+      <div class="hours-bar">
+        <div class="hours-fill" style="height: 80%"></div>
+        <span>Qua</span>
+      </div>
+      <div class="hours-bar">
+        <div class="hours-fill" style="height: 64%"></div>
+        <span>Qui</span>
+      </div>
+      <div class="hours-bar">
+        <div class="hours-fill" style="height: 96%"></div>
+        <span>Sex</span>
+      </div>
+      <div class="hours-bar">
+        <div class="hours-fill" style="height: 52%"></div>
+        <span>Sáb</span>
+      </div>
+    </div>
+
+    <div class="hours-summary">
+      <div class="summary-item">
+        <span class="summary-label">Total</span>
+        <span class="summary-value">42h</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">Meta</span>
+        <span class="summary-value">48h</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">Saldo</span>
+        <span class="summary-value positive">-6h</span>
+      </div>
+    </div>
+  </section>
+</section>
+} @else {
+<!-- Opcional: Um skeleton loader ou mensagem de carregamento -->
+<p>Carregando perfil...</p>
+}

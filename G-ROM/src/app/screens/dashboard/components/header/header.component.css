@@ -1,0 +1,100 @@
+.dashboard-header {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(var(--app-color-primary-rgb), 0.14);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02)),
+    linear-gradient(135deg, rgba(13, 19, 24, 0.92), rgba(8, 14, 19, 0.96));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 18px 34px rgba(7, 12, 18, 0.28);
+}
+
+.dashboard-header__glow {
+  position: absolute;
+  top: -3rem;
+  right: -2.25rem;
+  width: 9.5rem;
+  height: 9.5rem;
+  border-radius: 999px;
+  background: rgba(var(--app-color-primary-rgb), 0.18);
+  filter: blur(34px);
+  pointer-events: none;
+}
+
+.dashboard-header__content {
+  position: relative;
+  z-index: 1;
+}
+
+.dashboard-avatar {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 999px;
+  flex: 0 0 auto;
+  background: rgba(var(--app-color-primary-rgb), 0.12);
+  border: 1px solid rgba(var(--app-color-primary-rgb), 0.22);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 8px 18px rgba(7, 12, 18, 0.18);
+}
+
+.dashboard-hero-title {
+  color: var(--app-color-on-surface);
+  font-family: var(--app-font-family-display);
+  font-size: clamp(1.9rem, 7vw, 2.45rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.dashboard-role {
+  opacity: 0.92;
+}
+
+.dashboard-status-chip {
+  flex-wrap: wrap;
+  background: rgba(var(--app-color-primary-rgb), 0.1);
+  border: 1px solid rgba(var(--app-color-primary-rgb), 0.18);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 10px 24px rgba(7, 12, 18, 0.18);
+}
+
+.dashboard-status-divider {
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.dashboard-status-divider {
+  opacity: 0.65;
+}
+
+.status-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: var(--app-color-primary);
+  box-shadow: 0 0 0.75rem rgba(var(--app-color-primary-rgb), 0.55);
+  flex: 0 0 auto;
+  animation: dashboard-live-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes dashboard-live-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(0.82);
+    opacity: 0.68;
+  }
+}
+
+@media (max-width: 360px) {
+  .dashboard-status-divider {
+    display: none;
+  }
+}

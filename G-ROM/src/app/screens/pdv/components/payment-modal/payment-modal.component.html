@@ -1,0 +1,50 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar
+    class="font-black text-[#0a3413]"
+    style="--background: #66df75; --color: #0a3413; --border-color: transparent;">
+    <ion-title class="text-center text-[0.95rem] font-black tracking-[0.04em]">FORMA DE PAGAMENTO</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="close()" color="medium">
+        <i class="bi bi-x-lg"></i>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content scroll-y="false" style="--background: #0c1319;">
+  <div class="payment-sheet-enter flex h-full min-h-full flex-col gap-4 overflow-hidden px-4 pb-4 pt-3">
+
+    <section class="min-h-0 flex-1 overflow-y-auto pr-1">
+      <div class="mx-auto flex w-full max-w-md flex-col gap-3">
+      <button
+        *ngFor="let method of methods"
+        type="button"
+        class="payment-option-press flex w-full items-center gap-4 rounded-lg border bg-white/[0.03] p-4 text-left shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] transition-all duration-200"
+        [ngClass]="method.containerClass"
+        (click)="select(method.value)">
+        <span
+          class="flex h-13 w-13 shrink-0 items-center justify-center rounded-2xl bg-white/[0.05] text-[1.25rem]"
+          [ngClass]="method.iconClass">
+          <i [class]="'bi ' + method.icon"></i>
+        </span>
+
+        <span class="flex min-w-0 flex-1 flex-col gap-1">
+          <strong class="text-[0.96rem] font-extrabold text-[#dce3ec]">{{ method.label }}</strong>
+          <small class="text-[0.78rem] leading-[1.35] text-[#879484]">{{ method.description }}</small>
+        </span>
+
+        <span
+          class="hidden rounded-full bg-white/[0.05] px-[0.65rem] py-[0.38rem] text-[0.68rem] font-extrabold tracking-[0.14em] min-[480px]:inline-flex"
+          [ngClass]="method.tagClass">{{ method.value }}</span>
+      </button>
+      </div>
+    </section>
+
+    <button
+      type="button"
+      class="payment-option-press bg-red-900 mx-auto flex w-full max-w-md shrink-0 items-center justify-center rounded-2xl border border-white/[0.08] bg-white/[0.03] px-4 py-[0.95rem] text-[0.84rem] font-extrabold text-[#c5c7c8] transition-all duration-200"
+      (click)="close()">
+      Cancelar selecao
+    </button>
+  </div>
+</ion-content>

@@ -1,0 +1,43 @@
+<section class="mt-4 mb-6 flex w-full flex-col gap-4">
+  <div class="grid grid-cols-3 gap-2 sm:gap-3">
+    <button
+      *ngFor="let action of actions; trackBy: trackByLabel"
+      type="button"
+      class="group relative flex min-h-20 rounded-lg  w-full flex-col items-center justify-center overflow-hidden rounded-2xl border px-2 py-3 text-center shadow-md transition duration-200 hover:-translate-y-0.5 hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-55"
+      [ngClass]="getActionCardClass(action)"
+      [disabled]="isActionDisabled(action)"
+      [attr.title]="getActionTitle(action)"
+      (click)="handleAction(action)"
+    >
+      <div
+        class="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"
+        aria-hidden="true"
+      ></div>
+
+      <div
+        class="relative z-[1] flex h-8 w-8 items-center justify-center rounded-full border transition duration-200 group-hover:scale-105"
+        [ngClass]="getActionIconClass(action)"
+      >
+        <i class="text-xs" [ngClass]="action.icon"></i>
+      </div>
+
+      <div class="relative z-[1] mt-2 flex w-full flex-col items-center">
+        <span class="block text-[0.58rem] font-semibold leading-tight" [ngClass]="getActionLabelClass(action)">
+          {{ action.label }}
+        </span>
+      </div>
+    </button>
+  </div>
+</section>
+
+<app-close-register-modal
+  [isOpen]="isCloseRegisterModalOpen"
+  (closed)="handleCloseRegisterDismiss()"
+></app-close-register-modal>
+
+<app-open-register-modal
+  [isOpen]="isOpenRegisterModalOpen"
+  [origem]="modalOrigin"
+  (closed)="handleOpenRegisterDismiss()"
+  (opened)="handleOpenRegisterSuccess()"
+></app-open-register-modal>

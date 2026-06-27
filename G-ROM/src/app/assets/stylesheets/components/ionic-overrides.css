@@ -1,0 +1,102 @@
+/* Sobrescritas dos Componentes Ionic para SITFOR */
+/* Fundo global para todas as páginas */
+ion-app {
+  background: var(--app-color-background-content);
+}
+
+ion-content {
+  --background: var(--app-color-background-content);
+  --color: var(--app-color-black);
+}
+
+ion-router-outlet {
+  background: var(--app-color-background-content);
+}
+
+.ion-page {
+  background: var(--app-color-background-content);
+  color: var(--app-color-black);
+}
+
+/* Estilizando o cabeçalho */
+ion-header::after {
+  background-image: none;
+}
+
+ion-toolbar {
+  --background: var(--primary);
+  --color: var(--primary-contrast);
+}
+
+ion-title {
+  font-weight: 600;
+}
+
+/* Estilizando a barra de abas */
+ion-tab-bar {
+  --background: #ffffff;
+  --border: none;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.06);
+}
+
+ion-tab-button {
+  --color: #a0a0a0;
+  --color-selected: var(--primary);
+}
+
+/* Estilizando o menu lateral */
+ion-menu ion-content {
+  --background: var(--app-color-white);
+  --color: var(--app-color-black);
+}
+
+ion-menu ion-item.selected {
+  --background: rgba(245, 127, 23, 0.1);
+  --color: var(--primary);
+}
+
+/* Estilizando os modais */
+ion-modal {
+  --border-radius: 12px;
+}
+
+ion-modal ion-card {
+  margin: 0;
+  box-shadow: none;
+}
+
+/* Remover bordas do header e toolbar */
+.transparent-header {
+  border: none !important;
+  box-shadow: none !important;
+}
+.transparent-header::after {
+  display: none !important;
+  background: none !important;
+  height: 0 !important;
+}
+
+.transparent-toolbar {
+  --border-width: 0 !important;
+  --border-style: none !important;
+  --box-shadow: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+.transparent-toolbar::after {
+  display: none !important;
+  background: none !important;
+  height: 0 !important;
+}
+
+/* Sobrescrever estilos globais do header */
+ion-header.transparent-header {
+  border-bottom: none !important;
+  box-shadow: none !important;
+}
+ion-header.transparent-header ion-toolbar {
+  --border-width: 0 !important;
+  --border-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}

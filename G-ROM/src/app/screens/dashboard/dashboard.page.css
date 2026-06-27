@@ -1,0 +1,56 @@
+.dashboard-screen {
+  --background: var(--app-color-background);
+  color: var(--app-color-on-surface);
+}
+
+.dashboard-hero-title {
+  font-family: var(--app-font-family-display);
+  font-size: clamp(1.9rem, 7vw, 2.45rem);
+  font-weight: 800;
+  margin: 0 0 2px 0;
+  letter-spacing: -0.8px;
+  line-height: 0.96;
+  background: linear-gradient(135deg, var(--app-color-on-surface) 0%, var(--app-color-on-surface-variant) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  background: var(--app-color-primary);
+  border-radius: 999px;
+  box-shadow: 0 0 8px rgba(var(--app-color-primary-rgb), 0.6);
+}
+
+.intro-dismiss-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.8rem;
+  border: 1px solid rgba(var(--app-color-primary-rgb), 0.12);
+  color: rgba(227, 235, 240, 0.72);
+  background: rgba(255, 255, 255, 0.03);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease,
+    background 0.18s ease;
+}
+
+.intro-dismiss-btn i {
+  font-size: 0.9rem;
+  line-height: 1;
+  color: rgba(var(--app-color-primary-rgb), 0.88);
+}
+
+.intro-dismiss-btn:hover {
+  color: var(--app-color-on-surface);
+  border-color: rgba(var(--app-color-primary-rgb), 0.24);
+  background: rgba(var(--app-color-primary-rgb), 0.08);
+  transform: translateY(-1px);
+}

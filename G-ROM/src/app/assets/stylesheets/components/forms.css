@@ -1,0 +1,104 @@
+/* Componentes de Formulários SITFOR */
+/* ========================================
+   INPUTS CUSTOMIZADOS
+   ======================================== */
+.input {
+  width: 100%;
+  max-width: 220px;
+  height: 45px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1.5px solid lightgrey;
+  outline: none;
+  transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+  box-shadow: 0px 0px 20px -18px;
+}
+.input:hover {
+  border: 2px solid lightgrey;
+  box-shadow: 0px 0px 20px -17px;
+}
+.input:active {
+  transform: scale(0.95);
+}
+.input:focus {
+  border: 2px solid grey;
+}
+
+/* ========================================
+   CARDS DE LOGIN
+   ======================================== */
+.login-card {
+  max-width: 400px;
+}
+
+.login-input-item {
+  width: 48%;
+}
+
+/* Remover bordas e sombras dos itens de formulário */
+.form-item-clean {
+  --border-width: 0 !important;
+  --inner-border-width: 0 !important;
+  --border-style: none !important;
+  --inner-border-style: none !important;
+  --box-shadow: none !important;
+  --background: transparent !important;
+  --ripple-color: transparent !important;
+  border: none !important;
+}
+
+.form-list-clean {
+  background: transparent !important;
+}
+.form-list-clean ion-item {
+  --border-width: 0 !important;
+  --inner-border-width: 0 !important;
+  --border-style: none !important;
+  --inner-border-style: none !important;
+  --box-shadow: none !important;
+  --background: transparent !important;
+  --ripple-color: transparent !important;
+  border: none !important;
+}
+.form-list-clean ion-item::part(native) {
+  border: none !important;
+  box-shadow: none !important;
+}
+.form-list-clean ion-input {
+  --border-width: 0 !important;
+  --border-style: none !important;
+  border: none !important;
+}
+.form-list-clean ion-input::part(native) {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* ========================================
+   DIVISOR COM LINHAS LATERAIS
+   ======================================== */
+.divider {
+  position: relative;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 12px 16px;
+}
+.divider::before, .divider::after {
+  content: "";
+  flex: 1;
+  height: 2px;
+  background: #e0e0e0;
+  max-width: calc(50% - 60px);
+}
+.divider::before {
+  margin-right: 16px;
+}
+.divider::after {
+  margin-left: 16px;
+}
+.divider span {
+  flex-shrink: 0;
+  padding: 0 12px;
+  white-space: nowrap;
+}

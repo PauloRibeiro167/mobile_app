@@ -1,0 +1,37 @@
+<div
+  *ngIf="isOpen"
+  class="action-sheet-overlay"
+  role="presentation"
+  (click)="dismissFromBackdrop()"
+>
+  <div
+    class="action-sheet-panel"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-label]="ariaLabel"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="action-sheet-handle" aria-hidden="true"></div>
+
+    <header class="action-sheet-header">
+      <h2 class="action-sheet-title">
+        <i class="bi bi-funnel-fill"></i>
+        {{ ariaLabel }}
+      </h2>
+    </header>
+
+    <div class="action-sheet-content">
+      <ion-button
+        *ngFor="let button of safeButtons"
+        expand="block"
+        [fill]="button.role === 'cancel' ? 'clear' : 'solid'"
+        [color]="button.role === 'cancel' ? '' : 'primary'"
+        (click)="handleButtonClick(button)"
+        [class]="getButtonClasses(button)"
+      >
+        <i *ngIf="button.icon" [class]="'bi bi-' + button.icon + ' size-2 mr-2'"></i>
+        {{ button.text }}
+      </ion-button>
+    </div>
+  </div>
+</div>

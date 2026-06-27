@@ -1,0 +1,56 @@
+#!/bin/bash
+
+# Script para ambiente de DESENVOLVIMENTO
+# Utilizado para desenvolvimento local com hot reload
+
+set -e
+
+echo "🔧 Iniciando ambiente de DESENVOLVIMENTO..."
+echo "================================================"
+
+# Verifica se as dependências estão instaladas
+if [ ! -d "node_modules" ]; then
+    echo "📦 Instalando dependências..."
+    npm install
+fi
+
+# Verifica se as plataformas estão adicionadas
+if [ ! -d "android" ]; then
+    echo "🤖 Adicionando plataforma Android..."
+    ionic capacitor add android
+fi
+
+# Opções de execução
+echo "Selecione uma opção:"
+echo "1) Servir no navegador (ionic serve)"
+echo "2) Executar no Android com livereload"
+echo "3) Executar no Android sem livereload"
+echo "4) Apenas build"
+
+read -p "Digite sua opção (1-4): " option
+
+case $option in
+    1)
+        echo "🌐 Iniciando servidor de desenvolvimento..."
+        ionic serve
+        ;;
+    2)
+        echo "🤖 Executando no Android com livereload..."
+        ionic capacitor run android --livereload --external
+        ;;
+    3)
+        echo "🤖 Executando no Android..."
+        ionic capacitor run android
+        ;;
+    4)
+        echo "🔨 Fazendo build para desenvolvimento..."
+        ionic build
+        ionic capacitor copy android
+        ;;
+    *)
+        echo "❌ Opção inválida!"
+        exit 1
+        ;;
+esac
+
+echo "✅ Ambiente de desenvolvimento pronto!"
