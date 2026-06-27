@@ -3,7 +3,7 @@ import { IonicModule, RefresherCustomEvent, } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, OnDestroy, OnInit, inject } from '@angular/core';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
-import { BottomTabBarComponent, HeaderComponent, MenuComponent, } from '@components';
+import { BottomTabBarComponent, HeaderComponent, MenuComponent, RefresherComponent, } from '@components';
 import { buildAppLayoutClass } from '@utils';
 import { ThemeService, SafeAreaService, AppInitializationService, DataMigrationService, AppLifecycleService, NavigationService, PageInfo, AuthService, } from '@services';
 import { Subscription } from 'rxjs';
@@ -18,15 +18,7 @@ if (!customElements.get('l-line-wobble')) {
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.css'],
   standalone: true,
-  imports: [
-    CommonModule,
-    IonicModule,
-    RouterModule,
-    FormsModule,
-    HeaderComponent,
-    BottomTabBarComponent,
-    MenuComponent,
-  ],
+  imports: [ CommonModule, IonicModule, RouterModule, FormsModule, HeaderComponent, BottomTabBarComponent, MenuComponent, RefresherComponent, ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class AppComponent implements OnInit, OnDestroy {
