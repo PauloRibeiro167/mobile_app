@@ -158,14 +158,10 @@ ion-alert.custom-alert::part(title) {
     }
     
     ul {
-      margin: 10px 0;
-      padding-left: 20px;
-      
-      li {
         margin: 8px 0;
         color: var(--ion-color-dark);
-        
-        /98*{
+
+        ion-icon {
           margin-right: 8px;
           color: var(--ion-color-primary);
           vertical-align: middle;
@@ -233,7 +229,7 @@ ion-alert.custom-alert::part(title) {
       margin-top: 8px;
     }
   }
-}
+
 
 /* Estilo moderno para ion-alert customizado */
 

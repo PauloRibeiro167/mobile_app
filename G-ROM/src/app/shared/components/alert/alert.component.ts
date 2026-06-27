@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter, OnChanges, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonAlert, IonIcon, IonModal, IonContent } from '@ionic/angular/standalone';
+import { IonAlert, IonModal, IonContent } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { alertCircleOutline, bulbOutline, businessOutline, checkmarkCircleOutline, closeCircle, documentTextOutline, helpCircleOutline, informationCircleOutline, personCircleOutline, searchOutline, warning, warningOutline, logOutOutline } from 'ionicons/icons'; import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
@@ -11,7 +11,7 @@ export type AlertType = 'cpf' | 'inscricao' | 'dica' | 'info' | 'example' | 'err
   templateUrl: './alert.component.html',
   styleUrls: ['./alert.component.css'],
   standalone: true,
-  imports: [CommonModule, IonIcon, IonModal, IonContent]
+  imports: [CommonModule, IonModal, IonContent]
 })
 export class AlertComponent implements OnChanges {
   private sanitizer = inject(DomSanitizer);
