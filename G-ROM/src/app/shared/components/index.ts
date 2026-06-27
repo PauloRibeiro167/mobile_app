@@ -17,5 +17,6 @@ export * from './modal/modal.component';
 export * from './open-register-modal/open-register-modal.component';
 export * from './paginacao/paginacao.component';
 export * from './radio/radio.component';
+export * from './refresher/refresher.component';
 export * from './router-outlet/router-outlet.component';
 export * from './toggle/toggle.component';
