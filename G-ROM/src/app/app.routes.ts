@@ -12,13 +12,13 @@ export const routes: Routes = [
   {
     path: 'login',
     loadComponent: () =>
-      import('./screens/login/login.page').then((m) => m.LoginPage),
+      import('./domains/autenticacao/pages/login/login.page').then((m) => m.LoginPage),
     data: { animation: 'loginPage' },
   },
   {
     path: 'home',
     loadComponent: () =>
-      import('./screens/dashboard/dashboard.page').then((m) => m.HomePage),
+      import('./domains/relatorios/pages/dashboard/dashboard.page').then((m) => m.HomePage),
     providers: [provideHttpClient()],
     data: { animation: 'homePage' },
     canActivate: [AuthGuard],
@@ -26,33 +26,33 @@ export const routes: Routes = [
   {
     path: 'config',
     loadComponent: () =>
-      import('./screens/config/config.page').then((m) => m.ConfigPage),
+      import('./domains/configuracoes/pages/config/config.page').then((m) => m.ConfigPage),
     data: { animation: 'configPage' },
     canActivate: [AuthGuard],
   },
   {
     path: 'meu-perfil',
     loadComponent: () =>
-      import('./screens/perfil/perfil.page').then((m) => m.PerfilPage),
+      import('./domains/configuracoes/pages/perfil/perfil.page').then((m) => m.PerfilPage),
     data: { animation: 'perfilPage' },
     canActivate: [AuthGuard],
   },
   {
     path: 'pdv',
     loadComponent: () =>
-      import('./screens/pdv/pdv.page').then((m) => m.PdvPage),
+      import('./domains/pdv/pages/pdv/pdv.page').then((m) => m.PdvPage),
     canActivate: [AuthGuard, pdvAccessGuard],
   },
   {
     path: 'historico',
     loadComponent: () =>
-      import('./screens/historico/historico.page').then((m) => m.HistoricoPage),
+      import('./domains/vendas/pages/historico/historico.page').then((m) => m.HistoricoPage),
     canActivate: [AuthGuard],
   },
   {
     path: 'estoque',
     loadComponent: () =>
-      import('./screens/estoque/estoque.page').then((m) => m.EstoquePage),
+      import('./domains/estoque/pages/estoque/estoque.page').then((m) => m.EstoquePage),
     canActivate: [AuthGuard],
   },
   {

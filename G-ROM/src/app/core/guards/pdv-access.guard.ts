@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { CanActivateFn } from '@angular/router';
 
-import { PdvAccessService } from '@services/api';
+import { PdvAccessService } from '@domains/pdv/services/pdv-access.service';
 import { Router } from '@angular/router';
 
 export const pdvAccessGuard: CanActivateFn = async () => {

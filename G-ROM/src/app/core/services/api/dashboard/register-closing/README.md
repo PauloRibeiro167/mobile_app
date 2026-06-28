@@ -13,7 +13,7 @@ Organizar o fluxo de fechamento de caixa em services menores e especializados.
 - `register-closing-check.service.ts`
   - faz a checagem e conciliação dos valores
   - calcula esperado, extratos automáticos e resultado final
-  - mantém o snapshot operacional usado na conferência
+  - mantém o snapshot operacional usado na conferência com apoio dos helpers em `utils/`
 
 - `register-closing-review.service.ts`
   - abre solicitação de reavaliação quando existe divergência
@@ -26,8 +26,18 @@ Organizar o fluxo de fechamento de caixa em services menores e especializados.
   - marca notificações como lidas
 
 ## Tipos relacionados
-- `register-closing.types.ts`
+- `src/app/domains/gestao-caixa/models/register-closing.types.ts`
   - contratos de payload, response, nota, reavaliação e notificação
+
+## Utils relacionados
+- `utils/register-closing.factory.ts`
+  - concentra cálculos puros e montagem do resumo/resultados
+
+- `utils/register-closing.snapshot.ts`
+  - guarda o estado inicial mockado usado na conferência
+
+- `utils/register-closing-receipt.template.ts`
+  - renderiza o HTML da nota/comprovante de fechamento
 
 ## Fluxo sugerido
 1. Operador registra fechamento inicial.

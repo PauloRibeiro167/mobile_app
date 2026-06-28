@@ -3,7 +3,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { IonicModule } from '@ionic/angular';
 
 import { AuthService } from '@services';
-import { PdvAccessService } from '@services/api';
+import { PdvAccessService } from '@domains/pdv/services/pdv-access.service';
 import { BottomTabBarComponent } from './bottom-tab-bar.component';
 
 describe('BottomTabBarComponent', () => {

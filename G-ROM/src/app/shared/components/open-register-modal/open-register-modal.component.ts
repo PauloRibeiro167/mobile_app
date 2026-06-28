@@ -1,9 +1,17 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output, inject, } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators, } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  ReactiveFormsModule,
+  ValidationErrors,
+  Validators,
+} from '@angular/forms';
 import { IonModal, IonSpinner } from '@ionic/angular/standalone';
-import { AberturaCaixaResponse, PdvAccessOrigin, PdvAccessService, } from '@services/api';
+import type { AberturaCaixaResponse } from '@domains/gestao-caixa/models/register-opening.types';
+import { PdvAccessOrigin, PdvAccessService } from '@domains/pdv/services/pdv-access.service';
 import { AuthService } from '@services';
+import { formatCurrencyBRL } from '../../../core/utils/currency.utils';
 
 @Component({
   selector: 'app-open-register-modal',
@@ -20,7 +28,10 @@ export class OpenRegisterModalComponent {
   @Output() opened = new EventEmitter<AberturaCaixaResponse>();
 
   readonly aberturaForm = this.formBuilder.nonNullable.group({
-    fundoTroco: [50, [Validators.required, Validators.min(0)]],
+    fundoTroco: [
+      this.formatarValorMonetario(50),
+      [Validators.required, this.validarValorMonetario.bind(this)],
+    ],
     observacoes: ['', [Validators.maxLength(180)]],
   });
 
@@ -65,8 +76,11 @@ export class OpenRegisterModalComponent {
     this.enviando = true;
 
     try {
+      const fundoTroco = this.parseValorMonetario(
+        this.aberturaForm.controls.fundoTroco.getRawValue()
+      );
       const response = await this.pdvAccessService.confirmOpening(
-        this.aberturaForm.controls.fundoTroco.getRawValue(),
+        fundoTroco,
         this.aberturaForm.controls.observacoes.getRawValue(),
         this.origem
       );
@@ -80,13 +94,60 @@ export class OpenRegisterModalComponent {
     this.closed.emit();
   }
 
+  formatarMoeda(event: Event): void {
+    const input = event.target as HTMLInputElement | null;
+
+    if (!input) {
+      return;
+    }
+
+    const valorFormatado = this.formatarValorMonetario(input.value);
+    input.value = valorFormatado;
+    this.aberturaForm.controls.fundoTroco.setValue(valorFormatado, {
+      emitEvent: false,
+    });
+  }
+
   private resetForm(): void {
     const draft = this.pdvAccessService.getOpeningDraft(this.origem);
 
     this.enviando = false;
     this.aberturaForm.reset({
-      fundoTroco: draft.fundoTrocoSugerido,
+      fundoTroco: this.formatarValorMonetario(draft.fundoTrocoSugerido),
       observacoes: draft.observacoesPadrao,
     });
+  }
+
+  private formatarValorMonetario(valor: string | number): string {
+    if (typeof valor === 'number' && Number.isFinite(valor)) {
+      return formatCurrencyBRL(valor);
+    }
+
+    const apenasDigitos = String(valor).replace(/\D/g, '');
+    const valorEmCentavos = apenasDigitos ? Number(apenasDigitos) : 0;
+
+    return formatCurrencyBRL(valorEmCentavos / 100);
+  }
+
+  private parseValorMonetario(valor: string): number {
+    const apenasDigitos = valor.replace(/\D/g, '');
+
+    if (!apenasDigitos) {
+      return 0;
+    }
+
+    return Number(apenasDigitos) / 100;
+  }
+
+  private validarValorMonetario(
+    control: AbstractControl<string>
+  ): ValidationErrors | null {
+    const valor = this.parseValorMonetario(control.value ?? '');
+
+    if (valor < 0) {
+      return { min: true };
+    }
+
+    return null;
   }
 }

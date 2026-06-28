@@ -21,6 +21,7 @@
     "module": "es2020",
     "lib": ["es2018", "es2020", "es2021", "dom"],
     "paths": {
+      "@domains/*": ["src/app/domains/*"],
       "@services": ["src/app/core/services/index.ts"],
       "@services/*": ["src/app/core/services/*"],
       "@shared/*": ["src/app/shared/*"],

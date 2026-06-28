@@ -2,10 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, Input, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { IonTabBar, IonTabButton } from '@ionic/angular/standalone';
-import {
-  PdvAccessOrigin,
-  PdvAccessService,
-} from '@services/api';
+import { PdvAccessOrigin, PdvAccessService } from '@domains/pdv/services/pdv-access.service';
 import { OpenRegisterModalComponent } from '../open-register-modal/open-register-modal.component';
 
 @Component({
