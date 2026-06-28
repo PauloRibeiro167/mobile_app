@@ -2,6 +2,9 @@
 // export { DadosCadastraisService } from './dados-cadastrais/dados-cadastrais.service';
 // export { DadosListService } from './dados-list/dados-list.service';
 export * from './dashboard/register-closing/register-closing.service';
+export * from './dashboard/register-closing/register-closing-check.service';
+export * from './dashboard/register-closing/register-closing-review.service';
+export * from './dashboard/register-closing/register-closing-manager-notification.service';
 export * from './dashboard/register-opening/register-opening.service';
 export * from './dashboard/register-session/register-session.service';
 export * from './dashboard/recent-sales/recent-sales.service';
