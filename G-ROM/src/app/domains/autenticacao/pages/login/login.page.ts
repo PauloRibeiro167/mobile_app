@@ -2,7 +2,9 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController, IonicModule } from '@ionic/angular';
-import { AuthService, PreferencesService } from '@services';
+import { MockUserDefinition } from '@services';
+import { AutenticacaoFacadeService } from '../../services/autenticacao-facade.service';
+import { LoginFormState } from '../../services/login-form.service';
 import { LoginFormCardComponent } from './components/login-form-card/login-form-card.component';
 import { LoginHeroComponent } from './components/login-hero/login-hero.component';
 
@@ -17,33 +19,60 @@ import { LoginHeroComponent } from './components/login-hero/login-hero.component
 export class LoginPage implements OnInit {
   private alertController = inject(AlertController);
   private router = inject(Router);
-  private authService = inject(AuthService);
-  private preferencesService = inject(PreferencesService);
-  private readonly rememberedUserKey = 'rememberedUser';
+  private autenticacaoFacadeService = inject(AutenticacaoFacadeService);
 
+  readonly mockUsers = this.autenticacaoFacadeService.getMockUsers();
   readonly DEFAULT_USER = {
-    email: 'teste@teste.com',
-    password: '123456'
+    email: this.mockUsers[0]?.email ?? '',
+    password: this.mockUsers[0]?.password ?? ''
   };
 
-  email: string = this.DEFAULT_USER.email;
-  password: string = this.DEFAULT_USER.password;
-  rememberMe: boolean = false;
-  isLoading: boolean = false;
-  showPassword: boolean = false;
+  formState: LoginFormState = this.autenticacaoFacadeService.buildInitialFormState();
 
   title: string = 'Sistema G-Room';
 
-  async ngOnInit(): Promise<void> {
-    await this.authService.initialize();
+  get email(): string {
+    return this.formState.email;
+  }
 
-    if (this.authService.isAuthenticated()) {
-      await this.router.navigate(['/home']);
+  set email(value: string) {
+    this.formState = { ...this.formState, email: value };
+  }
+
+  get password(): string {
+    return this.formState.password;
+  }
+
+  set password(value: string) {
+    this.formState = { ...this.formState, password: value };
+  }
+
+  get rememberMe(): boolean {
+    return this.formState.rememberMe;
+  }
+
+  set rememberMe(value: boolean) {
+    this.formState = { ...this.formState, rememberMe: value };
+  }
+
+  get isLoading(): boolean {
+    return this.formState.isLoading;
+  }
+
+  get showPassword(): boolean {
+    return this.formState.showPassword;
+  }
+
+  async ngOnInit(): Promise<void> {
+    await this.autenticacaoFacadeService.initializeAuth();
+
+    if (this.autenticacaoFacadeService.isAuthenticated()) {
+      await this.router.navigate([this.autenticacaoFacadeService.getFallbackRoute()]);
     }
   }
 
   togglePasswordVisibility() {
-    this.showPassword = !this.showPassword;
+    this.formState = this.autenticacaoFacadeService.togglePassword(this.formState);
   }
 
   async login() {
@@ -51,23 +80,23 @@ export class LoginPage implements OnInit {
       return;
     }
 
-    this.isLoading = true;
+    this.formState = this.autenticacaoFacadeService.setLoading(this.formState, true);
 
     try {
-      const success = await this.authService.login(this.email, this.password);
+      const success = await this.autenticacaoFacadeService.login(this.formState);
 
       if (success) {
-        if (this.rememberMe) {
-          await this.preferencesService.setJson(this.rememberedUserKey, {
-            email: this.email,
-            rememberMe: true
-          });
-        } else {
-          await this.preferencesService.remove(this.rememberedUserKey);
-        }
+        await this.autenticacaoFacadeService.persistRememberedUser(this.formState);
 
-        await this.router.navigate(['/home']);
+        await this.router.navigate([this.autenticacaoFacadeService.getFallbackRoute()]);
+        return;
       }
+
+      await this.alertController.create({
+        header: 'Credenciais inválidas',
+        message: 'Escolha um dos usuários de simulação ou revise o e-mail e a senha.',
+        buttons: ['OK']
+      }).then(alert => alert.present());
     } catch (error) {
       await this.alertController.create({
         header: 'Falha no login',
@@ -75,14 +104,14 @@ export class LoginPage implements OnInit {
         buttons: ['OK']
       }).then(alert => alert.present());
     } finally {
-      this.isLoading = false;
+      this.formState = this.autenticacaoFacadeService.setLoading(this.formState, false);
     }
   }
 
   async forgotPassword() {
     const alert = await this.alertController.create({
       header: 'Recuperar Senha',
-      message: `Para o usuário padrão, use:<br><strong>Email:</strong> ${this.DEFAULT_USER.email}<br><strong>Senha:</strong> ${this.DEFAULT_USER.password}`,
+      message: `Escolha qualquer usuário da lista de simulação.<br><strong>Senha padrão:</strong> 123456`,
       buttons: ['OK']
     });
 
@@ -120,14 +149,10 @@ export class LoginPage implements OnInit {
   }
 
   async ionViewDidEnter(): Promise<void> {
-    const rememberedUser = await this.preferencesService.getJson<{
-      email: string;
-      rememberMe: boolean;
-    } | null>(this.rememberedUserKey, null);
+    this.formState = await this.autenticacaoFacadeService.loadRememberedUser(this.formState);
+  }
 
-    if (rememberedUser) {
-      this.email = rememberedUser.email;
-      this.rememberMe = rememberedUser.rememberMe;
-    }
+  fillMockUser(user: MockUserDefinition): void {
+    this.formState = this.autenticacaoFacadeService.fillWithMockUser(this.formState, user);
   }
 }

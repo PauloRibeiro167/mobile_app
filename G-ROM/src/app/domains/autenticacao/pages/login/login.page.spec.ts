@@ -10,12 +10,13 @@ describe('LoginPage', () => {
   let fixture: ComponentFixture<LoginPage>;
 
   beforeEach(async () => {
-    const authServiceSpy = jasmine.createSpyObj('AuthService', ['initialize', 'isAuthenticated', 'login'], {
+    const authServiceSpy = jasmine.createSpyObj('AuthService', ['initialize', 'isAuthenticated', 'login', 'getFallbackRoute'], {
       usuarioLogado$: undefined
     });
     authServiceSpy.initialize.and.resolveTo();
     authServiceSpy.isAuthenticated.and.returnValue(false);
     authServiceSpy.login.and.resolveTo(true);
+    authServiceSpy.getFallbackRoute.and.returnValue('/home');
 
     const preferencesServiceSpy = jasmine.createSpyObj('PreferencesService', ['getJson', 'setJson', 'remove']);
     preferencesServiceSpy.getJson.and.resolveTo(null);
