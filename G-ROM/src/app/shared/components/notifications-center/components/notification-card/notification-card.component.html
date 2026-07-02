@@ -1,0 +1,42 @@
+<div
+  class="notification-item-card group relative overflow-hidden rounded-[1.1rem] border p-3.5"
+  [class.is-unread]="!notification.read"
+  [class.is-read]="notification.read"
+  [class]="priorityClass"
+>
+  <div class="pointer-events-none absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-white/12 to-transparent"></div>
+
+  <div class="card-icon-aside" [ngClass]="typeClass">
+    <i [class]="iconClass"></i>
+  </div>
+
+  <div class="card-main-text min-w-0">
+    <div class="card-top-info">
+      <div class="min-w-0 flex-1">
+        <h3 class="card-title-text">{{ notification.title }}</h3>
+
+        <div class="mt-2 flex flex-wrap items-center gap-2">
+          <span class="card-status-pill" *ngIf="!notification.read">
+            Nova
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <p class="card-description">{{ notification.body }}</p>
+
+    <div class="card-footer" *ngIf="notification.read">
+      <div class="card-read-label">
+        <i class="bi bi-check-all"></i> Visualizada
+      </div>
+    </div>
+  </div>
+
+  <div class="card-meta-aside">
+    <span class="card-timestamp">
+      <i class="bi bi-clock-history"></i>
+      {{ notification.timestamp | date : 'HH:mm' }}
+    </span>
+    <div class="card-accent-dot" aria-hidden="true"></div>
+  </div>
+</div>

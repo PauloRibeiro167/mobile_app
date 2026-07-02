@@ -3,7 +3,16 @@ import { Component, Input, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { IonTabBar, IonTabButton } from '@ionic/angular/standalone';
 import { PdvAccessOrigin, PdvAccessService } from '@domains/pdv/services/pdv-access.service';
-import { OpenRegisterModalComponent } from '../open-register-modal/open-register-modal.component';
+import { OpenRegisterModalComponent } from '@domains/gestao-caixa/components/open-register-modal/open-register-modal.component';
+import { AuthService } from '@services';
+
+interface AppTabDefinition {
+  tab: string;
+  routerLink: string;
+  icon: string;
+  label: string;
+  viewId: string;
+}
 
 @Component({
   selector: 'app-bottom-tab-bar',
@@ -20,6 +29,7 @@ import { OpenRegisterModalComponent } from '../open-register-modal/open-register
 })
 export class BottomTabBarComponent {
   private router = inject(Router);
+  private readonly authService = inject(AuthService);
   private readonly pdvAccessService = inject(PdvAccessService);
 
   @Input() themeClass: string = '';
@@ -30,32 +40,40 @@ export class BottomTabBarComponent {
     return this.router.url;
   }
 
-  tabs = [
+  private readonly allTabs: AppTabDefinition[] = [
     {
       tab: 'home',
       routerLink: '/home',
       icon: 'bi-grid',
       label: 'Dashboard',
+      viewId: 'relatorios.dashboard',
     },
     {
       tab: 'pdv',
       routerLink: '/pdv',
       icon: 'bi-calculator',
       label: 'PDV',
+      viewId: 'pdv.operacao',
     },
     {
       tab: 'historico',
       routerLink: '/historico',
       icon: 'bi-clock-history',
       label: 'Histórico',
+      viewId: 'vendas.historico',
     },
     {
       tab: 'estoque',
       routerLink: '/estoque',
       icon: 'bi-box-seam',
       label: 'Estoque',
+      viewId: 'estoque.visao-geral',
     },
   ];
+
+  get tabs(): AppTabDefinition[] {
+    return this.allTabs.filter((tab) => this.authService.canAccessView(tab.viewId));
+  }
 
   // Função para verificar se a tab está ativa
   isActiveTab(tabRoute: string): boolean {
@@ -75,7 +93,7 @@ export class BottomTabBarComponent {
 
   async handleTabClick(
     event: Event,
-    tab: (typeof this.tabs)[number]
+    tab: AppTabDefinition
   ): Promise<void> {
     event.preventDefault();
 

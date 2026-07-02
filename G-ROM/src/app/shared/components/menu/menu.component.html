@@ -13,14 +13,14 @@
 
       <!-- Perfil do Usuário Compacto (Vindo do UserService) -->
       <div
-        class="relative overflow-hidden px-4 pb-4 pt-[calc(var(--ion-safe-area-top,0px)+1.5rem)] max-[480px]:px-[14px] max-[480px]:pb-[14px] max-[480px]:pt-[calc(var(--ion-safe-area-top,0px)+1.25rem)]"
+        class="relative overflow-hidden px-4 pb-0 pt-[calc(var(--ion-safe-area-top,0px)+1.5rem)] max-[480px]:px-[14px] max-[480px]:pb-[14px] max-[480px]:pt-[calc(var(--ion-safe-area-top,0px)+1.25rem)]"
         *ngIf="userProfile$ | async as user"
       >
         <div
           class="pointer-events-none absolute -left-10 -top-10 h-[100px] w-[100px] bg-[#00ff88] opacity-[0.08] blur-[45px]"
         ></div>
 
-        <div class="mb-3 flex items-center gap-3">
+        <div class="mb-2 flex items-center gap-3">
           <ion-avatar
             class="h-[42px] w-[42px] shrink-0 border-[1.5px] border-[#00ff88] bg-[rgba(0,255,136,0.05)] p-[2px] shadow-[0_6px_15px_rgba(0,255,136,0.1)]"
           >
@@ -42,50 +42,27 @@
 
       <!-- Lista de Navegação -->
       <div class="flex-1 min-h-0 overflow-y-auto overscroll-contain pb-[calc(var(--app-safe-area-bottom-effective,0px)+7.5rem)] max-[768px]:block max-[768px]:min-h-auto max-[768px]:overflow-visible">
-        <ion-list lines="none" class="m-0 bg-transparent px-[10px] max-[480px]:px-2 max-[768px]:block">
-          <div
-            class="mb-3 border-b border-gray-800 px-5 text-[0.55rem] font-extrabold uppercase tracking-[0.15em] text-zinc-700"
-          ></div>
+        <ion-list lines="none" class="m-0 bg-transparent p-6 px-[10px] max-[480px]:px-2 max-[768px]:block">
+          <ng-container *ngIf="session$ | async as session">
+            <ng-container *ngFor="let section of buildMenuSections(session.availableViews)">
+              <div class="mb-3 border-b border-gray-800 px-5 pb-1.5 pt-4 text-[0.55rem] font-extrabold uppercase tracking-[0.15em] text-zinc-700">
+                {{ section.title }}
+              </div>
 
-          <ion-item button detail="false" class="menu-item active">
-            <i class="bi bi-grid-fill" slot="start"></i>
-            <ion-label>Dashboard</ion-label>
-          </ion-item>
-
-          <ion-item
-            button
-            detail="false"
-            class="menu-item"
-            [routerLink]="'/meu-perfil'"
-            (click)="closeMenu()"
-          >
-            <i class="bi bi-person-circle" slot="start"></i>
-            <ion-label>Meu Perfil</ion-label>
-          </ion-item>
-
-          <ion-item button detail="false" class="menu-item">
-            <i class="bi bi-bell-fill" slot="start"></i>
-            <ion-label>Notificações</ion-label>
-          </ion-item>
-
-          <div
-            class="mb-3 border-b border-gray-800 px-5 pb-1.5 pt-4 text-[0.55rem] font-extrabold uppercase tracking-[0.15em] text-zinc-700"
-          ></div>
-
-          <ion-item button detail="false" class="menu-item">
-            <i class="bi bi-gear-fill" slot="start"></i>
-            <ion-label>Configurações</ion-label>
-          </ion-item>
-
-          <ion-item button detail="false" class="menu-item">
-            <i class="bi bi-shield-lock-fill" slot="start"></i>
-            <ion-label>Segurança</ion-label>
-          </ion-item>
-
-          <ion-item button detail="false" class="menu-item">
-            <i class="bi bi-question-circle-fill" slot="start"></i>
-            <ion-label>Suporte</ion-label>
-          </ion-item>
+              <ion-item
+                *ngFor="let view of section.items"
+                button
+                detail="false"
+                class="menu-item"
+                [class.active]="isActiveRoute(view.route)"
+                [routerLink]="view.route"
+                (click)="closeMenu()"
+              >
+                <i [ngClass]="view.icon" slot="start"></i>
+                <ion-label>{{ view.title }}</ion-label>
+              </ion-item>
+            </ng-container>
+          </ng-container>
         </ion-list>
       </div>
 

@@ -1,13 +1,22 @@
 <ion-menu-button
   *ngIf="mode === 'menu'; else closeButton"
-  [class]="buttonClasses"
+  [ngClass]="menuButtonClasses"
   [attr.aria-label]="ariaLabel"
 >
-  <span class="menu-toggle__surface" aria-hidden="true">
-    <span class="menu-toggle__icon">
-      <span></span>
-      <span></span>
-      <span></span>
+  <span [ngClass]="menuSurfaceClasses" aria-hidden="true">
+    <span class="flex h-3.5 w-3.5 flex-col justify-between">
+      <span
+        [ngClass]="menuBarClasses"
+        class="group-hover:translate-y-0.5 group-focus-visible:translate-y-0.5"
+      ></span>
+      <span
+        [ngClass]="menuBarClasses"
+        class="group-hover:opacity-70 group-focus-visible:opacity-70"
+      ></span>
+      <span
+        [ngClass]="menuBarClasses"
+        class="group-hover:-translate-y-0.5 group-focus-visible:-translate-y-0.5"
+      ></span>
     </span>
   </span>
 </ion-menu-button>
@@ -15,17 +24,13 @@
 <ng-template #closeButton>
   <button
     type="button"
-    [class]="buttonClasses"
+    [ngClass]="closeButtonClasses"
     [attr.aria-label]="ariaLabel"
     (click)="handlePress()"
   >
-    <span
-      class="menu-toggle__surface menu-toggle__surface--close"
-      aria-hidden="true"
-    >
-      <span class="menu-toggle__close-icon">
-        <span></span>
-        <span></span>
+    <span class="flex h-full w-full items-center justify-center" aria-hidden="true">
+      <span class="flex h-3.5 w-3.5 items-center justify-center">
+        <i [ngClass]="closeIconClasses"></i>
       </span>
     </span>
   </button>

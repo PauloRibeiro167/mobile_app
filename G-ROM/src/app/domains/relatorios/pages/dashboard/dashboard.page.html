@@ -18,6 +18,25 @@
         <app-dashboard-header [userProfile$]="userProfile$"></app-dashboard-header>
 
       </section>
+
+      <section
+        *ngIf="currentSession as session"
+        class="mb-4 rounded-3xl border border-white/10 bg-[linear-gradient(145deg,rgba(10,18,25,0.98),rgba(13,22,32,0.94))] p-4 text-white shadow-[0_20px_50px_rgba(0,0,0,0.22)]"
+      >
+        <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+          <div>
+            <div class="text-[0.68rem] font-black uppercase tracking-[0.18em] text-emerald-300">Sessão atual</div>
+            <h2 class="mt-2 text-lg font-bold">{{ session.user.nome }} • {{ session.user.cargo }}</h2>
+            <p class="mt-1 text-sm text-zinc-300">{{ session.user.situacao }}</p>
+          </div>
+
+          <div class="flex flex-wrap gap-2">
+            <span *ngFor="let profile of session.profileNames" class="rounded-full border border-fuchsia-400/20 bg-fuchsia-400/10 px-2 py-1 text-xs text-fuchsia-100">
+              {{ profile }}
+            </span>
+          </div>
+        </div>
+      </section>
       <!-- Meta de Vendas -->
       <app-meta-de-vendas></app-meta-de-vendas>
       <!-- Quick Actions -->

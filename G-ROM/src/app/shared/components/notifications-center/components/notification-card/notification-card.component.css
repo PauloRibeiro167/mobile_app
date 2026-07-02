@@ -1,0 +1,201 @@
+.notification-item-card {
+  --notify-accent: var(--nm-primary, #66df75);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.015)),
+    var(--nm-surface-container, #192027);
+  border: 1px solid rgba(62, 74, 60, 0.55);
+  position: relative;
+  backdrop-filter: blur(18px);
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease;
+  animation: fadeUp 0.35s ease both;
+}
+
+.notification-item-card.is-unread {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--notify-accent) 10%, transparent),
+    rgba(36, 43, 49, 0.96)
+  );
+  border-color: color-mix(in srgb, var(--notify-accent) 44%, rgba(62, 74, 60, 0.55));
+}
+
+.notification-item-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 16px;
+  bottom: 16px;
+  width: 3px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--notify-accent) 88%, white 4%);
+  opacity: 0.9;
+}
+
+.notification-item-card:active {
+  transform: scale(0.98);
+}
+
+.notification-item-card.priority-low {
+  --notify-accent: var(--nm-outline, #879484);
+}
+
+.notification-item-card.priority-normal {
+  --notify-accent: var(--nm-primary, #66df75);
+}
+
+.notification-item-card.priority-high {
+  --notify-accent: var(--nm-secondary, #ffb77d);
+}
+
+.notification-item-card.priority-urgent {
+  --notify-accent: var(--nm-error, #ffb4ab);
+}
+
+.card-icon-aside {
+  width: 48px;
+  height: 48px;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.card-icon-aside i {
+  font-size: 1.08rem;
+}
+
+.card-icon-aside.type-stock {
+  background: rgba(255, 183, 125, 0.16);
+  color: var(--nm-secondary, #ffb77d);
+}
+
+.card-icon-aside.type-price {
+  background: rgba(102, 223, 117, 0.16);
+  color: var(--nm-primary, #66df75);
+}
+
+.card-icon-aside.type-closing {
+  background: rgba(255, 180, 171, 0.16);
+  color: var(--nm-error, #ffb4ab);
+}
+
+.card-icon-aside.type-success {
+  background: rgba(40, 167, 69, 0.18);
+  color: var(--nm-primary, #66df75);
+}
+
+.card-icon-aside.type-system {
+  background: rgba(197, 199, 200, 0.16);
+  color: var(--nm-tertiary, #c5c7c8);
+}
+
+.card-main-text {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+  min-height: 4.25rem;
+  padding-right: 3.1rem;
+}
+
+.card-top-info {
+  display: flex;
+  align-items: flex-start;
+}
+
+.card-title-text {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--nm-on-surface, #dce3ec) !important;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  line-height: 1.2;
+}
+
+.card-status-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 1.45rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--notify-accent) 35%, transparent);
+  background: color-mix(in srgb, var(--notify-accent) 14%, transparent);
+  padding: 0 0.55rem;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: color-mix(in srgb, var(--notify-accent) 88%, white 4%);
+  text-transform: uppercase;
+}
+
+.card-meta-aside {
+  position: absolute;
+  top: 1rem;
+  right: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.55rem;
+}
+
+.card-timestamp {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.72rem;
+  color: var(--nm-outline, #879484);
+  font-weight: 700;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.card-accent-dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  flex: 0 0 auto;
+  background: color-mix(in srgb, var(--notify-accent) 92%, white 4%);
+}
+
+.card-description {
+  margin: 0;
+  font-size: 0.94rem;
+  color: var(--nm-on-surface-variant, #bdcab9) !important;
+  line-height: 1.5;
+  padding-top: 2px;
+}
+
+.card-read-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  color: var(--nm-outline, #879484);
+  font-weight: 800;
+}
+
+.card-footer {
+  display: flex;
+  align-items: center;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

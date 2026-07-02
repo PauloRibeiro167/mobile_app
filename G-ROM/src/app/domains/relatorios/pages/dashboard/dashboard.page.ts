@@ -13,6 +13,7 @@ import { QuickActionsComponent } from './components/quick-actions/quick-actions.
 import { Observable, firstValueFrom } from 'rxjs';
 import { TabelaUltimasVendasComponent } from "./components/tabela-ultimas-vendas/tabela-ultimas-vendas.component"
 import { MetaDeVendasComponent } from './components/meta-de-vendas/meta-de-vendas.component';
+import { AuthService } from '@services';
 
 if (!customElements.get('l-line-wobble')) {
   lineWobble.register();
@@ -34,6 +35,7 @@ export class HomePage implements OnInit {
   private readonly userService = inject(UserService);
   private readonly recentSalesDataService = inject(RecentSalesDataService);
   private readonly registerSessionService = inject(RegisterSessionService);
+  private readonly authService = inject(AuthService);
 
   dashboardData?: DashboardData;
   showIntroCards = true;
@@ -51,6 +53,10 @@ export class HomePage implements OnInit {
       alertCircleOutline,
       receiptOutline,
     });
+  }
+
+  get currentSession() {
+    return this.authService.getSessaoAtual();
   }
 
   async ngOnInit(): Promise<void> {

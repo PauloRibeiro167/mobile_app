@@ -20,6 +20,7 @@ describe('BottomTabBarComponent', () => {
     ]);
     authServiceSpy = jasmine.createSpyObj('AuthService', [
       'getUsuarioLogado',
+      'canAccessView',
     ]);
     pdvAccessServiceSpy.requestPdvAccess.and.resolveTo({
       status: 'granted',
@@ -36,6 +37,7 @@ describe('BottomTabBarComponent', () => {
       nome: 'Usuário Teste',
       email: 'teste@teste.com',
     });
+    authServiceSpy.canAccessView.and.returnValue(true);
 
     await TestBed.configureTestingModule({
       imports: [BottomTabBarComponent, IonicModule.forRoot(), RouterTestingModule],

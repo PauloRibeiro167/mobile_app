@@ -1,14 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthService } from '@services';
 
 import {
   PdvAccessOrigin,
   RegisterSessionService,
 } from '@services/api';
 import { PdvAccessService } from '@domains/pdv/services/pdv-access.service';
-import { CloseRegisterModalComponent } from '../close-register-modal/close-register-modal.component';
-import { OpenRegisterModalComponent } from '@components';
+import { CloseRegisterModalComponent } from '@domains/gestao-caixa/components/close-register-modal/close-register-modal.component';
+import { OpenRegisterModalComponent } from '@domains/gestao-caixa/components/open-register-modal/open-register-modal.component';
 
 interface QuickAction {
   id: 'new-sale' | 'pricing' | 'close-register';
@@ -16,6 +17,7 @@ interface QuickAction {
   description: string;
   icon: string;
   variant: 'success' | 'info' | 'danger';
+  requiredPermissions: string[];
 }
 
 @Component({
@@ -26,6 +28,7 @@ interface QuickAction {
 })
 export class QuickActionsComponent implements OnInit {
   private readonly router = inject(Router);
+  private readonly authService = inject(AuthService);
   private readonly registerSessionService = inject(RegisterSessionService);
   private readonly pdvAccessService = inject(PdvAccessService);
 
@@ -45,6 +48,7 @@ export class QuickActionsComponent implements OnInit {
       description: 'Iniciar turno',
       icon: 'bi-upc-scan',
       variant: 'success',
+      requiredPermissions: ['pdv.read', 'pdv.caixa'],
     },
     {
       id: 'pricing',
@@ -52,6 +56,7 @@ export class QuickActionsComponent implements OnInit {
       description: 'Sincronizar catalogo',
       icon: 'bi bi-basket2-fill',
       variant: 'info',
+      requiredPermissions: ['estoque.read', 'estoque.manage'],
     },
     {
       id: 'close-register',
@@ -59,8 +64,17 @@ export class QuickActionsComponent implements OnInit {
       description: 'Encerrar turno',
       icon: 'bi-pc-display-horizontal',
       variant: 'danger',
+      requiredPermissions: ['pdv.caixa'],
     },
   ];
+
+  get visibleActions(): QuickAction[] {
+    return this.actions.filter((action) =>
+      action.requiredPermissions.some((permission) =>
+        this.authService.hasPermission(permission)
+      )
+    );
+  }
 
   trackByLabel(_: number, action: QuickAction): string {
     return action.id;

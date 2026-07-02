@@ -1,0 +1,63 @@
+<ng-container *ngIf="notifications$ | async as notifications">
+  <ion-header class="ion-no-border premium-header">
+    <ion-toolbar class="premium-toolbar">
+      <div class="flex flex-col items-center justify-center px-4 py-4 text-center">
+        <div class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1 text-[0.68rem] font-bold uppercase tracking-[0.08em] text-primary">
+          <i class="bi bi-bell text-[0.75rem]"></i>
+          Central de alertas
+        </div>
+        <div class="mt-3 flex items-center gap-2">
+          <h2 class="m-0 text-[1.05rem] font-extrabold tracking-[-0.03em] text-[var(--nm-on-surface)]">
+            Notificações
+          </h2>
+          <span class="inline-flex min-w-6 items-center justify-center rounded-full bg-[rgba(var(--app-color-primary-rgb),0.16)] px-2 py-0.5 text-[0.72rem] font-extrabold text-primary">
+            {{ notifications.length }}
+          </span>
+        </div>
+        <p class="mt-1 text-[0.78rem] leading-relaxed text-[var(--nm-on-surface-variant)]">
+          Atualizações importantes para acompanhar agora.
+        </p>
+      </div>
+    </ion-toolbar>
+  </ion-header>
+
+  <div class="modal-body-wrapper">
+    <div class="top-actions" *ngIf="notifications.length">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[rgba(var(--app-color-primary-rgb),0.14)] bg-[rgba(var(--app-color-primary-rgb),0.08)] px-3 py-1.5 text-[0.72rem] font-semibold text-[var(--nm-on-surface-variant)]">
+        <span class="h-2 w-2 rounded-full bg-primary"></span>
+        {{ notifications.length }} pendente{{ notifications.length > 1 ? 's' : '' }}
+      </div>
+
+      <button
+        type="button"
+        (click)="clearAll()"
+        class="soft-action danger"
+        aria-label="Limpar todas"
+      >
+        <i class="bi bi-trash3 text-sm"></i>
+        Limpar tudo
+      </button>
+    </div>
+
+    <div class="scroll-container">
+      <div class="px-4 pb-8 pt-2">
+        <div class="empty-state" *ngIf="!notifications.length">
+          <div class="empty-icon-wrapper">
+            <i class="bi bi-bell"></i>
+          </div>
+          <h2>Tudo em dia</h2>
+          <p>Você não possui notificações pendentes no momento.</p>
+        </div>
+
+        <div class="flex flex-col gap-3" *ngIf="notifications.length">
+          <app-notification-card
+            *ngFor="let notify of notifications; trackBy: trackByFn"
+            [notification]="notify"
+          ></app-notification-card>
+        </div>
+
+        <div class="scroll-spacer"></div>
+      </div>
+    </div>
+  </div>
+</ng-container>

@@ -1,23 +1,8 @@
 import { CommonModule } from '@angular/common';
-import {
-  Component,
-  EventEmitter,
-  Input,
-  Output,
-  inject,
-  OnInit,
-} from '@angular/core';
-import {
-  IonHeader,
-  IonTitle,
-  IonToolbar,
-  IonButton,
-  IonButtons,
-  IonModal,
-} from '@ionic/angular/standalone';
-import { NotificationService } from '../../../core/services/api/notification/notification.service';
-import { map, Observable } from 'rxjs';
-import { NotificationsModalComponent } from '../notifications-modal/notifications-modal.component';
+import { Component, EventEmitter, Input, Output, inject, OnInit, } from '@angular/core';
+import { IonHeader, IonTitle, IonToolbar, IonButton, IonButtons, IonModal, } from '@ionic/angular/standalone';
+import { NotificationsCenterComponent } from '../notifications-center/notifications-center.component';
+import { NotificationsCenterFacade } from '../notifications-center/services/notifications-center.facade';
 import { MenuToggleButtonComponent } from '../menu-toggle-button/menu-toggle-button.component';
 
 @Component({
@@ -25,20 +10,11 @@ import { MenuToggleButtonComponent } from '../menu-toggle-button/menu-toggle-but
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],
   standalone: true,
-  imports: [
-    CommonModule,
-    IonHeader,
-    IonToolbar,
-    IonTitle,
-    IonButton,
-    IonButtons,
-    IonModal,
-    NotificationsModalComponent,
-    MenuToggleButtonComponent,
+  imports: [ CommonModule, IonHeader, IonToolbar, IonTitle, IonButton, IonButtons, IonModal, NotificationsCenterComponent, MenuToggleButtonComponent,
   ],
 })
 export class HeaderComponent implements OnInit {
-  private notificationService = inject(NotificationService);
+  private readonly notificationsFacade = inject(NotificationsCenterFacade);
 
   @Input() title: string = 'Mercadinho';
   @Input() showMenuButton: boolean = true;
@@ -47,9 +23,7 @@ export class HeaderComponent implements OnInit {
   @Input() themeClass: string = '';
   @Output() closeMenu = new EventEmitter<Event>();
 
-  unreadCount$ = this.notificationService.notifications$.pipe(
-    map((notifications) => notifications.filter((n) => !n.read).length)
-  );
+  readonly unreadCount$ = this.notificationsFacade.unreadCount$;
 
   presentingElement: HTMLElement | null = null;
 
@@ -62,7 +36,7 @@ export class HeaderComponent implements OnInit {
   }
 
   testNotification() {
-    this.notificationService.sendNotification({
+    this.notificationsFacade.send({
       title: 'Alerta de Teste',
       body: 'Isso é uma simulação de notificação nativa!',
       type: 'system',

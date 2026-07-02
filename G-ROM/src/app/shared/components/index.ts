@@ -14,7 +14,7 @@ export * from './map/map.component';
 export * from './menu/menu.component';
 export * from './menu-toggle-button/menu-toggle-button.component';
 export * from './modal/modal.component';
-export * from './open-register-modal/open-register-modal.component';
+export * from './notifications-center/notifications-center.component';
 export * from './paginacao/paginacao.component';
 export * from './radio/radio.component';
 export * from './refresher/refresher.component';

@@ -21,6 +21,7 @@ export class NavigationService {
     { title: 'Perfil', url: '/perfil', icon: 'bi-person-circle-fill' },
     { title: 'Configurações', url: '/config', icon: 'bi-gear-fill' },
     { title: 'PDV', url: '/pdv', icon: 'bi-cash-stack' },
+    { title: 'Gestão de caixa', url: '/gestao-caixa', icon: 'bi-safe2' },
     { title: 'Histórico', url: '/historico', icon: 'bi-clock-history' },
     { title: 'Estoque', url: '/estoque', icon: 'bi-box-seam' },
   ];

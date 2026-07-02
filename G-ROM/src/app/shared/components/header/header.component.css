@@ -1,63 +1,8 @@
-/**
- * GLASSMORPHISM UTILITIES
- *
- * Classes and mixins for macOS-style glass surfaces.
- */
-.glass {
-  background: var(--app-glass-bg);
-  border: 1px solid var(--app-glass-border);
-  box-shadow: var(--app-glass-shadow);
-  backdrop-filter: blur(var(--app-glass-blur)) saturate(var(--app-glass-saturate));
-  -webkit-backdrop-filter: blur(var(--app-glass-blur)) saturate(var(--app-glass-saturate));
-}
-
-.glass-strong {
-  background: var(--app-glass-bg-strong);
-  border: 1px solid var(--app-glass-border-strong);
-  box-shadow: var(--app-glass-shadow-strong);
-  backdrop-filter: blur(var(--app-glass-blur-strong)) saturate(var(--app-glass-saturate));
-  -webkit-backdrop-filter: blur(var(--app-glass-blur-strong)) saturate(var(--app-glass-saturate));
-}
-
-.glass-subtle {
-  background: var(--app-glass-bg-subtle);
-  border: 1px solid var(--app-glass-border);
-  box-shadow: var(--app-glass-shadow);
-  backdrop-filter: blur(var(--app-glass-blur)) saturate(var(--app-glass-saturate));
-  -webkit-backdrop-filter: blur(var(--app-glass-blur)) saturate(var(--app-glass-saturate));
-}
-
-.glass-card {
-  background: var(--app-glass-bg);
-  border: 1px solid var(--app-glass-border);
-  box-shadow: var(--app-glass-shadow);
-  backdrop-filter: blur(var(--app-glass-blur)) saturate(var(--app-glass-saturate));
-  -webkit-backdrop-filter: blur(var(--app-glass-blur)) saturate(var(--app-glass-saturate));
-  border-radius: var(--app-radius-lg);
-}
-
-.glass-pill {
-  background: var(--app-glass-bg-subtle);
-  border: 1px solid var(--app-glass-border);
-  box-shadow: var(--app-glass-shadow);
-  backdrop-filter: blur(var(--app-glass-blur)) saturate(var(--app-glass-saturate));
-  -webkit-backdrop-filter: blur(var(--app-glass-blur)) saturate(var(--app-glass-saturate));
-  padding: 2px 8px;
-}
-
-.glass-border {
-  border: 1px solid var(--app-glass-border-strong) !important;
-}
-
 :host {
   display: block;
   position: sticky;
   top: 0;
   z-index: 1000;
-}
-
-.app-header {
-  background: transparent;
 }
 
 .header-toolbar {
@@ -66,79 +11,92 @@
   --padding-start: 8px;
   --padding-end: 8px;
   --min-height: 64px;
-  background: var(--app-glass-bg);
-  border: 1px solid var(--app-glass-border);
-  box-shadow: var(--app-glass-shadow);
-  backdrop-filter: blur(var(--app-glass-blur)) saturate(var(--app-glass-saturate));
-  -webkit-backdrop-filter: blur(var(--app-glass-blur)) saturate(var(--app-glass-saturate));
-  border: none;
   contain: none;
-}
-
-.title-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  height: 100%;
-}
-.title-container i {
-  font-size: 1.2rem;
-  color: var(--app-color-primary);
-  text-shadow: 0 0 10px rgba(var(--app-color-primary-rgb), 0.3);
-}
-.title-container span {
-  font-size: var(--app-type-title-sm);
-  font-weight: 800;
-  letter-spacing: -0.5px;
-  background: linear-gradient(to right, var(--app-color-on-surface), var(--app-color-on-surface-variant));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
 }
 
 .header-action-btn {
   margin: 0 2px;
-  transition: all 0.2s ease;
+  --background: transparent;
+  --background-hover: transparent;
+  --background-focused: transparent;
+  --background-activated: transparent;
+  --border-radius: 14px;
+  --box-shadow: none;
+  --color: transparent;
+  --padding-top: 0;
+  --padding-bottom: 0;
+  --padding-start: 0;
+  --padding-end: 0;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  overflow: visible;
 }
 
-.header-menu-toggle {
-  margin: 0 2px;
-}
-
-.header-action-btn.notification-btn {
+.header-action-btn.notification-btn,
+.header-action-btn.notification-btn::part(native) {
   position: relative;
+  overflow: visible;
 }
+
 .header-action-btn.notification-btn .notification-badge {
   position: absolute;
-  top: 10px;
-  right: 8px;
-  min-width: 16px;
-  height: 16px;
-  background: var(--app-color-primary);
-  color: var(--primary-contrast);
-  font-size: var(--app-type-label-sm);
-  font-weight: 800;
-  border-radius: 50%;
+  top: 0;
+  right: 0;
+  transform: translate(35%, -35%);
+  z-index: 3;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1.5px solid var(--app-color-background);
-  box-shadow: 0 0 10px rgba(var(--app-color-primary-rgb), 0.4);
-  padding: 2px;
-}
-.header-action-btn.profile-shortcut i {
-  color: var(--app-color-primary);
-  opacity: 0.9;
-}
-.header-action-btn:active {
-  transform: scale(0.9);
-  opacity: 0.7;
+  background: linear-gradient(180deg, #7cf18e, var(--app-color-primary));
+  color: #03230c;
+  font-size: 0.65rem;
+  font-weight: 800;
+  line-height: 1;
+  border: 2px solid #0f151b;
+  box-shadow:
+    0 0 0 1px rgba(124, 241, 142, 0.16),
+    0 10px 18px rgba(8, 16, 12, 0.32);
+  animation: notification-badge-pulse 2.4s ease-in-out infinite;
 }
 
-/* Linha de Acento Neon Inferior */
-.header-accent-line {
-  height: 1px;
-  width: 100%;
-  background: linear-gradient(to right, transparent, rgba(var(--app-color-primary-rgb), 0.5), rgba(var(--app-color-primary-rgb), 0.8), rgba(var(--app-color-primary-rgb), 0.5), transparent);
-  box-shadow: 0 1px 10px rgba(var(--app-color-primary-rgb), 0.2);
+.header-action-btn.notification-btn .notification-badge::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  z-index: -1;
+  border-radius: inherit;
+  background: radial-gradient(circle, rgba(124, 241, 142, 0.26) 0%, rgba(124, 241, 142, 0) 72%);
+  opacity: 0.85;
+}
+
+.header-action-btn.notification-btn:hover .notification-btn__surface,
+.header-action-btn.notification-btn:focus-visible .notification-btn__surface {
+  transform: translateY(-1px);
+  border-color: rgba(var(--app-color-primary-rgb), 0.24);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 16px 28px rgba(6, 10, 16, 0.28);
+}
+
+.header-action-btn:active {
+  transform: scale(0.96);
+  opacity: 0.92;
+}
+
+.header-action-btn:active .notification-btn__surface {
+  transform: scale(0.96);
+}
+
+@keyframes notification-badge-pulse {
+  0%,
+  100% {
+    transform: translate(35%, -35%) scale(1);
+  }
+
+  50% {
+    transform: translate(35%, -35%) scale(1.06);
+  }
 }
