@@ -17,7 +17,7 @@ import {
   PdvMetodoPagamentoServer,
   PdvVendaServerRequest,
   PdvVendaServerResponse,
-} from '@domains/pdv/models/pdv.models';
+} from '@domains/pdv/types/pdv.types';
 import {
   PAYMENT_API_NAMES,
 } from '@domains/pdv/helpers/payment-method.helper';

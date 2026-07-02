@@ -12,8 +12,8 @@ import { PdvFooterComponent } from './components/pdv-footer/pdv-footer.component
 import { PdvCashWithdrawalService } from '@domains/pdv/services/pdv-cash-withdrawal.service';
 import { CartItem, PdvStore } from '@domains/pdv/state/pdv.store';
 import { AuthService } from '@services';
-import { PdvSaleSubmissionService } from '@domains/pdv/api/pdv-sale-submission.service';
-import { CartItemView, ConfirmedSale, PaymentMethod } from '@domains/pdv/models/pdv.models';
+import { PdvSaleSubmissionService } from '@domains/pdv/services/pdv-sale-submission.service';
+import { CartItemView, ConfirmedSale, PaymentMethod } from '@domains/pdv/types/pdv.types';
 import { ModalComponent } from '@components';
 
 @Component({

@@ -1,0 +1,108 @@
+<ion-modal
+  [isOpen]="isOpen"
+  [backdropDismiss]="!enviando"
+  [showBackdrop]="true"
+  [style.--background]="'transparent'"
+  [style.--box-shadow]="'none'"
+  [style.--backdrop-opacity]="0.72"
+  (didDismiss)="close()"
+>
+  <ng-template>
+    <div
+      class="flex min-h-full items-center justify-center bg-black/70 px-3 py-6 backdrop-blur-[10px] sm:p-5 md:p-8"
+      role="presentation"
+    >
+      <section
+        class="flex w-full max-w-lg flex-col overflow-hidden rounded-[1.5rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02)),linear-gradient(135deg,rgba(13,19,24,0.98),rgba(9,15,20,0.99))] text-zinc-50 shadow-[0_24px_70px_rgba(0,0,0,0.45)]"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Conferência de abertura do caixa"
+      >
+        <div class="relative border-b border-white/6 px-4 pb-4 pt-5 md:px-5 md:pt-6">
+          <div class="max-w-[calc(100%-3.5rem)] space-y-1">
+            <p class="m-0 text-[0.72rem] pb-1 font-bold uppercase tracking-[0.14em] text-[var(--app-color-primary-light)]">
+              Abertura do caixa
+            </p>
+            <span class="m-0 pb-1 text-md font-black tracking-[-0.04em] text-zinc-50">
+              Liberar acesso ao PDV
+            </span>
+          </div>
+
+          <button
+            type="button"
+            aria-label="Fechar abertura do caixa"
+            class="absolute right-4 top-5 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-zinc-300 transition-colors hover:bg-white/15 hover:text-zinc-100 md:right-5 md:top-6"
+            [disabled]="enviando"
+            (click)="close()"
+          >
+            <i class="bi bi-x-lg text-sm"></i>
+          </button>
+        </div>
+
+        <form
+          class="mx-auto grid w-full max-w-md gap-5 px-4 py-5 md:px-5 md:py-6"
+          [formGroup]="aberturaForm"
+          (ngSubmit)="submit()"
+        >
+          <div class="grid gap-3 grid-cols-2">
+            <article class="rounded-2xl border border-gray-900 bg-black/10 px-3 py-3">
+              <p class="text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-500">Operador</p>
+              <p class="mt-1 text-sm font-black text-zinc-50">{{ usuarioAtualLabel }}</p>
+            </article>
+
+            <article class="rounded-2xl border border-gray-900 bg-black/10 px-3 py-3">
+              <p class="text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-500">Horário</p>
+              <p class="mt-1 inline-flex items-center gap-1 text-xs font-black text-zinc-50">
+                <i class="bi bi-clock text-sm text-zinc-400"></i>
+                {{ horarioAtualLabel }}
+              </p>
+            </article>
+          </div>
+
+          <div class="rounded-[1.35rem] border border-gray-900 bg-black/10 px-4 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] md:px-5">
+            <label class="grid w-full gap-3">
+              <div class="grid gap-1 text-center">
+                <span class="text-sm font-semibold uppercase tracking-[0.18em] text-zinc-300">
+                  Fundo de troco
+                </span>
+                <p class="text-xs leading-relaxed text-zinc-500">
+                  Informe o valor inicial disponivel para troco.
+                </p>
+              </div>
+
+              <input
+                type="text"
+                formControlName="fundoTroco"
+                inputmode="numeric"
+                autocomplete="off"
+                (input)="formatarMoeda($event)"
+                class="h-14 w-full rounded-2xl border border-[rgba(var(--app-color-primary-rgb),0.18)] bg-black/20 px-4 text-center text-xl font-black tracking-[-0.03em] text-zinc-50 outline-none transition placeholder:text-zinc-500 focus:border-[rgba(var(--app-color-primary-rgb),0.42)] focus:ring-2 focus:ring-[rgba(var(--app-color-primary-rgb),0.18)]"
+                placeholder="R$ 0,00"
+              />
+            </label>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 pt-1">
+            <button
+              type="button"
+              class="inline-flex h-11 w-full items-center justify-center rounded-xl border border-white/12 bg-white/[0.06] px-4 text-sm font-bold text-zinc-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] transition hover:border-white/20 hover:bg-white/[0.1] disabled:cursor-not-allowed disabled:opacity-70"
+              [disabled]="enviando"
+              (click)="close()"
+            >
+              Cancelar
+            </button>
+
+            <button
+              type="submit"
+              class="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-[linear-gradient(180deg,rgba(var(--app-color-primary-rgb),0.95),rgba(var(--app-color-primary-rgb),0.78))] px-4 text-sm font-bold text-gray-400  transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-70"
+              [disabled]="enviando"
+            >
+              <ion-spinner *ngIf="enviando" name="crescent"></ion-spinner>
+              <span>{{ enviando ? 'Conferindo...' : 'Abrir caixa' }}</span>
+            </button>
+          </div>
+        </form>
+      </section>
+    </div>
+  </ng-template>
+</ion-modal>

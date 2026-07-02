@@ -4,7 +4,7 @@ import type {
   FechamentoExtratosAutomaticos,
   FechamentoResumoItem,
   FechamentoValoresInformados,
-} from '@domains/gestao-caixa/models/register-closing.types';
+} from '@domains/gestao-caixa/types/register-closing.types';
 
 export function buildRegisterClosingExpectedValues(
   snapshot: FechamentoCaixaSnapshot,

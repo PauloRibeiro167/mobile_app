@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 
-import { CartItemView, CartSkuLine, ProductCatalogItem } from '@domains/pdv/models/pdv.models';
-import { PdvCatalogService } from '@domains/pdv/api/pdv-catalog.service';
+import { CartItemView, CartSkuLine, ProductCatalogItem } from '@domains/pdv/types/pdv.types';
+import { PdvCatalogService } from '@domains/pdv/services/pdv-catalog.service';
 
 @Injectable({
   providedIn: 'root',

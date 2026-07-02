@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 
 import {
   AberturaCaixaResponse,
-} from '@domains/gestao-caixa/models/register-opening.types';
+} from '@domains/gestao-caixa/types/register-opening.types';
 import { RegisterOpeningService } from './register-opening.service';
 
 @Injectable({

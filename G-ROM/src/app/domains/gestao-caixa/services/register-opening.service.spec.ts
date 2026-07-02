@@ -60,7 +60,7 @@ describe('RegisterOpeningService', () => {
   });
 
   it('deve registrar a abertura com operador, fundo de troco e horario previsto', async () => {
-    await authService.login('teste@teste.com', '123456');
+    await authService.login('caixa@mercadinho.local', '123456');
 
     const response = await firstValueFrom(
       service.solicitarAbertura(
@@ -70,7 +70,7 @@ describe('RegisterOpeningService', () => {
       )
     );
 
-    expect(response.operadorId).toBe('teste@teste.com');
+    expect(response.operadorId).toBe('caixa@mercadinho.local');
     expect(response.fundoTroco).toBe(80);
     expect(response.horarioPrevistoAbertura).toBe('07:00');
     expect(response.horarioPrevistoFechamento).toBe('22:00');

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ModalController, IonContent } from '@ionic/angular/standalone';
 
 import { getPaymentMethodLabel } from '@domains/pdv/helpers/payment-method.helper';
-import { PaymentMethod } from '@domains/pdv/models/pdv.models';
+import { PaymentMethod } from '@domains/pdv/types/pdv.types';
 
 @Component({
   selector: 'app-success-modal',

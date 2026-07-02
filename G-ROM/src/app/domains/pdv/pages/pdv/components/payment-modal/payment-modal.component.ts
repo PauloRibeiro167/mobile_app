@@ -2,7 +2,7 @@ import { Component, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ModalController, IonContent, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton } from '@ionic/angular/standalone';
 
-import { PaymentMethod } from '@domains/pdv/models/pdv.models';
+import { PaymentMethod } from '@domains/pdv/types/pdv.types';
 
 @Component({
   selector: 'app-payment-modal',

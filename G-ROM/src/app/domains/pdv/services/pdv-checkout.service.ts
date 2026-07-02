@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 
 import { AuthService } from '@services';
-import { CartItemView, ConfirmedSale, PaymentMethod } from '@domains/pdv/models/pdv.models';
+import { CartItemView, ConfirmedSale, PaymentMethod } from '@domains/pdv/types/pdv.types';
 import { PdvCartService } from './pdv-cart.service';
 
 @Injectable({

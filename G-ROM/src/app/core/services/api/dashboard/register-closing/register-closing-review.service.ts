@@ -6,7 +6,7 @@ import type {
   FechamentoCaixaResponse,
   FechamentoResultadoFinal,
   FechamentoSolicitacaoReavaliacao,
-} from '@domains/gestao-caixa/models/register-closing.types';
+} from '@domains/gestao-caixa/types/register-closing.types';
 
 @Injectable({
   providedIn: 'root',

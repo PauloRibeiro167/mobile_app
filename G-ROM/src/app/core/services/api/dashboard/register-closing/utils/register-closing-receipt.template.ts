@@ -2,7 +2,7 @@ import type {
   FechamentoFormaPagamento,
   FechamentoNotaPdf,
   FechamentoResumoItem,
-} from '@domains/gestao-caixa/models/register-closing.types';
+} from '@domains/gestao-caixa/types/register-closing.types';
 
 interface DivergenciaLinha {
   forma: FechamentoFormaPagamento;

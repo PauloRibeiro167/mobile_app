@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 import { PAYMENT_ICONS, PAYMENT_LABELS } from '@domains/pdv/helpers/payment-method.helper';
-import { PaymentMethod } from '@domains/pdv/models/pdv.models';
+import { PaymentMethod } from '@domains/pdv/types/pdv.types';
 
 @Component({
   selector: 'app-pdv-footer',

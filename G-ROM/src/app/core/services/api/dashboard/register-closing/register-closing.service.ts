@@ -5,7 +5,7 @@ import { AuthService, PreferencesService } from '@services';
 import { RegisterOpeningService } from '@domains/gestao-caixa/services/register-opening.service';
 import { RegisterClosingCheckService } from './register-closing-check.service';
 import { renderClosingReceiptHtml } from './utils/register-closing-receipt.template';
-import type { FechamentoArmazenado, FechamentoCaixaPayload, FechamentoCaixaResponse, FechamentoCaixaSnapshot, FechamentoExtratosAutomaticos, FechamentoNotaPdf, FechamentoValoresInformados, } from '@domains/gestao-caixa/models/register-closing.types';
+import type { FechamentoArmazenado, FechamentoCaixaPayload, FechamentoCaixaResponse, FechamentoCaixaSnapshot, FechamentoExtratosAutomaticos, FechamentoNotaPdf, FechamentoValoresInformados, } from '@domains/gestao-caixa/types/register-closing.types';
 
 @Injectable({
   providedIn: 'root',

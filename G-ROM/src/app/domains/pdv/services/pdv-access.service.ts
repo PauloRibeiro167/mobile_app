@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
-import type { AberturaCaixaResponse } from '@domains/gestao-caixa/models/register-opening.types';
+import type { AberturaCaixaResponse } from '@domains/gestao-caixa/types/register-opening.types';
 import { RegisterOpeningService } from '@domains/gestao-caixa/services/register-opening.service';
 
 export type PdvAccessOrigin =

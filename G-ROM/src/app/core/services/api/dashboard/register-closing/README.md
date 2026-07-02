@@ -26,7 +26,7 @@ Organizar o fluxo de fechamento de caixa em services menores e especializados.
   - marca notificações como lidas
 
 ## Tipos relacionados
-- `src/app/domains/gestao-caixa/models/register-closing.types.ts`
+- `src/app/domains/gestao-caixa/types/register-closing.types.ts`
   - contratos de payload, response, nota, reavaliação e notificação
 
 ## Utils relacionados

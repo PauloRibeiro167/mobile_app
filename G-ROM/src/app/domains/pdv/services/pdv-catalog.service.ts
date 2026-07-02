@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import { ProductCatalogItem } from '@domains/pdv/models/pdv.models';
+import { ProductCatalogItem } from '@domains/pdv/types/pdv.types';
 
 @Injectable({
   providedIn: 'root',

@@ -1,7 +1,7 @@
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
-import { CartItemView } from '@domains/pdv/models/pdv.models';
+import { CartItemView } from '@domains/pdv/types/pdv.types';
 
 @Component({
   selector: 'app-pdv-cart-list',

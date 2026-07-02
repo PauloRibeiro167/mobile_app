@@ -4,7 +4,7 @@ import { RegisterOpeningService } from '@domains/gestao-caixa/services/register-
 import { formatDate, formatTime, formatDateTime } from '../../../../utils/date.utils';
 import { buildRegisterClosingAutomaticStatementValues, buildRegisterClosingExpectedValues, buildRegisterClosingResult, buildRegisterClosingResumoItem, } from './utils/register-closing.factory';
 import { REGISTER_CLOSING_SNAPSHOT_INITIAL_STATE } from './utils/register-closing.snapshot';
-import type { FechamentoCaixaPayload, FechamentoCaixaResponse, FechamentoCaixaSnapshot, FechamentoDetalhesOperacionais, FechamentoExtratosAutomaticos, FechamentoResumoItem, FechamentoValoresInformados, } from '@domains/gestao-caixa/models/register-closing.types';
+import type { FechamentoCaixaPayload, FechamentoCaixaResponse, FechamentoCaixaSnapshot, FechamentoDetalhesOperacionais, FechamentoExtratosAutomaticos, FechamentoResumoItem, FechamentoValoresInformados, } from '@domains/gestao-caixa/types/register-closing.types';
 
 @Injectable({
   providedIn: 'root',

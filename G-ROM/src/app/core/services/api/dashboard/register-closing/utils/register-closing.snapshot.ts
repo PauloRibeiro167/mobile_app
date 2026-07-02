@@ -1,4 +1,4 @@
-import type { FechamentoCaixaSnapshot } from '@domains/gestao-caixa/models/register-closing.types';
+import type { FechamentoCaixaSnapshot } from '@domains/gestao-caixa/types/register-closing.types';
 
 export const REGISTER_CLOSING_SNAPSHOT_INITIAL_STATE: FechamentoCaixaSnapshot = {
   caixaId: '12345',

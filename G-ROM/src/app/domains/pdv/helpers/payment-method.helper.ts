@@ -1,4 +1,4 @@
-import type { PaymentMethod } from '@domains/pdv/models/pdv.models';
+import type { PaymentMethod } from '@domains/pdv/types/pdv.types';
 
 export const PAYMENT_LABELS: Record<PaymentMethod, string> = {
   DINHEIRO: 'Dinheiro',
