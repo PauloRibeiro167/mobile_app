@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { IonContent, IonSearchbar, IonChip, IonLabel, IonRefresher, IonRefresherContent } from '@ionic/angular/standalone';
+import { AuthService } from '@services';
 
 interface Venda {
   id: string;
@@ -12,14 +12,22 @@ interface Venda {
   pagamento: 'pix' | 'dinheiro' | 'cartao';
 }
 
+interface HistoricoResumoCard {
+  label: string;
+  value: string;
+  tone: string;
+}
+
 @Component({
   selector: 'app-historico',
   templateUrl: './historico.page.html',
   styleUrls: ['./historico.page.css'],
   standalone: true,
-  imports: [IonContent, IonSearchbar, IonChip, IonRefresher, IonRefresherContent, CommonModule, FormsModule]
+  imports: [IonContent, IonSearchbar, IonChip, IonRefresher, IonRefresherContent, CommonModule]
 })
 export class HistoricoPage implements OnInit {
+  private readonly authService = inject(AuthService);
+
   vendas: Venda[] = [
     { id: '#1052', horario: '17:45', status: 'concluida', total: 125.80, itensCount: 5, pagamento: 'pix' },
     { id: '#1051', horario: '17:20', status: 'concluida', total: 45.90, itensCount: 2, pagamento: 'dinheiro' },
@@ -37,6 +45,37 @@ export class HistoricoPage implements OnInit {
 
   ngOnInit() {
     this.calculateStats();
+  }
+
+  get session() {
+    return this.authService.getSessaoAtual();
+  }
+
+  get summaryCards(): HistoricoResumoCard[] {
+    const canceladas = this.vendas.filter((venda) => venda.status === 'cancelada').length;
+
+    return [
+      {
+        label: 'Total vendido',
+        value: new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(this.totalDia),
+        tone: 'border-emerald-400/20 bg-emerald-400/10 text-emerald-100',
+      },
+      {
+        label: 'Vendas concluídas',
+        value: String(this.vendasCount),
+        tone: 'border-sky-400/20 bg-sky-400/10 text-sky-100',
+      },
+      {
+        label: 'Canceladas',
+        value: String(canceladas),
+        tone: 'border-rose-400/20 bg-rose-400/10 text-rose-100',
+      },
+      {
+        label: 'Métodos usados',
+        value: String(new Set(this.vendas.map((venda) => venda.pagamento)).size),
+        tone: 'border-fuchsia-400/20 bg-fuchsia-400/10 text-fuchsia-100',
+      },
+    ];
   }
 
   calculateStats() {

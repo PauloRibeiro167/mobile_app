@@ -3,79 +3,119 @@
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
-  <div class="history-container">
-    
-    <!-- Header e Título -->
-    <header class="history-header">
-      <div class="top-row">
-        <h1>Histórico</h1>
-        <div class="date-badge">
-          <i class="fa-solid fa-calendar-day"></i>
-          Hoje
+  <div class="mx-auto flex min-h-full max-w-6xl flex-col gap-6 px-4 py-6 pb-24">
+    <section class="rounded-3xl border border-white/10 bg-[linear-gradient(145deg,rgba(10,16,23,0.98),rgba(15,23,32,0.94))] p-5 text-white shadow-[0_24px_60px_rgba(0,0,0,0.28)]">
+      <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div>
+          <span class="inline-flex rounded-full border border-sky-400/30 bg-sky-400/10 px-3 py-1 text-[0.65rem] font-bold uppercase tracking-[0.18em] text-sky-200">
+            Histórico de vendas
+          </span>
+          <h1 class="mt-3 text-2xl font-black tracking-tight text-white">Transações, filtros e leitura operacional</h1>
+          <p class="mt-2 max-w-3xl text-sm text-zinc-300">
+            O resultado do domínio agora segue o mesmo padrão dos demais: contexto da sessão, cards de resumo e lista principal padronizada.
+          </p>
+        </div>
+
+        <div class="rounded-2xl border border-sky-400/20 bg-sky-400/10 px-4 py-3 text-sm text-sky-50">
+          <div class="text-[0.7rem] font-bold uppercase tracking-[0.16em] text-sky-200">Recorte atual</div>
+          <div class="mt-1 text-base font-semibold">Hoje</div>
+          <div class="mt-1 text-xs text-sky-100/75">{{ vendasFiltradas.length }} transação(ões) visíveis</div>
         </div>
       </div>
+    </section>
 
-      <!-- Métricas de Resumo -->
-      <div class="stats-grid">
-        <div class="stat-card total">
-          <span class="label">Total Vendido</span>
-          <strong class="value">{{ totalDia | currency:'BRL' }}</strong>
-        </div>
-        <div class="stat-card count">
-          <span class="label">Vendas</span>
-          <strong class="value">{{ vendasCount }}</strong>
-        </div>
-      </div>
-    </header>
+    <section class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <article
+        *ngFor="let card of summaryCards"
+        class="rounded-3xl border p-4 shadow-[0_18px_45px_rgba(0,0,0,0.18)]"
+        [ngClass]="card.tone"
+      >
+        <div class="text-[0.68rem] font-black uppercase tracking-[0.16em] opacity-80">{{ card.label }}</div>
+        <div class="mt-3 text-2xl font-black tracking-tight">{{ card.value }}</div>
+      </article>
+    </section>
 
-    <!-- Barra de Pesquisa e Filtros -->
-    <div class="filter-section">
-      <ion-searchbar 
-        placeholder="Buscar por ID ou Valor" 
-        class="custom-search"
-        mode="ios">
-      </ion-searchbar>
-      
-      <div class="filter-chips">
-        <ion-chip [class.active]="filtroAtivo === 'todas'" (click)="setFiltro('todas')">Todas</ion-chip>
-        <ion-chip [class.active]="filtroAtivo === 'concluida'" (click)="setFiltro('concluida')">Concluídas</ion-chip>
-        <ion-chip [class.active]="filtroAtivo === 'cancelada'" (click)="setFiltro('cancelada')">Canceladas</ion-chip>
-      </div>
-    </div>
+    <section *ngIf="session as currentSession" class="grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
+      <article class="rounded-3xl border border-white/10 bg-[#0e1620] p-5 text-white">
+        <h2 class="text-lg font-bold">Contexto da sessão</h2>
+        <p class="mt-1 text-sm text-zinc-400">Padrão compartilhado para deixar claro quem está olhando o histórico e com quais permissões.</p>
 
-    <!-- Lista de Vendas -->
-    <main class="history-list">
-      <div class="list-label">Transações de Hoje</div>
-      
-      <div class="modern-sale-card" 
-           *ngFor="let venda of vendasFiltradas"
-           [class.cancelled]="venda.status === 'cancelada'">
-        
-        <div class="card-left">
-          <div class="method-icon" [class]="venda.pagamento">
-            <i [class]="getPaymentIcon(venda.pagamento)"></i>
+        <div class="mt-4 flex flex-col gap-4">
+          <div>
+            <div class="text-xs font-bold uppercase tracking-[0.14em] text-zinc-500">Usuário atual</div>
+            <div class="mt-2 text-sm text-zinc-200">{{ currentSession.user.nome }} • {{ currentSession.user.cargo }}</div>
           </div>
-          <div class="info">
-            <div class="sale-id">{{ venda.id }} <span class="time">• {{ venda.horario }}</span></div>
-            <div class="items-count">{{ venda.itensCount }} {{ venda.itensCount === 1 ? 'item' : 'itens' }}</div>
-          </div>
-        </div>
 
-        <div class="card-right">
-          <div class="amount">{{ venda.total | currency:'BRL' }}</div>
-          <div class="status-indicator">
-            <span class="dot"></span>
-            {{ venda.status === 'concluida' ? 'Concluída' : 'Cancelada' }}
+          <div>
+            <div class="text-xs font-bold uppercase tracking-[0.14em] text-zinc-500">Perfis</div>
+            <div class="mt-2 flex flex-wrap gap-2">
+              <span *ngFor="let profile of currentSession.profileNames" class="rounded-full border border-white/10 px-2 py-1 text-xs text-zinc-200">
+                {{ profile }}
+              </span>
+            </div>
+          </div>
+
+          <div>
+            <div class="text-xs font-bold uppercase tracking-[0.14em] text-zinc-500">Permissões efetivas</div>
+            <div class="mt-2 flex flex-wrap gap-2">
+              <span *ngFor="let permission of currentSession.permissions" class="rounded-full border border-sky-400/20 bg-sky-400/10 px-2 py-1 text-xs text-sky-100">
+                {{ permission }}
+              </span>
+            </div>
           </div>
         </div>
-      </div>
+      </article>
 
-      <!-- Estado Vazio caso não haja resultados -->
-      <div class="empty-results" *ngIf="vendasFiltradas.length === 0">
-        <i class="fa-solid fa-receipt"></i>
-        <p>Nenhuma venda encontrada com este filtro.</p>
-      </div>
-    </main>
+      <article class="rounded-3xl border border-white/10 bg-[#0e1620] p-5 text-white">
+        <h2 class="text-lg font-bold">Filtros e resultados</h2>
+        <p class="mt-1 text-sm text-zinc-400">Estrutura padronizada para busca, segmentação e leitura da lista principal.</p>
 
+        <div class="mt-4 rounded-2xl border border-white/8 bg-white/5 p-4">
+          <ion-searchbar 
+            placeholder="Buscar por ID ou valor" 
+            class="custom-search"
+            mode="ios">
+          </ion-searchbar>
+
+          <div class="mt-3 flex flex-wrap gap-2">
+            <ion-chip [class.active]="filtroAtivo === 'todas'" (click)="setFiltro('todas')">Todas</ion-chip>
+            <ion-chip [class.active]="filtroAtivo === 'concluida'" (click)="setFiltro('concluida')">Concluídas</ion-chip>
+            <ion-chip [class.active]="filtroAtivo === 'cancelada'" (click)="setFiltro('cancelada')">Canceladas</ion-chip>
+          </div>
+        </div>
+
+        <div class="mt-4 grid gap-3">
+          <div class="text-xs font-bold uppercase tracking-[0.14em] text-zinc-500">Transações do dia</div>
+
+          <div class="modern-sale-card" 
+              *ngFor="let venda of vendasFiltradas"
+              [class.cancelled]="venda.status === 'cancelada'">
+            
+            <div class="card-left">
+              <div class="method-icon" [class]="venda.pagamento">
+                <i [class]="getPaymentIcon(venda.pagamento)"></i>
+              </div>
+              <div class="info">
+                <div class="sale-id">{{ venda.id }} <span class="time">• {{ venda.horario }}</span></div>
+                <div class="items-count">{{ venda.itensCount }} {{ venda.itensCount === 1 ? 'item' : 'itens' }}</div>
+              </div>
+            </div>
+
+            <div class="card-right">
+              <div class="amount">{{ venda.total | currency:'BRL' }}</div>
+              <div class="status-indicator">
+                <span class="dot"></span>
+                {{ venda.status === 'concluida' ? 'Concluída' : 'Cancelada' }}
+              </div>
+            </div>
+          </div>
+
+          <div class="empty-results" *ngIf="vendasFiltradas.length === 0">
+            <i class="fa-solid fa-receipt"></i>
+            <p>Nenhuma venda encontrada com este filtro.</p>
+          </div>
+        </div>
+      </article>
+    </section>
   </div>
 </ion-content>

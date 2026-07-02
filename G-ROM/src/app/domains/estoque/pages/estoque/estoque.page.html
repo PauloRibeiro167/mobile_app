@@ -1,48 +1,101 @@
-<ion-content fullscreen class="dashboard-screen">
-  <div class="dashboard-container">
-    
-    <!-- Header -->
-    <header class="dash-header">
-      <h1>Estoque</h1>
-      <div class="status-badge" style="background: rgba(251, 146, 60, 0.1); color: #fb923c; border: 1px solid rgba(251, 146, 60, 0.2);">
-        <ion-icon name="alert-circle-outline" style="margin-right: 4px;"></ion-icon>
-        2 Itens Baixos
-      </div>
-    </header>
+<ion-content fullscreen class="page-screen">
+  <div class="mx-auto flex min-h-full max-w-6xl flex-col gap-6 px-4 py-6 pb-24">
+    <section class="rounded-3xl border border-white/10 bg-[linear-gradient(145deg,rgba(10,16,23,0.98),rgba(15,23,32,0.94))] p-5 text-white shadow-[0_24px_60px_rgba(0,0,0,0.28)]">
+      <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div>
+          <span class="inline-flex rounded-full border border-amber-400/30 bg-amber-400/10 px-3 py-1 text-[0.65rem] font-bold uppercase tracking-[0.18em] text-amber-200">
+            Estoque
+          </span>
+          <h1 class="mt-3 text-2xl font-black tracking-tight text-white">Visão de inventário e reposição</h1>
+          <p class="mt-2 max-w-3xl text-sm text-zinc-300">
+            O domínio de estoque agora segue o mesmo padrão de resumo, contexto da sessão e resultados operacionais das demais áreas.
+          </p>
+        </div>
 
-    <!-- Stock Items -->
-    <section class="latest-sales">
-      <ion-card class="sales-list-card">
-        <ion-list lines="full" class="dark-list">
-          <ion-item>
-            <div class="sale-icon" slot="start" style="background: rgba(156, 163, 175, 0.1);">
-              <ion-icon name="cube-outline" style="color: #9ca3af;"></ion-icon>
-            </div>
-            <ion-label>
-              <h3>Coca-Cola 2L</h3>
-              <p>Cód: 7894900011517</p>
-            </ion-label>
-            <div slot="end" style="text-align: right;">
-              <span style="display: block; font-weight: 700; color: #4ade80;">150 un</span>
-              <span style="font-size: 0.75rem; color: #9ca3af;">R$ 8,50</span>
-            </div>
-          </ion-item>
-          <ion-item>
-            <div class="sale-icon" slot="start" style="background: rgba(251, 146, 60, 0.1);">
-              <ion-icon name="alert-circle-outline" style="color: #fb923c;"></ion-icon>
-            </div>
-            <ion-label>
-              <h3>Arroz 5kg</h3>
-              <p>Cód: 7891234567890</p>
-            </ion-label>
-            <div slot="end" style="text-align: right;">
-              <span style="display: block; font-weight: 700; color: #fb923c;">5 un</span>
-              <span style="font-size: 0.75rem; color: #9ca3af;">R$ 25,90</span>
-            </div>
-          </ion-item>
-        </ion-list>
-      </ion-card>
+        <div class="rounded-2xl border border-amber-400/20 bg-amber-400/10 px-4 py-3 text-sm text-amber-50">
+          <div class="text-[0.7rem] font-bold uppercase tracking-[0.16em] text-amber-200">Alerta atual</div>
+          <div class="mt-1 text-base font-semibold">{{ itensBaixos.length }} item(ns) em reposição</div>
+        </div>
+      </div>
     </section>
 
+    <section class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <article
+        *ngFor="let card of summaryCards"
+        class="rounded-3xl border p-4 shadow-[0_18px_45px_rgba(0,0,0,0.18)]"
+        [ngClass]="card.tone"
+      >
+        <div class="text-[0.68rem] font-black uppercase tracking-[0.16em] opacity-80">{{ card.label }}</div>
+        <div class="mt-3 text-2xl font-black tracking-tight">{{ card.value }}</div>
+      </article>
+    </section>
+
+    <section *ngIf="session as currentSession" class="grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
+      <article class="rounded-3xl border border-white/10 bg-[#0e1620] p-5 text-white">
+        <h2 class="text-lg font-bold">Contexto da sessão</h2>
+        <p class="mt-1 text-sm text-zinc-400">Escopos que devem recortar consultas, inventário e reposição.</p>
+
+        <div class="mt-4 flex flex-col gap-4">
+          <div>
+            <div class="text-xs font-bold uppercase tracking-[0.14em] text-zinc-500">Usuário atual</div>
+            <div class="mt-2 text-sm text-zinc-200">{{ currentSession.user.nome }} • {{ currentSession.user.cargo }}</div>
+          </div>
+
+          <div>
+            <div class="text-xs font-bold uppercase tracking-[0.14em] text-zinc-500">Lojas</div>
+            <div class="mt-2 flex flex-wrap gap-2">
+              <span *ngFor="let loja of currentSession.scopes.lojas" class="rounded-full border border-white/10 px-2 py-1 text-xs text-zinc-200">
+                {{ loja }}
+              </span>
+            </div>
+          </div>
+
+          <div>
+            <div class="text-xs font-bold uppercase tracking-[0.14em] text-zinc-500">Permissões efetivas</div>
+            <div class="mt-2 flex flex-wrap gap-2">
+              <span *ngFor="let permission of currentSession.permissions" class="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-2 py-1 text-xs text-emerald-100">
+                {{ permission }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="rounded-3xl border border-white/10 bg-[#0e1620] p-5 text-white">
+        <h2 class="text-lg font-bold">Itens monitorados</h2>
+        <p class="mt-1 text-sm text-zinc-400">Lista padronizada com código, categoria, saldo e preço unitário.</p>
+
+        <div class="mt-4 grid gap-3">
+          <div *ngFor="let item of itens" class="rounded-2xl border border-white/8 bg-white/5 p-4">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <div class="text-base font-bold text-white">{{ item.nome }}</div>
+                <div class="mt-1 text-sm text-zinc-400">{{ item.categoria }} • {{ item.codigo }}</div>
+              </div>
+
+              <span
+                class="rounded-full px-2 py-1 text-xs font-bold uppercase tracking-[0.14em]"
+                [ngClass]="item.status === 'baixo'
+                  ? 'border border-amber-400/20 bg-amber-400/10 text-amber-100'
+                  : 'border border-emerald-400/20 bg-emerald-400/10 text-emerald-100'"
+              >
+                {{ item.status === 'baixo' ? 'Reposição' : 'Saudável' }}
+              </span>
+            </div>
+
+            <div class="mt-4 grid gap-3 sm:grid-cols-2">
+              <div class="rounded-2xl border border-white/8 bg-black/10 p-3">
+                <div class="text-[0.68rem] font-black uppercase tracking-[0.14em] text-zinc-500">Saldo</div>
+                <div class="mt-2 text-lg font-black text-white">{{ item.quantidade }} un</div>
+              </div>
+              <div class="rounded-2xl border border-white/8 bg-black/10 p-3">
+                <div class="text-[0.68rem] font-black uppercase tracking-[0.14em] text-zinc-500">Preço</div>
+                <div class="mt-2 text-lg font-black text-white">{{ item.preco | currency:'BRL' }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
   </div>
 </ion-content>
