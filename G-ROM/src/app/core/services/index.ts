@@ -10,6 +10,22 @@ export { GeocodingService } from './navegacao/geocoding.service';
 
 // Serviços de autenticação
 export { AuthService } from './auth/auth.service';
+export { AccessControlService } from './auth/access-control.service';
+export { AuthApiService } from './auth/auth-api.service';
+export { AuthMockService } from './auth/auth-mock.service';
+export { AuthSessionService } from './auth/auth-session.service';
+export { AuthUserContextService } from './auth/auth-user-context.service';
+export { PermissionService } from './auth/permission.service';
+export { ProfileManagementService } from './auth/profile-management.service';
+export { ScopeService } from './auth/scope.service';
+export type {
+  AppViewDefinition,
+  AuthSession,
+  AuthSessionUser,
+  MockProfileDefinition,
+  MockUserDefinition,
+  PermissionScope,
+} from '../models/access-control.models';
 
 // ============================================
 // Serviços de UI (Reorganizados por Feature)

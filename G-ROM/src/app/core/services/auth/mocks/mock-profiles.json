@@ -1,0 +1,155 @@
+[
+  {
+    "nome": "Admin",
+    "descricao": "Acesso completo ao domínio administrativo e operacional.",
+    "cargoLabel": "ADMINISTRADOR",
+    "landingRoute": "/admin/acessos",
+    "permissions": [
+      "admin.usuarios.manage",
+      "admin.usuarios.read",
+      "admin.perfis.manage",
+      "admin.perfis.read",
+      "admin.permissoes.manage",
+      "admin.permissoes.read",
+      "core.authentication.manage",
+      "core.authentication.sessions.read",
+      "core.authentication.sessions.revoke",
+      "admin.configuracoes.manage",
+      "admin.configuracoes.read",
+      "dashboard.admin",
+      "dashboard.crm",
+      "dashboard.estoque",
+      "dashboard.financeiro",
+      "dashboard.pdv",
+      "dashboard.rh",
+      "pdv.read",
+      "pdv.caixa",
+      "estoque.read",
+      "estoque.manage",
+      "financeiro.read",
+      "rh.read",
+      "rh.manage",
+      "crm.read",
+      "catalogo.read",
+      "vendas.historico.read"
+    ]
+  },
+  {
+    "nome": "Gerente",
+    "descricao": "Gestão operacional, indicadores e supervisão de rotinas da loja.",
+    "cargoLabel": "GERENTE",
+    "landingRoute": "/home",
+    "permissions": [
+      "admin.usuarios.read",
+      "admin.perfis.read",
+      "core.authentication.sessions.read",
+      "admin.configuracoes.read",
+      "dashboard.admin",
+      "dashboard.estoque",
+      "dashboard.financeiro",
+      "dashboard.pdv",
+      "dashboard.rh",
+      "pdv.read",
+      "estoque.read",
+      "financeiro.read",
+      "rh.read",
+      "crm.read",
+      "catalogo.read",
+      "vendas.historico.read"
+    ]
+  },
+  {
+    "nome": "Funcionario",
+    "descricao": "Acesso interno básico com visão do próprio contexto.",
+    "cargoLabel": "FUNCIONARIO",
+    "landingRoute": "/meu-perfil",
+    "permissions": []
+  },
+  {
+    "nome": "TI",
+    "descricao": "Suporte técnico, auditoria e manutenção das integrações.",
+    "cargoLabel": "SUPORTE TI",
+    "landingRoute": "/admin/acessos",
+    "permissions": [
+      "admin.usuarios.read",
+      "admin.perfis.read",
+      "admin.permissoes.read",
+      "core.authentication.manage",
+      "core.authentication.sessions.read",
+      "core.authentication.sessions.revoke",
+      "admin.configuracoes.manage",
+      "admin.configuracoes.read",
+      "dashboard.admin"
+    ]
+  },
+  {
+    "nome": "Supervisor",
+    "descricao": "Supervisão de turnos, equipe e acompanhamento do fluxo operacional.",
+    "cargoLabel": "SUPERVISOR",
+    "landingRoute": "/home",
+    "permissions": [
+      "dashboard.pdv",
+      "dashboard.estoque",
+      "dashboard.rh",
+      "pdv.read",
+      "estoque.read",
+      "rh.read",
+      "vendas.historico.read"
+    ]
+  },
+  {
+    "nome": "Caixa",
+    "descricao": "Operação do caixa, vendas e atendimento de balcão.",
+    "cargoLabel": "CAIXA",
+    "landingRoute": "/pdv",
+    "permissions": [
+      "dashboard.pdv",
+      "pdv.read",
+      "pdv.caixa",
+      "vendas.historico.read"
+    ]
+  },
+  {
+    "nome": "Atendente",
+    "descricao": "Atendimento ao cliente com apoio às vendas e catálogo.",
+    "cargoLabel": "ATENDENTE",
+    "landingRoute": "/home",
+    "permissions": [
+      "dashboard.pdv",
+      "pdv.read",
+      "catalogo.read",
+      "crm.read"
+    ]
+  },
+  {
+    "nome": "Vendedor",
+    "descricao": "Execução comercial e acompanhamento do relacionamento com clientes.",
+    "cargoLabel": "VENDEDOR",
+    "landingRoute": "/historico",
+    "permissions": [
+      "dashboard.crm",
+      "crm.read",
+      "catalogo.read",
+      "vendas.historico.read"
+    ]
+  },
+  {
+    "nome": "Estoquista",
+    "descricao": "Controle de estoque, inventário e reposição operacional.",
+    "cargoLabel": "ESTOQUISTA",
+    "landingRoute": "/estoque",
+    "permissions": [
+      "dashboard.estoque",
+      "estoque.read",
+      "estoque.manage",
+      "catalogo.read"
+    ]
+  },
+  {
+    "nome": "Limpeza",
+    "descricao": "Acesso restrito para apoio operacional com baixo privilégio.",
+    "cargoLabel": "APOIO",
+    "landingRoute": "/meu-perfil",
+    "permissions": []
+  }
+]

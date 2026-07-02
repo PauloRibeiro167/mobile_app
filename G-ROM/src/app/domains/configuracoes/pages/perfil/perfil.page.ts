@@ -59,6 +59,10 @@ export class PerfilPage implements OnInit, OnDestroy {
     this.userProfileSubscription?.unsubscribe();
   }
 
+  get currentSession() {
+    return this.authService.getSessaoAtual();
+  }
+
   private performLogout() {
     this.authService.logout();
     this.router.navigate(['/login']);

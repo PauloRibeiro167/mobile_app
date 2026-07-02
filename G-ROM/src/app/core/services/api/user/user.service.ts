@@ -1,5 +1,7 @@
-import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Injectable, inject } from '@angular/core';
+import { Observable, map } from 'rxjs';
+
+import { AuthService, AuthUserContextService, PermissionScope } from '@services';
 
 export interface UserProfile {
   nome: string;
@@ -11,30 +13,22 @@ export interface UserProfile {
   avatarUrl?: string;
   telefone?: string;
   departamento?: string;
+  perfis?: string[];
+  permissions?: string[];
+  scopes?: PermissionScope;
+  situacao?: string;
 }
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
-  constructor() {}
+  private readonly authService = inject(AuthService);
+  private readonly authUserContextService = inject(AuthUserContextService);
 
-  /**
-   * Simula a busca dos dados do usuário logado
-   */
   getUserProfile(): Observable<UserProfile> {
-    return of({
-      id: 'FF-88291',
-      nome: 'José Paulo',
-      cargo: 'OPERADOR',
-      turno: 'TURNO MANHÃ',
-      status: 'online',
-      isVerificado: true,
-      telefone: '(11) 99999-9999',
-      departamento: 'Vendas',
-      // Gerando avatar dinâmico baseado no nome
-      avatarUrl:
-        'https://ui-avatars.com/api/?name=Admin&background=00ff88&color=064e3b&bold=true',
-    });
+    return this.authService.sessao$.pipe(
+      map((session) => this.authUserContextService.toUserProfile(session))
+    );
   }
 }

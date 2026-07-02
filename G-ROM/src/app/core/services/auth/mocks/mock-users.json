@@ -1,0 +1,173 @@
+[
+  {
+    "id": "user-admin",
+    "nome": "Ariella Costa",
+    "email": "admin@mercadinho.local",
+    "password": "123456",
+    "cargo": "Admin Geral",
+    "departamento": "Diretoria",
+    "turno": "Integral",
+    "status": "online",
+    "situacao": "Admin com acesso total para validar toda a estrutura.",
+    "avatarUrl": "https://ui-avatars.com/api/?name=Ariella+Costa&background=00ff88&color=053b2d&bold=true",
+    "profiles": ["Admin"],
+    "additionalPermissions": ["support.read"],
+    "scopes": {
+      "lojas": ["matriz", "filial-norte", "filial-sul"],
+      "setores": ["administrativo", "operacoes", "financeiro", "estoque", "rh"],
+      "ownOnly": false
+    }
+  },
+  {
+    "id": "user-gerente",
+    "nome": "Marcos Lima",
+    "email": "gerente@mercadinho.local",
+    "password": "123456",
+    "cargo": "Gerente de Loja",
+    "departamento": "Operações",
+    "turno": "Abertura",
+    "status": "online",
+    "situacao": "Gerente com leitura ampla e permissão extra para movimentação de estoque.",
+    "avatarUrl": "https://ui-avatars.com/api/?name=Marcos+Lima&background=f59e0b&color=422006&bold=true",
+    "profiles": ["Gerente"],
+    "additionalPermissions": ["estoque.manage"],
+    "scopes": {
+      "lojas": ["matriz"],
+      "setores": ["operacoes", "estoque", "financeiro"],
+      "ownOnly": false
+    }
+  },
+  {
+    "id": "user-ti",
+    "nome": "Patricia Nunes",
+    "email": "ti@mercadinho.local",
+    "password": "123456",
+    "cargo": "Analista de Suporte",
+    "departamento": "Tecnologia",
+    "turno": "Comercial",
+    "status": "online",
+    "situacao": "TI focado em sessões, perfis e suporte de autenticação.",
+    "avatarUrl": "https://ui-avatars.com/api/?name=Patricia+Nunes&background=2563eb&color=e0f2fe&bold=true",
+    "profiles": ["TI"],
+    "additionalPermissions": ["support.read"],
+    "scopes": {
+      "lojas": ["matriz", "filial-norte"],
+      "setores": ["tecnologia", "administrativo"],
+      "ownOnly": false
+    }
+  },
+  {
+    "id": "user-supervisor-hibrido",
+    "nome": "Clara Mendes",
+    "email": "supervisor@mercadinho.local",
+    "password": "123456",
+    "cargo": "Supervisora de Turno",
+    "departamento": "Operações",
+    "turno": "Fechamento",
+    "status": "ausente",
+    "situacao": "Usuária híbrida com perfil de supervisão e apoio extra ao estoque.",
+    "avatarUrl": "https://ui-avatars.com/api/?name=Clara+Mendes&background=7c3aed&color=f3e8ff&bold=true",
+    "profiles": ["Supervisor", "Estoquista"],
+    "additionalPermissions": ["pdv.caixa"],
+    "scopes": {
+      "lojas": ["filial-norte"],
+      "setores": ["operacoes", "estoque"],
+      "ownOnly": false
+    }
+  },
+  {
+    "id": "user-caixa",
+    "nome": "Joao Pedro",
+    "email": "caixa@mercadinho.local",
+    "password": "123456",
+    "cargo": "Operador de Caixa",
+    "departamento": "Frente de Loja",
+    "turno": "Abertura",
+    "status": "online",
+    "situacao": "Caixa puro para testar fluxo operacional e bloqueios administrativos.",
+    "avatarUrl": "https://ui-avatars.com/api/?name=Joao+Pedro&background=10b981&color=052e26&bold=true",
+    "profiles": ["Caixa"],
+    "additionalPermissions": [],
+    "scopes": {
+      "lojas": ["matriz"],
+      "setores": ["pdv"],
+      "ownOnly": true
+    }
+  },
+  {
+    "id": "user-vendedor",
+    "nome": "Larissa Gomes",
+    "email": "vendas@mercadinho.local",
+    "password": "123456",
+    "cargo": "Vendedora",
+    "departamento": "Comercial",
+    "turno": "Intermediário",
+    "status": "online",
+    "situacao": "Vendedora com permissão adicional de leitura do PDV para acompanhar pedidos.",
+    "avatarUrl": "https://ui-avatars.com/api/?name=Larissa+Gomes&background=ec4899&color=500724&bold=true",
+    "profiles": ["Vendedor"],
+    "additionalPermissions": ["pdv.read"],
+    "scopes": {
+      "lojas": ["filial-sul"],
+      "setores": ["comercial"],
+      "ownOnly": false
+    }
+  },
+  {
+    "id": "user-estoque",
+    "nome": "Bruno Alves",
+    "email": "estoque@mercadinho.local",
+    "password": "123456",
+    "cargo": "Estoquista",
+    "departamento": "Estoque",
+    "turno": "Madrugada",
+    "status": "offline",
+    "situacao": "Estoquista com foco em inventário e catálogo.",
+    "avatarUrl": "https://ui-avatars.com/api/?name=Bruno+Alves&background=14b8a6&color=042f2e&bold=true",
+    "profiles": ["Estoquista"],
+    "additionalPermissions": [],
+    "scopes": {
+      "lojas": ["centro-distribuicao"],
+      "setores": ["estoque"],
+      "ownOnly": false
+    }
+  },
+  {
+    "id": "user-funcionario",
+    "nome": "Camila Rocha",
+    "email": "funcionario@mercadinho.local",
+    "password": "123456",
+    "cargo": "Assistente",
+    "departamento": "Administrativo",
+    "turno": "Comercial",
+    "status": "online",
+    "situacao": "Funcionária com perfil básico e leitura adicional de catálogo para apoio interno.",
+    "avatarUrl": "https://ui-avatars.com/api/?name=Camila+Rocha&background=64748b&color=f8fafc&bold=true",
+    "profiles": ["Funcionario"],
+    "additionalPermissions": ["catalogo.read"],
+    "scopes": {
+      "lojas": ["matriz"],
+      "setores": ["administrativo"],
+      "ownOnly": true
+    }
+  },
+  {
+    "id": "user-limpeza",
+    "nome": "Sonia Freitas",
+    "email": "limpeza@mercadinho.local",
+    "password": "123456",
+    "cargo": "Apoio Operacional",
+    "departamento": "Serviços Gerais",
+    "turno": "Fechamento",
+    "status": "offline",
+    "situacao": "Acesso mínimo para validar cenários de usuário quase sem privilégios.",
+    "avatarUrl": "https://ui-avatars.com/api/?name=Sonia+Freitas&background=78716c&color=fafaf9&bold=true",
+    "profiles": ["Limpeza"],
+    "additionalPermissions": [],
+    "scopes": {
+      "lojas": ["matriz"],
+      "setores": ["servicos-gerais"],
+      "ownOnly": true
+    }
+  }
+]

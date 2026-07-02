@@ -1,22 +1,27 @@
 import { Injectable, inject } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-import { PreferencesService } from '../infraestrutura/preferences.service';
-
-export interface Usuario {
-  nome: string;
-  email: string;
-}
+import { BehaviorSubject, map } from 'rxjs';
+import {
+  AuthSession,
+  AuthSessionUser,
+} from '../../models/access-control.models';
+import { AccessControlService } from './access-control.service';
+import { AuthSessionService } from './auth-session.service';
+import { AuthApiService } from './auth-api.service';
+import { PermissionService } from './permission.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly storageKey = 'usuarioLogado';
-  private readonly preferencesService = inject(PreferencesService);
-  private usuarioLogadoSubject = new BehaviorSubject<Usuario | null>(null);
-  usuarioLogado$ = this.usuarioLogadoSubject.asObservable();
+  private readonly accessControlService = inject(AccessControlService);
+  private readonly authSessionService = inject(AuthSessionService);
+  private readonly authApiService = inject(AuthApiService);
+  private readonly permissionService = inject(PermissionService);
+  private readonly sessionSubject = new BehaviorSubject<AuthSession | null>(null);
+  readonly sessao$ = this.sessionSubject.asObservable();
+  readonly usuarioLogado$ = this.sessao$.pipe(map((session) => session?.user ?? null));
   private initializationPromise: Promise<void>;
 
   constructor() {
-    this.initializationPromise = this.loadUsuarioPersistido();
+    this.initializationPromise = this.loadSessionPersistida();
   }
 
   async initialize(): Promise<void> {
@@ -24,61 +29,81 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    return !!this.usuarioLogadoSubject.getValue();
+    return !!this.sessionSubject.getValue();
   }
 
-  getUsuarioLogado(): Usuario | null {
-    return this.usuarioLogadoSubject.getValue();
+  getUsuarioLogado(): AuthSessionUser | null {
+    return this.sessionSubject.getValue()?.user ?? null;
   }
 
-  login(email: string, senha: string): Promise<boolean> {
-    // Simula uma chamada de API assíncrona
-    return new Promise(resolve => {
-      setTimeout(() => {
-        if (email === 'teste@teste.com' && senha === '123456') {
-          const usuario = { nome: 'Usuário Teste', email };
-          this.usuarioLogadoSubject.next(usuario);
-          void this.setUsuarioPersistido(usuario);
-          resolve(true);
-        } else {
-          resolve(false);
-        }
-      }, 500);
-    });
+  getSessaoAtual(): AuthSession | null {
+    return this.sessionSubject.getValue();
+  }
+
+  getFallbackRoute(): string {
+    const session = this.getSessaoAtual();
+    return session
+      ? this.accessControlService.getSuggestedLandingRoute(session)
+      : '/login';
+  }
+
+  hasPermission(permissionKey: string): boolean {
+    return this.permissionService.hasPermission(this.getSessaoAtual(), permissionKey);
+  }
+
+  canAccessView(viewId: string): boolean {
+    const session = this.getSessaoAtual();
+    return !!session && this.accessControlService.canAccessView(session, viewId);
+  }
+
+  async login(email: string, senha: string): Promise<boolean> {
+    if (!email || !senha) {
+      return false;
+    }
+
+    const user = await this.authApiService.login(email, senha);
+    if (!user) {
+      return false;
+    }
+
+    const session = this.accessControlService.buildSession(user);
+    this.sessionSubject.next(session);
+    await this.authSessionService.save({ userId: user.id });
+    return true;
   }
 
   logout(): void {
-    this.usuarioLogadoSubject.next(null);
-    void this.removeUsuarioPersistido();
+    this.sessionSubject.next(null);
+    void this.authSessionService.clear();
     sessionStorage.removeItem('dashboard:intro-cards-visible');
   }
 
-  private async loadUsuarioPersistido(): Promise<void> {
-    const usuario = await this.getUsuarioPersistido();
-    this.usuarioLogadoSubject.next(usuario);
-  }
-
-  private async setUsuarioPersistido(usuario: Usuario): Promise<void> {
-    await this.preferencesService.setJson(this.storageKey, usuario);
-  }
-
-  private async getUsuarioPersistido(): Promise<Usuario | null> {
-    const usuario = await this.preferencesService.getString(this.storageKey);
-
-    if (usuario) {
-      try {
-        return JSON.parse(usuario);
-      } catch (error) {
-        console.error('AuthService: erro ao ler usuario persistido', error);
-        await this.removeUsuarioPersistido();
-        return null;
-      }
+  async switchUser(userId: string): Promise<boolean> {
+    const user = await this.authApiService.restoreUser(userId);
+    if (!user) {
+      return false;
     }
 
-    return null;
+    const session = this.accessControlService.buildSession(user);
+    this.sessionSubject.next(session);
+    await this.authSessionService.save({ userId: user.id });
+    return true;
   }
 
-  private async removeUsuarioPersistido(): Promise<void> {
-    await this.preferencesService.remove(this.storageKey);
+  private async loadSessionPersistida(): Promise<void> {
+    const persisted = await this.authSessionService.load();
+    if (!persisted?.userId) {
+      this.sessionSubject.next(null);
+      return;
+    }
+
+    const user = await this.authApiService.restoreUser(persisted.userId);
+    if (!user) {
+      await this.authSessionService.clear();
+      this.sessionSubject.next(null);
+      return;
+    }
+
+    this.sessionSubject.next(this.accessControlService.buildSession(user));
   }
 }
